@@ -1,0 +1,84 @@
+struct addrinfo {
+    int              ai_flags;     // AI_PASSIVE, AI_CANONNAME, etc.
+    int              ai_family;    // AF_INET, AF_INET6, AF_UNSPEC
+    int              ai_socktype;  // SOCK_STREAM, SOCK_DGRAM
+    int              ai_protocol;  // use 0 for "any"
+    size_t           ai_addrlen;   // size of ai_addr in bytes
+    struct sockaddr *ai_addr;      // struct sockaddr_in or _in6
+    char            *ai_canonname; // full canonical hostname
+
+    struct addrinfo *ai_next;      // linked list, next node
+};
+
+
+struct sockaddr {
+    unsigned short    sa_family;    // address family, AF_xxx
+    char              sa_data[14];  // 14 bytes of protocol address
+}; 
+
+
+// Internet address (a structure for historical reasons)
+struct in_addr {
+    uint32_t s_addr; // that's a 32-bit int (4 bytes)
+};
+
+// (IPv4 only--see struct sockaddr_in6 for IPv6)
+struct sockaddr_in {
+    short int          sin_family;  // Address family, AF_INET
+    unsigned short int sin_port;    // Port number
+    struct in_addr     sin_addr;    // Internet address
+    unsigned char      sin_zero[8]; // Same size as struct sockaddr
+};
+
+
+// (IPv6 only--see struct sockaddr_in and struct in_addr for IPv4)
+struct in6_addr {
+    unsigned char   s6_addr[16];   // IPv6 address
+};
+
+struct sockaddr_in6 {
+    u_int16_t       sin6_family;   // address family, AF_INET6
+    u_int16_t       sin6_port;     // port number, Network Byte Order
+    u_int32_t       sin6_flowinfo; // IPv6 flow information
+    struct in6_addr sin6_addr;     // IPv6 address
+    u_int32_t       sin6_scope_id; // Scope ID
+};
+
+//a generic container for storing socket addresses of any address family, including both IPv4 and IPv6
+struct sockaddr_storage {
+    sa_family_t  ss_family;     // address family
+
+    // all this is padding, implementation specific, ignore it:
+    char      __ss_pad1[_SS_PAD1SIZE];
+    int64_t   __ss_align;
+    char      __ss_pad2[_SS_PAD2SIZE];
+};
+
+
+/*
+The inet_pton() function is used for address conversion (presentation to network) 
+and is part of the socket programming API. It takes the address family 
+as the first argument (AF_INET for IPv4 or AF_INET6 for IPv6), 
+the human-readable address string as the second argument, 
+and a pointer to the destination memory location where the binary format 
+will be stored as the third argument. The function returns 1 on success, 
+0 if the input address string is not valid, or -1 if an error occurs.
+*/
+inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr)); // IPv4
+inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr)); // IPv6
+
+
+/*
+The inet_ntop(), converts the specified binary IP address to its 
+human-readable string format and stores it in the corresponding character array 
+(ip4 for IPv4 or ip6 for IPv6), ready to be used for display or further processing.
+The function returns a pointer to the resulting string on success or NULL on failure.
+
+It takes the address family as the first argument (AF_INET for IPv4 or AF_INET6 for IPv6),
+a pointer to the binary address to be converted as the second argument, a pointer to 
+the destination character array where the resulting string will be stored 
+as the third argument, and the size of the destination character array as the fourth argument. 
+*/
+
+inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN);
+inet_ntop(AF_INET6, &(sa6.sin6_addr), ip6, INET6_ADDRSTRLEN);
