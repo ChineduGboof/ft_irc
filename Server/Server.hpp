@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 18:07:13 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 20:20:06 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@
 #include <csignal>
 #include <cctype>
 #include <vector>
+#include <sstream>
+#include <limits>
+#include <string>
 
 namespace irc {
 

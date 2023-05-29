@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 23:47:23 by gboof             #+#    #+#             */
-/*   Updated: 2023/05/29 16:19:02 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 20:22:43 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,9 @@
 namespace utils {
     
     int atoi(const std::string& val) {
-        size_t pos = 0;
-        int num = std::stoi(val, &pos);
-
-        if (pos != val.size())
+        std::istringstream iss(val);
+        int num;
+        if (!(iss >> num) || !iss.eof())
             throw std::invalid_argument("Invalid int");
         return num;
     }
