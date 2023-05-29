@@ -31,9 +31,9 @@ The IP address 0.0.0.0 is used to indicate that a server should bind to all avai
 
 ## Step for Implementing the Server
 
-- Validate the port and password arguments.
-- Handle any exceptions that may occur during the validation process.
-- If the arguments are valid, proceed with the server implementation.
-- Use the validated port and password to configure the IRC server.
-- Start the server and listen for incoming connections.
-- Handle any errors or exceptions that may occur during the server's execution.
+- Validate the port and password arguments. => (done)
+- Handle any exceptions that may occur during the validation process.   => (done)
+- If the arguments are valid, proceed with the server implementation.   => (done)
+- Use the validated port and password to configure the IRC server.  => (partly done)
+- Start the server and listen for incoming connections.     => (partly done)
+- Handle any errors or exceptions that may occur during the server's execution. => (ongoing)
