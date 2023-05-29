@@ -29,5 +29,5 @@ Yes use that /connect etc. in the irssi terminal
 
 server args#     ./ircserv 6667 password
 
-t can be any, we just used 6667 because it was kind of the default for irssi or maybe clients 
+It can be any, we just used 6667 because it was kind of the default for irssi or maybe clients 
 in general. If you don't have the authentication ready, you can just do /connect <IP address> (edited) 

@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 11:05:02 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 14:19:14 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
 
         irc::Server server("0.0.0.0", port, password);
         server.config();
+        while (true) {
+            // Optionally, you can add logic here to handle incoming connections or other tasks
+            // This loop will keep the program execution alive until it is terminated externally
+        }
     }
     catch (std::exception &e) 
     {

@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 11:40:58 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 14:06:47 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,10 @@ namespace irc {
 
         private:
 
+            std::string _host;
             int         _port;
             int         _status;
             int         _sockfd;
-            std::string _host;
 
             Server();
 
