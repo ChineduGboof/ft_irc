@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 08:44:15 by gboof            ###   ########.fr       */
+/*   Updated: 2023/05/29 09:25:44 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <poll.h>
+# include <csignal>
 
 namespace irc {
 
@@ -38,9 +39,12 @@ namespace irc {
 
         private:
 
-            std::string _host;
-            int         _port;
+            int                                 _port;
+            int                                 _status;
+            std::string                         _host;
+            static volatile std::sig_atomic_t   _signalStatus;
 
+            static void signalHandler(int signal);
             Server();
 
         public:
@@ -48,6 +52,9 @@ namespace irc {
             ~Server();
 
             void config();
+            bool isOnline();
+            void stop();
+
 
     };
 }
