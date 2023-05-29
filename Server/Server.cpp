@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 19:08:34 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 20:42:50 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ namespace irc {
         initPollFD(_sockfd);
 
         while (true) {
-            std::cout << "HERE 1" << std::endl;
             int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
             if (pollResult < 0) {
                 perror("poll error");
@@ -80,46 +79,31 @@ namespace irc {
             }
             std::cout << "poll() result: " << pollResult << std::endl;
 
-            // std::cout << "HERE 2" << std::endl;
-            // for (size_t i = 0; i < _pollFD.size(); i++) {
-            //     // Something is in the IN Queue
-            //     std::cout << "HERE 3" << std::endl;
-            //     if (_pollFD[i].revents & POLLIN) {
-            //         std::cout << "HERE 4" << std::endl;
-            //         // We have a new connection, create a new socket for comms
-            //         if (_pollFD[i].fd == _sockfd) {
-            //             int fd = -1;
-            //             int addressLen = 0;
-            //             struct sockaddr_in address;
-            //             std::memset(&address, 0, sizeof(address));
-            //             std::cout << "HERE 5" << std::endl;
-            //             if ((fd = accept(_sockfd, (struct sockaddr *)&address, (socklen_t *)&addressLen)) < 0) {
-            //                 throw std::runtime_error("Server: client connection error");
-            //             }
-
-            //             // Handle the new connection here (e.g., create a new client object, store the new socket)
-            //             initPollFD(fd);
-
-            //             // Print the server name and port
-            //             std::cout << "HERE 6" << std::endl;
-            //             char hostname[NI_MAXHOST];
-            //             char servname[NI_MAXSERV];
-            //             int result = getnameinfo((struct sockaddr *)&address, addressLen, hostname, NI_MAXHOST, servname, NI_MAXSERV, NI_NUMERICSERV);
-            //             if (result == 0) {
-            //                 std::cout << "Connected to server: " << hostname << " Port: " << servname << std::endl;
-            //             } else {
-            //                 std::cerr << "Error getting server name and port: " << gai_strerror(result) << std::endl;
-            //             }
-            //         }
-            //         else { /*Handle the data from existing clients here*/ }
-            //     }
-            //     else if (_pollFD[i].revents & POLLHUP) {
-            //         // Client socket closed
-            //         close(_pollFD[i].fd);
-            //         _pollFD.erase(_pollFD.begin() + i);
-            //         i--;
-            //     }
-            // }
+            for (size_t i = 0; i < _pollFD.size(); i++) {
+                // Something is in the IN Queue
+                if (_pollFD[i].revents & POLLIN) {
+                    // We have a new connection, create a new socket for comms
+                    if (_pollFD[i].fd == _sockfd) {
+                        int fd = -1;
+                        int addressLen = 0;
+                        struct sockaddr_in address;
+                        std::memset(&address, 0, sizeof(address));
+                        std::cout << "HERE 5" << std::endl;
+                        if ((fd = accept(_sockfd, (struct sockaddr *)&address, (socklen_t *)&addressLen)) < 0) {
+                            throw std::runtime_error("Server: client connection error");
+                        }
+                        // Handle the new connection here (e.g., create a new client object, store the new socket)
+                        initPollFD(fd);
+                    }
+                    else { /*Handle the data from existing clients here*/ }
+                }
+                else if (_pollFD[i].revents & POLLHUP) {
+                    // Client socket closed
+                    close(_pollFD[i].fd);
+                    _pollFD.erase(_pollFD.begin() + i);
+                    i--;
+                }
+            }
         }
     }
 
