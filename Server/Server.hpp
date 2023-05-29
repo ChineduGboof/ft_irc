@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 09:25:44 by gboof            ###   ########.fr       */
+/*   Updated: 2023/05/29 11:40:58 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #define RED			"\033[0;31m"
 #define GREEN		"\033[0;32m"
 #define YELLOW		"\033[0;33m"
+
+#define ONLINE  1
 
 #include <iostream>
 #include <stdexcept>
@@ -39,12 +41,11 @@ namespace irc {
 
         private:
 
-            int                                 _port;
-            int                                 _status;
-            std::string                         _host;
-            static volatile std::sig_atomic_t   _signalStatus;
+            int         _port;
+            int         _status;
+            int         _sockfd;
+            std::string _host;
 
-            static void signalHandler(int signal);
             Server();
 
         public:
@@ -52,9 +53,6 @@ namespace irc {
             ~Server();
 
             void config();
-            bool isOnline();
-            void stop();
-
 
     };
 }

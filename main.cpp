@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 08:17:44 by gboof            ###   ########.fr       */
+/*   Updated: 2023/05/29 11:05:02 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ int main(int argc, char *argv[])
         std::cout << "Port: " << port << " Password: " << password << std::endl;
 
         irc::Server server("0.0.0.0", port, password);
-        // server.init();
-        // server.start();
+        server.config();
     }
     catch (std::exception &e) 
     {

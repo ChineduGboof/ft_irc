@@ -36,3 +36,60 @@ freeaddrinfo, bind, connect, listen, accept,
 htons, htonl, ntohs, ntohl, inet_addr, inet_ntoa,
 send, recv, signal, lseek, fstat, fcntl, poll (or
 equivalent)
+
+
+
+
+
+
+Project: ft_irc
+
+Description:
+The project involves developing an IRC (Internet Relay Chat) server in C++98. The server should be capable of handling multiple clients simultaneously without hanging. The server will listen for incoming IRC connections on a specified port, and a connection password will be required for clients to connect.
+
+Requirements:
+
+The server must use non-blocking I/O operations. Forking is not allowed.
+All I/O operations, including read, write, listen, etc., should be handled using a single poll() or equivalent function.
+Communication between the client and server must be done using TCP/IP (v4 or v6).
+The server should work on both Unix and macOS systems.
+File descriptors must be set to non-blocking mode using fcntl().
+Program: ircserv
+
+Executable: ./ircserv
+Arguments:
+<port>: The port number on which the IRC server will listen for incoming connections.
+<password>: The connection password required for clients to connect.
+Required Files:
+
+Makefile
+Header files (*.h, *.hpp, *.tpp, *.ipp)
+Source files (*.cpp)
+External Functions:
+
+socket
+close
+setsockopt
+getsockname
+getprotobyname
+gethostbyname
+getaddrinfo
+freeaddrinfo
+bind
+connect
+listen
+accept
+htons
+htonl
+ntohs
+ntohl
+inet_addr
+inet_ntoa
+send
+recv
+signal
+lseek
+fstat
+fcntl
+poll (or equivalent)
+Note: The project should be implemented using C++98 and should meet all the specified requirements.
