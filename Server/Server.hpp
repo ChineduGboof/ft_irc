@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 14:06:47 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 15:36:07 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <poll.h>
-# include <csignal>
+#include <csignal>
+#include <cctype>
 
 namespace irc {
 
