@@ -1,3 +1,7 @@
+## You can place any doubts that concern us all here..
+
+
+
 Questions:
 
 1. Is a NULL "" password valid?
