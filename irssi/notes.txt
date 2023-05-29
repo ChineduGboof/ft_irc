@@ -15,6 +15,7 @@ After (compiling and) installing Irssi, to start it, open a shell (Terminal) and
 #       /help <commandname>             -> help page in irssi
 
 
+#       nc 127.0.0.1 1000               -> connect using nc
 
 /connect <IP address> <port number> <password>
 

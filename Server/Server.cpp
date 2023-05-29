@@ -6,14 +6,13 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 14:15:53 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 19:08:34 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 namespace irc {
-
 
     Server::Server(const std::string& host, const int& port, const std::string& password) : _host(host), _port(port) {
         std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
@@ -30,43 +29,98 @@ namespace irc {
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(static_cast<uint16_t>(_port));
         socklen_t addressLen = sizeof(address);
-        
-        // Create a socket for the server
+
         if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
             throw std::runtime_error("Server: socket error");
         }
-        else{std::cout << GREEN << "Socket Created" << DEFAULT << std::endl;}
-        
-        // Set the SO_REUSEADDR socket option to allow reusing the address, especially in fast restarts
+
         int optval = 1;
         if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
-        else{std::cout << GREEN << "REUSEADDR set" << DEFAULT << std::endl;}
 
-        // Set the socket to non-blocking mode using O_NONBLOCK flag
-        // This allows the server to handle multiple clients simultaneously
-        // without being blocked by any individual client's I/O operations
         if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
             throw std::runtime_error("Server: file control error");
         }
-        else{std::cout << GREEN << "O_NONBLOCK set" << DEFAULT << std::endl;}
 
-        // Bind the socket to a specific address
-        // This is necessary before the socket can start listening for incoming connections
         if (bind(_sockfd, reinterpret_cast<struct sockaddr*>(&address), addressLen) < 0) {
             throw std::runtime_error("Server: bind error");
         }
-        else{std::cout << GREEN << "Binding Done" << DEFAULT << std::endl;}
 
-        // Start listening for incoming connections on the socket
-        // The maximum number of pending connections is set to the system's defined maximum
         if (listen(_sockfd, std::numeric_limits<int>::max()) < 0) {
             throw std::runtime_error("Server: listen error");
         }
-        else{std::cout << GREEN << "Listening" << DEFAULT << std::endl;}
-        
+
         _status = ONLINE;
+    }
+
+    void Server::initPollFD(int fd) {
+        struct pollfd pFD = { .fd = fd, .events = POLLIN, .revents = 0 };
+        _pollFD.push_back(pFD);
+
+        if (_pollFD.back().fd == -1) {
+            throw std::runtime_error("Failed to initialize pollfd struct");
+        }
+    }
+
+
+    void Server::run() {
+        std::cout << YELLOW << "Server Run Called" << DEFAULT << std::endl;
+        if (!_status)
+            throw std::runtime_error("Server: Offline, must init first");
+
+        initPollFD(_sockfd);
+
+        while (true) {
+            std::cout << "HERE 1" << std::endl;
+            int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
+            if (pollResult < 0) {
+                perror("poll error");
+                throw std::runtime_error("Server: poll error");
+            }
+            std::cout << "poll() result: " << pollResult << std::endl;
+
+            // std::cout << "HERE 2" << std::endl;
+            // for (size_t i = 0; i < _pollFD.size(); i++) {
+            //     // Something is in the IN Queue
+            //     std::cout << "HERE 3" << std::endl;
+            //     if (_pollFD[i].revents & POLLIN) {
+            //         std::cout << "HERE 4" << std::endl;
+            //         // We have a new connection, create a new socket for comms
+            //         if (_pollFD[i].fd == _sockfd) {
+            //             int fd = -1;
+            //             int addressLen = 0;
+            //             struct sockaddr_in address;
+            //             std::memset(&address, 0, sizeof(address));
+            //             std::cout << "HERE 5" << std::endl;
+            //             if ((fd = accept(_sockfd, (struct sockaddr *)&address, (socklen_t *)&addressLen)) < 0) {
+            //                 throw std::runtime_error("Server: client connection error");
+            //             }
+
+            //             // Handle the new connection here (e.g., create a new client object, store the new socket)
+            //             initPollFD(fd);
+
+            //             // Print the server name and port
+            //             std::cout << "HERE 6" << std::endl;
+            //             char hostname[NI_MAXHOST];
+            //             char servname[NI_MAXSERV];
+            //             int result = getnameinfo((struct sockaddr *)&address, addressLen, hostname, NI_MAXHOST, servname, NI_MAXSERV, NI_NUMERICSERV);
+            //             if (result == 0) {
+            //                 std::cout << "Connected to server: " << hostname << " Port: " << servname << std::endl;
+            //             } else {
+            //                 std::cerr << "Error getting server name and port: " << gai_strerror(result) << std::endl;
+            //             }
+            //         }
+            //         else { /*Handle the data from existing clients here*/ }
+            //     }
+            //     else if (_pollFD[i].revents & POLLHUP) {
+            //         // Client socket closed
+            //         close(_pollFD[i].fd);
+            //         _pollFD.erase(_pollFD.begin() + i);
+            //         i--;
+            //     }
+            // }
+        }
     }
 
 } // namespace irc

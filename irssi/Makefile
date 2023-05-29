@@ -7,9 +7,9 @@ all: build run
 build:
 	docker build -t irssi .
 
-# Run the Irssi container
+# Run the Irssi container with port mapping
 run:
-	docker run -it irssi
+	docker run -it -p 6667:6667 irssi
 
 # Clean up the Docker image
 clean:

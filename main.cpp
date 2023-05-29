@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 16:17:48 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/29 18:46:09 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,10 @@ int main(int argc, char *argv[])
             throw std::out_of_range("Select Port number (0 -> 65535)");
 
         password = utils::whitespace(argv[2]);
-        std::cout << "Port: " << port << " Password: " << password << std::endl;
 
         irc::Server server("0.0.0.0", port, password);
         server.config();
-        while (true) {
-            // Optionally, you can add logic here to handle incoming connections or other tasks
-            // This loop will keep the program execution alive until it is terminated externally
-        }
+        server.run();
     }
     catch (std::exception &e) 
     {
