@@ -28,7 +28,7 @@ clean:
 	@rm -f *.gch
 	@rm -rf *.dSYM
 	@rm -rf */*.dSYM
-	@rm -rf */*.DStore
+	@rm -rf */*.DS_Store
 	@echo ${ORANGE}"Cleaning up refuse"$(DEFAULT)
 
 fclean: clean
