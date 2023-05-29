@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 08:52:30 by gboof            ###   ########.fr       */
+/*   Created: 2023/05/28 23:47:20 by gboof             #+#    #+#             */
+/*   Updated: 2023/05/28 23:49:57 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
-namespace irc {
+# include <string>
+# include <sstream>
+# include <limits>
+# include <exception>
+# include <cstdlib>
+# include <queue>
+# include <ctime>
+# include <algorithm>
 
-    Server::Server( const std::string& host, const int& port, const std::string& password ): _host(host), _port(port) {
-        std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
-    }
-
-    Server::~Server() {}
-    
-    void Server::config(){}
+namespace utils {
+    int atoi(const std::string& val);
 }
+
+#endif

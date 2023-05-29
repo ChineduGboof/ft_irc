@@ -18,7 +18,12 @@ After (compiling and) installing Irssi, to start it, open a shell (Terminal) and
 
 /connect <IP address> <port number> <password>
 
-Yeah just have a basic server running first. Try to add a std::cout when you use the recv() function. When that's ready you can try to connect the client (irssi) to the server, and if it prints something like CAP LS 302 or anything that start with a CAP in the terminal then you're on the right path
+Yeah just have a basic server running first. 
+Try to add a std::cout when you use the recv() function. 
+When that's ready you can try to connect the client (irssi) to the server,
+ and if it prints something like CAP LS 302 
+ or anything that start with a CAP in the terminal 
+ then you're on the right path
 3:12
 Yes use that /connect etc. in the irssi terminal
 

@@ -1,18 +1,18 @@
 NAME	=	ircserv
 COMPILER=	c++
-FLAGS	=	-std=c++98 -Wall -Wextra -Werror
-SRC		=	main.cpp
+FLAGS	=	-std=c++98 -Wall -Wextra #-Werror
+SRC		=	main.cpp Server/Utils.cpp Server/Server.cpp
 OBJ		=	$(SRC:.cpp=.o)
 INC		=	
 
 
-GREEN ='\033[1;32m'
-ORANGE ='\033[1;33m'
-NC='\033[0m'
+DEFAULT	=	'\033[0m'
+GREEN	=	'\033[1;32m'
+ORANGE 	=	'\033[1;33m'
 
 .PHONY: all clean fclean re
 
-all: assembling $(NAME) assembled
+all: compiling $(NAME) compiled
 
 %.o: %.cpp $(INC)
 	$(COMPILER) $(FLAGS) -o $@ -c $<
@@ -28,27 +28,19 @@ clean:
 	@rm -f *.gch
 	@rm -rf *.dSYM
 	@rm -rf */*.dSYM
-	@echo ${ORANGE}"Clearing"$(NC)
+	@rm -rf */*.DStore
+	@echo ${ORANGE}"Cleaning up refuse"$(DEFAULT)
 
 fclean: clean
 	@rm -f $(NAME)
-	@echo ${GREEN}"Cleared"$(NC)
+	@echo ${GREEN}"All Clean"$(DEFAULT)
 
 re: fclean all
 
-run:
-	@echo $(GREEN)"Start!"$(NC)
-	@./$(NAME) 127.0.0.1:6667:23
 
-nc:
-	@echo $(GREEN)"Enter to server new user"$(NC)
-	@nc 127.0.0.1 6667
+compiling:
+	@echo $(ORANGE)"Ft_IRC is being compiled"$(DEFAULT)
 
-assembling:
-	@echo $(ORANGE)"Assembling"$(NC)
+compiled:
+	@echo $(GREEN)"Ft_IRC is ready"$(DEFAULT)
 
-assembled:
-	@echo $(GREEN)"Assembled"$(NC)
-
-irssi:
-	irssi -c 127.0.0.1

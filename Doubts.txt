@@ -1,0 +1,3 @@
+Questions:
+
+1. Is a NULL "" password valid?

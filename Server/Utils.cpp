@@ -1,24 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 08:52:30 by gboof            ###   ########.fr       */
+/*   Created: 2023/05/28 23:47:23 by gboof             #+#    #+#             */
+/*   Updated: 2023/05/28 23:53:54 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "Utils.hpp"
 
-namespace irc {
+namespace utils {
+    
+    int atoi(const std::string& val) {
+        size_t pos = 0;
+        int num = std::stoi(val, &pos);
 
-    Server::Server( const std::string& host, const int& port, const std::string& password ): _host(host), _port(port) {
-        std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
+        if (pos != val.size())
+            throw std::invalid_argument("Invalid int");
+        return num;
     }
 
-    Server::~Server() {}
-    
-    void Server::config(){}
 }
