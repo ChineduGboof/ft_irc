@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 20:42:50 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/30 18:29:38 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace irc {
     Server::~Server() {}
 
     void Server::config() {
-        std::cout << YELLOW << "Config Called" << DEFAULT << std::endl;
+        
         struct sockaddr_in address;
         std::memset(&address, 0, sizeof(address));
         address.sin_family = AF_INET;
