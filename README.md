@@ -37,3 +37,20 @@ The IP address 0.0.0.0 is used to indicate that a server should bind to all avai
 - Use the validated port and password to configure the IRC server.  => (partly done)
 - Start the server and listen for incoming connections.     => (partly done)
 - Handle any errors or exceptions that may occur during the server's execution. => (ongoing)
+
+
+## Configuring the Server
+
+- `socket()`: This function creates a new socket for communication. In this case, it creates a TCP socket (SOCK_STREAM) using the IPv4 protocol (AF_INET). The importance of this step is to establish a communication endpoint that the server can use for sending and receiving data.
+
+- `setsockopt()`: This function sets socket options. In this case, it sets the SO_REUSEADDR option to allow reusing the address. This is useful when the server needs to restart or bind to the same address that was previously used. The importance of this step is to enable address reuse and prevent errors related to "address already in use."
+
+- `fcntl()`: This function sets the file status flags for the socket. In this case, it sets the O_NONBLOCK flag, which makes the socket non-blocking. Non-blocking sockets allow the server to perform I/O operations without waiting, which is crucial for handling multiple clients simultaneously. The importance of this step is to ensure non-blocking behavior and prevent the server from hanging.
+
+- `bind()`: This function binds the socket to a specific address and port number. In this case, it binds to the address specified in the address structure. The importance of this step is to associate the socket with a specific network address so that incoming client connections can be received on that address.
+
+- `listen()`: This function puts the socket into a listening state to accept incoming connections. It specifies the maximum number of pending connections that can be queued. In this case, std::numeric_limits<int>::max() is used to set the maximum value allowed by the system. The importance of this step is to make the server ready to accept client connections and specify the backlog size for incoming connection requests.
+
+After successfully completing these steps, the server is considered online and can start accepting incoming connections.
+
+## Running the Server
