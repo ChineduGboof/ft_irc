@@ -63,3 +63,6 @@ After successfully completing these steps, the server is considered online and c
 - [FT IRServer Documentation](https://irc.dalexhd.dev/index.html)
 - [IRSSI Documentation](https://irssi.org/documentation/manual/)
 - [BEEJ Guide To Network Programming](https://beej.us/guide/bgnet/html/#select)
+
+- [Internet Relay Chat Protocol](https://www.rfc-editor.org/rfc/rfc1459)
+

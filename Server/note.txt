@@ -106,3 +106,198 @@ Mandatories:
 1. Remove all log and BOT implementation and any unnecessary details,
 2. Use only  c++98 standard functions. 
 3. dont use the libft and remove anything concerning BOT for now.
+
+
+void Server::run() {
+    std::cout << YELLOW << "Server Run Called" << DEFAULT << std::endl;
+    if (!_status)
+        throw std::runtime_error("Server: Offline, must init first");
+
+    initPollFD(_sockfd);
+
+    while (true) {
+        int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
+        if (pollResult < 0) {
+            perror("poll error");
+            throw std::runtime_error("Server: poll error");
+        }
+        std::cout << "Number of Clients: " << _pollFD.size() << std::endl;
+
+        // Run through the existing connections looking for data to read
+        for (size_t i = 0; i < _pollFD.size(); i++) {
+            // Check if someone's ready to read
+            if (_pollFD[i].revents & POLLIN) {
+                // We have a new connection, create a new socket for comms
+                if (_pollFD[i].fd == _sockfd) {
+                    // Password has already been authenticated, so no need to authenticate again here
+                    int fd = -1;
+                    socklen_t addressLen = sizeof(struct sockaddr_storage);
+                    struct sockaddr_storage remoteAddress;
+                    std::memset(&remoteAddress, 0, sizeof(remoteAddress));
+
+                    if ((fd = accept(_sockfd, (struct sockaddr *)&remoteAddress, &addressLen)) < 0) {
+                        throw std::runtime_error("Server: client connection error");
+                    }
+                    // Handle the new connection here (e.g., create a new client object, store the new socket)
+                    initPollFD(fd);
+
+                    // Print the new connection information
+                    char remoteIP[INET6_ADDRSTRLEN];
+                    if (remoteAddress.ss_family == AF_INET) {
+                        struct sockaddr_in *ipv4 = (struct sockaddr_in *)&remoteAddress;
+                        inet_ntop(AF_INET, &(ipv4->sin_addr), remoteIP, INET_ADDRSTRLEN);
+                    } else if (remoteAddress.ss_family == AF_INET6) {
+                        struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)&remoteAddress;
+                        inet_ntop(AF_INET6, &(ipv6->sin6_addr), remoteIP, INET6_ADDRSTRLEN);
+                    } else {
+                        std::cout << "Unknown address family" << std::endl;
+                        continue;
+                    }
+                    std::cout << "pollserver: new connection from " << remoteIP << " on socket " << fd << std::endl;
+                } else {
+                    // Handle the data from existing clients here
+                    int bytesRec = receiveData(_pollFD[i].fd);
+
+                    if (bytesRec <= 0) {
+                        // Error or connection closed
+                        if (bytesRec < 0) {
+                            perror("recv error");
+                        }
+                        // Close the client socket and remove from poll list
+                        close(_pollFD[i].fd);
+                        _pollFD.erase(_pollFD.begin() + i);
+                        i--;
+                    } else {
+                        // Print the received message
+                        std::string message = getClientMessage(_pollFD[i].fd);
+                        std::cout << "Received message from client: " << message << std::endl;
+
+                        // Process the received message as needed
+                        processMessage(message);
+                    }
+                }
+            } else if (_pollFD[i].revents & POLLHUP) {
+                // Client socket closed
+                close(_pollFD[i].fd);
+                _pollFD.erase(_pollFD.begin() + i);
+                i--;
+            }
+        }
+    }
+}
+
+int Server::receiveData(int clientSocket) {
+    char buffer[BUFFSIZE];
+    ssize_t byteRec = recv(clientSocket, buffer, sizeof(buffer), 0);
+    if (byteRec <= 0)
+        return byteRec;
+
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    auto clientIter = std::find_if(_clients.begin(), _clients.end(),
+        [clientSocket](const auto& client) { return client->getFD() == clientSocket; });
+
+    if (clientIter != _clients.end()) {
+        (*clientIter)->receiveData(buffer, byteRec);
+    }
+
+    return byteRec;
+}
+
+std::string Server::getClientMessage(int clientSocket) {
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    auto clientIter = std::find_if(_clients.begin(), _clients.end(),
+        [clientSocket](const auto& client) { return client->getFD() == clientSocket; });
+
+    if (clientIter != _clients.end()) {
+        return (*clientIter)->getMessage();
+    }
+
+    return "";
+}
+
+
+
+
+
+	void Server::run() {
+		std::cout << YELLOW << "Server Run Called" << DEFAULT << std::endl;
+		if (!_status)
+			throw std::runtime_error("Server: Offline, must init first");
+
+		// Authenticate the password here
+		// if (!authenticatePassword(password)) {
+		// 	throw std::runtime_error("Server: Invalid password");
+		// }
+
+		initPollFD(_sockfd);
+
+		while (true) {
+			int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
+			if (pollResult < 0) {
+				perror("poll error");
+				throw std::runtime_error("Server: poll error");
+			}
+			std::cout << "Number of Clients: " << _pollFD.size() << std::endl;
+
+			// Run through the existing connections looking for data to read
+			for (size_t i = 0; i < _pollFD.size(); i++) {
+				//you need to also implement writing POLLOUT
+				// Check if someone's ready to read
+				if (_pollFD[i].revents & POLLIN) {
+					// We have a new connection, create a new socket for comms
+					if (_pollFD[i].fd == _sockfd) {
+						// Password has already been authenticated, so no need to authenticate again here
+						int fd = -1;
+						socklen_t addressLen = sizeof(struct sockaddr_storage);
+						struct sockaddr_storage remoteAddress;
+						std::memset(&remoteAddress, 0, sizeof(remoteAddress));
+
+						if ((fd = accept(_sockfd, (struct sockaddr *)&remoteAddress, &addressLen)) < 0) {
+							throw std::runtime_error("Server: client connection error");
+						}
+						// Handle the new connection here (e.g., create a new client object, store the new socket)
+						initPollFD(fd);
+
+						// Print the new connection information
+						char remoteIP[INET6_ADDRSTRLEN];
+						if (remoteAddress.ss_family == AF_INET) {
+							struct sockaddr_in *ipv4 = (struct sockaddr_in *)&remoteAddress;
+							inet_ntop(AF_INET, &(ipv4->sin_addr), remoteIP, INET_ADDRSTRLEN);
+						} else if (remoteAddress.ss_family == AF_INET6) {
+							struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)&remoteAddress;
+							inet_ntop(AF_INET6, &(ipv6->sin6_addr), remoteIP, INET6_ADDRSTRLEN);
+						} else {
+							std::cout << "Unknown address family" << std::endl;
+							continue;
+						}
+						std::cout << "pollserver: new connection from " << remoteIP << " on socket " << fd << std::endl;
+					} else {
+						// Handle the data from existing clients here
+						// Receive and process messages from clients
+						// char buffer[1024];
+						// int bytesRead = recv(_pollFD[i].fd, buffer, sizeof(buffer), 0);
+						// if (bytesRead <= 0) {
+						// 	// Error or connection closed
+						// 	if (bytesRead < 0) {
+						// 		perror("recv error");
+						// 	}
+						// 	// Close the client socket and remove from poll list
+						// 	close(_pollFD[i].fd);
+						// 	_pollFD.erase(_pollFD.begin() + i);
+						// 	i--;
+						// } else {
+						// 	// Process the received message
+						// 	std::string message(buffer, bytesRead);
+						// 	// Process the message as needed
+						// 	processMessage(message);
+						// }
+					}
+				} else if (_pollFD[i].revents & POLLHUP) {
+					// Client socket closed
+					close(_pollFD[i].fd);
+					_pollFD.erase(_pollFD.begin() + i);
+					i--;
+				}
+			}
+		}
+	}
