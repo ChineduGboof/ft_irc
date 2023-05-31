@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/29 18:46:09 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/31 21:01:08 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
         password = utils::whitespace(argv[2]);
 
         irc::Server server("0.0.0.0", port, password);
+        irc::Server::serverInstance = &server;  // Set the serverInstance pointer
+        std::signal(SIGINT, irc::Server::signalHandler);  // Register the signal handler
         server.config();
         server.run();
     }

@@ -3,8 +3,6 @@
 
 
 Questions:
-1- stoi() doesnt work in linux --- (fixed)
-2- numeric_limits doesnt work in linux as well   --- (fixed)
 
 
 

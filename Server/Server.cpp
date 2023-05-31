@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/31 20:16:40 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/31 21:22:13 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 namespace irc {
 
+	Server* Server::serverInstance = NULL;
+
 	Server::Server(const std::string& host, const int& port, const std::string& password) 
-	: _host(host), _port(port) {
+	: _host(host), _port(port), _running(false) {
 		std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
 		(void)password;
+		serverInstance = this;  // Set the serverInstance pointer to the current instance
 	}
 
 	Server::~Server() {}
@@ -72,16 +75,23 @@ void Server::run() {
     // if (!authenticatePassword(password)) {
     //     throw std::runtime_error("Server: Invalid password");
     // }
-
+	std::signal(SIGINT, signalHandler);
+	_running = true;
     initPollFD(_sockfd);
 
-    while (true) {
+    while (_running) {
         int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
-        if (pollResult < 0) {
-            perror("poll error");
-            throw std::runtime_error("Server: poll error");
-        }
-        std::cout << "Number of Clients: " << _pollFD.size() << std::endl;
+		if (pollResult < 0) {
+			// Check if the poll was interrupted by a signal
+			if (errno == EINTR) {
+				// Signal interrupted the poll, handle it gracefully
+				handleSignal(SIGINT);
+				continue;
+			}
+			perror("poll error");
+			throw std::runtime_error("Server: poll error");
+		}
+		std::cout << "Number of Clients: " << _pollFD.size() << std::endl;
 
         // Run through the existing connections looking for data to read
         for (size_t i = 0; i < _pollFD.size(); i++) {
@@ -89,7 +99,6 @@ void Server::run() {
             if (_pollFD[i].revents & POLLIN) {
                 // We have a new connection, create a new socket for comms
                 if (_pollFD[i].fd == _sockfd) {
-                    // Password has already been authenticated, so no need to authenticate again here
                     handleNewConnection();
                 } else {
                     // Handle the data from existing clients here
@@ -101,7 +110,13 @@ void Server::run() {
                 i--;
             }
         }
+		// Check if the server should stop
+        if (!_running) {
+            break;
+        }
     }
+	// Perform any necessary cleanup before exiting the loop
+    bye();
 }
 
 void Server::handleNewConnection() {
@@ -157,5 +172,29 @@ void Server::closeClientSocket(size_t index) {
     _pollFD.erase(_pollFD.begin() + index);
 }
 
+void Server::bye() {
+    if (_sockfd != -1) {
+        std::cout << "Server: Stopped socket closed" << std::endl;
+        close(_sockfd);
+        _sockfd = -1;
+
+        // Add any additional cleanup code here
+    }
+}
+
+// Signal handling function
+void Server::handleSignal(int signal) {
+	std::cout << "Received signal: " << signal << std::endl;
+	// Add necessary actions to handle the signal
+	// For example, you can call the stop() function here to stop the server gracefully
+	bye();
+	_running = false;  // Set _running to false to stop the server
+}
+
+void Server::signalHandler(int signal) {
+	if (serverInstance != NULL) {
+		serverInstance->handleSignal(signal);
+	}
+}
 
 } // namespace irc

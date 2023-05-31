@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/05/31 20:01:58 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/05/31 21:23:38 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 #include <sstream>
 #include <limits>
 #include <string>
+#include <cerrno>
 
 namespace irc {
 
@@ -51,6 +52,7 @@ namespace irc {
             int                 _status;
             int                 _sockfd;
             std::vector<pollfd> _pollFD;
+            bool                _running;
 
             Server();
             void initPollFD(int fd);
@@ -59,11 +61,15 @@ namespace irc {
             Server( const std::string& host, const int& port, const std::string& password );
             ~Server();
 
+            static Server*      serverInstance;
             void config();
             void run();
             void handleNewConnection();
             void handleClientData(size_t index);
             void closeClientSocket(size_t index);
+            void handleSignal(int signal);
+            static void signalHandler(int signal);
+            void bye();
 
     };
 }
