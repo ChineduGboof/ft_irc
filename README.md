@@ -54,3 +54,12 @@ The IP address 0.0.0.0 is used to indicate that a server should bind to all avai
 After successfully completing these steps, the server is considered online and can start accepting incoming connections.
 
 ## Running the Server
+
+
+
+## Further Studies
+
+- [Things to know about IRC](https://ircgod.com/docs/irc/to_know/)
+- [FT IRServer Documentation](https://irc.dalexhd.dev/index.html)
+- [IRSSI Documentation](https://irssi.org/documentation/manual/)
+- [BEEJ Guide To Network Programming](https://beej.us/guide/bgnet/html/#select)
