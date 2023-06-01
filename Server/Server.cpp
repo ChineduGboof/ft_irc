@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 20:13:10 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/01 21:01:26 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ namespace irc {
 	Server* Server::serverInstance = NULL;
 
 	Server::Server(const std::string& host, const int& port, const std::string& password) 
-	: _host(host), _port(port), _running(false) {
+	: _host(host), _port(port), _password(password), _running(false) {
 		std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
 		(void)password;
 		serverInstance = this;  // Set the serverInstance pointer to the current instance
@@ -71,10 +71,6 @@ namespace irc {
         if (!_status)
             throw std::runtime_error("Server: Offline, must init first");
 
-        // Authenticate the password here
-        // if (!authenticatePassword(password)) {
-        //     throw std::runtime_error("Server: Invalid password");
-        // }
         std::signal(SIGINT, signalHandler);
         _running = true;
         initPollFD(_sockfd);
@@ -197,4 +193,9 @@ namespace irc {
         }
     }
 
+    bool Server::verifyPassword(std::string userPassword) {
+        if (userPassword == _password)
+            return true;
+        return false;
+    }
 } // namespace irc
