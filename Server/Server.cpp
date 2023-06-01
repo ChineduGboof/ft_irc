@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 21:01:26 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/01 21:38:32 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,9 +156,17 @@ namespace irc {
             _pollFD.erase(_pollFD.begin() + index);
             return;
         }
-
         // Process the received message
         std::string message(buffer, bytesRead);
+        
+        // if you get a PING, respond with PONG
+        // if (message.substr(0, 4) == "PING") {
+        //     // Respond with PONG
+        //     std::string pongMessage = "PONG" + message.substr(4);
+        //     send(_pollFD[index].fd, pongMessage.c_str(), pongMessage.size(), 0);
+        //     return;
+        // }
+        
         // Print the received message
         std::cout << GREEN << "Received message from client: " << DEFAULT << message << std::endl;
     }
@@ -198,4 +206,10 @@ namespace irc {
             return true;
         return false;
     }
+
+    // function to send messages to specific clients when needed.
+    // void Server::sendToClient(size_t index, const std::string& message) {
+    //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
+    // }
+    
 } // namespace irc
