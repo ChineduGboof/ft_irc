@@ -40,7 +40,9 @@
 #include <limits>
 #include <string>
 #include <cerrno>
+#include "../Channels/Channel.hpp"
 
+class Channel;
 namespace irc {
 
     class Server {
@@ -55,9 +57,11 @@ namespace irc {
             std::vector<pollfd> _pollFD;
             bool                _running;
 
+
             Server();
             void initPollFD(int fd);
-
+			
+			std::vector<Channel> _channels;
         public:
             Server( const std::string& host, const int& port, const std::string& password );
             ~Server();
@@ -73,7 +77,10 @@ namespace irc {
             void bye();
 
             bool verifyPassword(std::string userPassword);
-
+			
+			// Channels
+			void createChannel(std::string name);
+			void deleteChannel(Channel channel);
     };
 }
 
