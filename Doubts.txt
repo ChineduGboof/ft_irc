@@ -8,3 +8,41 @@ Questions:
 
 Connection to IRSSI:
 -> /connect 127.0.0.1 6667
+
+
+Issues With Other People's Project
+
+our mode was ignoring channel operator privileges and allowed normal clients to change mode on channels
+
+unfortunately there were case when u open more than one client then u can't use other users 
+if u didn't login to the first one u opened with. good luck guys and keep it up
+
+their irc didn't let me login with the same nick when i used the command quit, 
+which was a minor issue as he fixed it directly, also when i connect and then 
+do ctrl z and try to connect back, they are not handling it and quit that user out, 
+also when i open a client connection and a second one at the same time it will crash 
+to wait till the 2nd user to finish registration. good luck next time!
+
+there was a small issue of sending chat to channels that you are not in.
+
+The did not handle a client with no name. the server fails for more than 209 clients
+
+with valgrind i found errors they are not handling, that was 5 errors, 
+in nc when i do too many ctrl d at the same time it crashes and the server 
+never responds again, the client lime chat disconnects after a while as 
+they are not handling ping pong commands in the server, when I put my 
+nick starts with a (#) I could never receive any privmsg during my time 
+in the server, when I disconnect from the client using ctrl z and try to 
+enter again, it says my nickname is still there and i am not allowed to 
+take it back, so the problem is mainly from the nick and the way they handled it. 
+At the end i considered it as a crash cz the client cannot be held forever 
+in the server and it disconnects after 2-5 min.
+
+the ones that actually make sense were the memory-related error indicated 
+by valgrind, that the nickname stays unavailable after a client exists. 
+He also did some overkill tests that are nowhere near the scope of this project, 
+also a test that would fail because of bash itsself (multiple CTRL+D's at 
+once causes readline, used by bash, to end the stream, so we would need to 
+change bash to fix that :D). The ping-pong implementation he wanted from us 
+is not specified by the subject pdf or the checklist, and our client 
+reconnects anyway, so it wasn't really a problem.
