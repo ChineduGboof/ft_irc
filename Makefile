@@ -14,6 +14,15 @@ ORANGE 	=	'\033[1;33m'
 
 all: compiling $(NAME) compiled
 
+irssi: rm_irssi
+	docker run -it --name my-running-irssi -e TERM -u $(id -u):$(id -g) \
+	--log-driver=none \
+    -v ${HOME}/.irssi:/home/user/.irssi:ro \
+    irssi
+
+rm_irssi:
+	@docker rm -f my-running-irssi 2> /dev/null || exit 0
+
 %.o: %.cpp $(INC)
 	$(COMPILER) $(FLAGS) -o $@ -c $<
 
