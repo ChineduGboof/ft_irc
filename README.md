@@ -54,3 +54,96 @@ The IP address 0.0.0.0 is used to indicate that a server should bind to all avai
 After successfully completing these steps, the server is considered online and can start accepting incoming connections.
 
 ## Running the Server
+
+## Server Class Functions
+
+This is a summary of the functions in the `Server` class, their purpose, and how they contribute to the overall functionality of the server.
+
+### Server::initPollFD(int fd)
+- Purpose: Initialize a `pollfd` structure for a given file descriptor (socket).
+- Parameters:
+  - `fd`: The file descriptor to initialize the `pollfd` structure for.
+- Actions:
+  - Creates a `pollfd` structure with the provided file descriptor (`fd`).
+  - Sets the events to be monitored to `POLLIN` (incoming data).
+  - Appends the initialized `pollfd` structure to the `_pollFD` vector.
+- Notes:
+  - Throws a `std::runtime_error` if the initialization fails.
+
+### Server::run()
+- Purpose: Main loop for the server to handle incoming connections and data.
+- Actions:
+  - Checks if the server is online and throws an exception if not.
+  - Sets up a signal handler for interrupt signals.
+  - Initializes the `pollfd` structure for the server socket.
+  - Enters a loop that waits for events using `poll()`.
+  - Handles new connections and incoming data from clients.
+  - Closes client sockets and removes them from the `_pollFD` vector when necessary.
+  - Checks if the server should stop and exits the loop if needed.
+  - Performs necessary cleanup before exiting.
+- Notes:
+  - Throws a `std::runtime_error` if an error occurs during `poll()`.
+  - Calls the `handleNewConnection()`, `handleClientData()`, and `closeClientSocket()` functions.
+
+### Server::handleNewConnection()
+- Purpose: Handle a new client connection.
+- Actions:
+  - Accepts the new client connection and creates a new socket for communication.
+  - Initializes the `pollfd` structure for the new socket.
+  - Prints information about the new connection.
+- Notes:
+  - Throws a `std::runtime_error` if the client connection fails.
+
+### Server::handleClientData(size_t index)
+- Purpose: Handle data received from an existing client.
+- Parameters:
+  - `index`: The index of the client's `pollfd` structure in the `_pollFD` vector.
+- Actions:
+  - Reads data from the client socket into a buffer.
+  - Processes the received message.
+  - Prints the received message.
+- Notes:
+  - Closes the client socket and removes it from the `_pollFD` vector if there is an error or the connection is closed.
+
+### Server::closeClientSocket(size_t index)
+- Purpose: Close the socket and remove a client from the `_pollFD` vector.
+- Parameters:
+  - `index`: The index of the client's `pollfd` structure in the `_pollFD` vector.
+- Actions:
+  - Closes the client socket.
+  - Removes the client's `pollfd` structure from the `_pollFD` vector.
+
+### Server::bye()
+- Purpose: Clean up resources and close the server socket.
+- Actions:
+  - Closes the server socket and sets `_sockfd` to -1.
+  - Performs any additional cleanup tasks.
+
+### Server::handleSignal(int signal)
+- Purpose: Handle signals received by the server.
+- Parameters:
+  - `signal`: The signal number received.
+- Actions:
+  - Prints the received signal.
+  - Calls the `bye()` function to clean up resources and close the server socket.
+  - Sets `_running` to false to stop the server gracefully.
+
+### Server::signalHandler(int signal)
+- Purpose: Static signal handling function.
+- Parameters:
+  - `signal`: The signal number received.
+- Actions:
+  - Calls the `handleSignal()` function of the `
+
+serverInstance` if it is not `NULL`.
+
+
+## Further Studies
+
+- [Things to know about IRC](https://ircgod.com/docs/irc/to_know/)
+- [FT IRServer Documentation](https://irc.dalexhd.dev/index.html)
+- [IRSSI Documentation](https://irssi.org/documentation/manual/)
+- [BEEJ Guide To Network Programming](https://beej.us/guide/bgnet/html/#select)
+
+- [Internet Relay Chat Protocol](https://www.rfc-editor.org/rfc/rfc1459)
+
