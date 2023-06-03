@@ -103,6 +103,7 @@ I am not implementing any logs yet. I just want the server up and running.
 Requirement.: 
 Modify the below code to implement a running server which handles incoming connections
 Mandatories: 
-1. Remove all log and BOT implementation and any unnecessary details,
-2. Use only  c++98 standard functions. 
-3. dont use the libft and remove anything concerning BOT for now.
+1. Use only  c++98 standard functions. 
+2. dont use the libft and remove anything concerning BOT for now.
+
+

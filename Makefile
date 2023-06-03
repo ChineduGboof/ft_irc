@@ -52,4 +52,7 @@ compiling:
 
 compiled:
 	@echo $(GREEN)"Ft_IRC is ready"$(DEFAULT)
+	@printf "\n"
+	@printf "   🌼\033[1;97m I R C S E R V  C R E A T E D  W I T H  S U C C E S S 🌼\e[0m\n"
+	@printf "\n"
 
