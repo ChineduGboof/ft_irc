@@ -9,26 +9,26 @@ Channel::~Channel()
 {
 }
 
-void Channel::addUser(std::string user)
+void Channel::addUser(User user)
 {
-	std::vector<std::string>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end())
 	{
-		std::cout << "Error: User " << user << " is already in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user.getName() << " is already in channel " << this->name << "." << std::endl;
 		return;
 	}
 	this->users.push_back(user);
 }
 
-void Channel::removeUser(std::string user)
+void Channel::removeUser(User user)
 {
-	if (findString(user, this->users))
+	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+	if (it != this->users.end())
 	{
-		std::vector<std::string>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: User " << user << " is not in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user.getName() << " is not in channel " << this->name << "." << std::endl;
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
@@ -44,7 +44,7 @@ std::string Channel::getName()
 	return this->name;
 }
 
-std::vector<std::string> Channel::getUsers()
+std::vector<User> Channel::getUsers()
 {
 	return this->users;
 }
@@ -80,12 +80,20 @@ void	irc::Server::deleteChannel(const Channel channel)
 		return;
 }
 
-void	joinChannel(Channel channel, std::string user)
-{	
+void	joinChannel(Channel channel, User user)
+{
 	channel.addUser(user);
 }
 
-void	partChannel(Channel channel, std::string user)
+void	partChannel(Channel channel, User user)
 {
 	channel.removeUser(user);
+}
+
+void	Channel::sendMessage(std::string message)
+{
+	for (std::vector<User>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+	{
+		it->addMessage(message);
+	}
 }
