@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 21:00:16 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/04 00:40:34 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 #include <string>
 #include <cerrno>
 #include "../Channels/Channel.hpp"
+#include <algorithm>
+#include "user.hpp"
 
 class Channel;
 namespace irc {
@@ -74,6 +76,10 @@ namespace irc {
             void closeClientSocket(size_t index);
             void handleSignal(int signal);
             static void signalHandler(int signal);
+            
+            void createNewUser(int fd);
+            void removeUser(int fd);
+            std::vector<User> users;
             void bye();
 
             bool verifyPassword(std::string userPassword);

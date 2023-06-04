@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 20:58:52 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/04 00:28:35 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server/Server.hpp"
 #include "Server/Utils.hpp"
-
 int main(int argc, char *argv[])
 {
     int         port;
@@ -31,9 +30,13 @@ int main(int argc, char *argv[])
 
         irc::Server server("0.0.0.0", port, password);
         irc::Server::serverInstance = &server;  // Set the serverInstance pointer
+        // server.users.push_back(User("yoni", "yoni1", "yonatan", 1));
         std::signal(SIGINT, irc::Server::signalHandler);  // Register the signal handler
         server.config();
         server.run();
+        
+        // server.users.at(1).getNickName();
+        // server.users.at(1).getNickName();
     }
     catch (std::exception &e) 
     {

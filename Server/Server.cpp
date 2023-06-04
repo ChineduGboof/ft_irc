@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 21:38:32 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/04 00:46:45 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,20 @@ namespace irc {
         // Perform any necessary cleanup before exiting the loop
         bye();
     }
-
+    void    Server::removeUser(int fd){
+	for (std::vector<User>::iterator itr = users.begin(); itr != users.end(); itr++) {
+		if (itr->getUserFd() == fd)
+		{
+			users.erase(itr);
+			break ;
+		}
+	}
+    }
+    void Server::createNewUser(int fd)
+    {
+        this->users.push_back(User(fd));
+        std::cout << "size: " << this->users.size() << std::endl;
+    }
     void Server::handleNewConnection() {
         int fd = -1;
         socklen_t addressLen = sizeof(struct sockaddr_storage);
@@ -126,7 +139,7 @@ namespace irc {
         }
         // Handle the new connection here (e.g., create a new client object, store the new socket)
         initPollFD(fd);
-
+        createNewUser(fd);
         // Print the new connection information
         char remoteIP[INET6_ADDRSTRLEN];
         if (remoteAddress.ss_family == AF_INET) {
@@ -152,6 +165,7 @@ namespace irc {
                 perror("recv error");
             }
             // Close the client socket and remove from poll list
+            removeUser(_pollFD[index].fd);
             close(_pollFD[index].fd);
             _pollFD.erase(_pollFD.begin() + index);
             return;
