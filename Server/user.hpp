@@ -9,8 +9,8 @@
 # include <queue>
 # include <ctime>
 # include <algorithm>
-#include <iostream>
-
+# include <iostream>
+# include <deque>
 class User
 {
 private:
@@ -18,6 +18,8 @@ private:
     std::string real_name;
     std::string nick_name;
     std::string user_name;
+	std::deque<std::string> messages;
+
 public:
     User( void );
     User(int fd);
@@ -29,7 +31,7 @@ public:
     void setNickName( std::string nick );
     void setUserName( std::string user );
     void setRealName( std::string real );
-
+	void addMessage(std::string message);
     ~User( void );
 };
 

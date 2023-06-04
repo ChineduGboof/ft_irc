@@ -43,3 +43,10 @@ void User::setUserName( std::string user )
 {
     this->user_name = user;
 }
+
+// Channel changes:
+
+void User::addMessage(std::string message)
+{
+	this->messages.push_back(message);
+}

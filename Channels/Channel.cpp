@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
+/*   Updated: 2023/06/04 22:03:14 by Omar             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Channel.hpp"
 
 Channel::Channel(std::string name)
@@ -14,7 +26,7 @@ void Channel::addUser(User user)
 	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end())
 	{
-		std::cout << "Error: User " << user.getName() << " is already in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user.getNickName() << " is already in channel " << this->name << "." << std::endl;
 		return;
 	}
 	this->users.push_back(user);
@@ -28,7 +40,7 @@ void Channel::removeUser(User user)
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: User " << user.getName() << " is not in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user.getNickName() << " is not in channel " << this->name << "." << std::endl;
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
@@ -96,4 +108,9 @@ void	Channel::sendMessage(std::string message)
 	{
 		it->addMessage(message);
 	}
+}
+
+void Channel::execMessage(std::string message, User user)
+{
+	
 }
