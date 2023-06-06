@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 20:11:39 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/06 21:36:53 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ namespace irc {
                 close(_pollFD[index].fd);
                 _pollFD.erase(_pollFD.begin() + index);
             }
-            // m_clientCommand->cmdExecute( _users[index - 1] );
+            // execute clieent commands
         }
     }
 
