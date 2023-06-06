@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/01 21:38:32 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/06 14:51:17 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,24 @@ namespace irc {
         // Perform any necessary cleanup before exiting the loop
         bye();
     }
+    void    Server::removeUser(int fd){
+	for (std::vector<User>::iterator itr = users.begin(); itr != users.end(); itr++) {
+		if (itr->getUserFd() == fd)
+		{
+			users.erase(itr);
+			break ;
+		}
+	}
+    }
+    void Server::createNewUser(int fd)
+    {
+        std::string msg;
 
+        this->users.push_back(User(fd));
+        std::cout << "size: " << this->users.size() << std::endl;
+    	msg = "CAP * ACK multi-prefix\r\n";
+	    send(fd, msg.c_str(), msg.length(), 0);
+    }
     void Server::handleNewConnection() {
         int fd = -1;
         socklen_t addressLen = sizeof(struct sockaddr_storage);
@@ -126,7 +143,7 @@ namespace irc {
         }
         // Handle the new connection here (e.g., create a new client object, store the new socket)
         initPollFD(fd);
-
+        createNewUser(fd);
         // Print the new connection information
         char remoteIP[INET6_ADDRSTRLEN];
         if (remoteAddress.ss_family == AF_INET) {
@@ -141,7 +158,14 @@ namespace irc {
         }
         std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
     }
-
+    User&		Server::getUser(int fd){
+	for (std::vector<User>::iterator it = users.begin(); it != users.end(); it++) {
+		if (it->getUserFd() == fd) {
+			return *it;
+		}
+	}
+	return users[0];
+}
     void Server::handleClientData(size_t index) {
         char buffer[1024];
         int bytesRead = recv(_pollFD[index].fd, buffer, sizeof(buffer), 0);
@@ -152,13 +176,15 @@ namespace irc {
                 perror("recv error");
             }
             // Close the client socket and remove from poll list
+            removeUser(_pollFD[index].fd);
             close(_pollFD[index].fd);
             _pollFD.erase(_pollFD.begin() + index);
             return;
         }
         // Process the received message
         std::string message(buffer, bytesRead);
-        
+        // std::string msg = "001 user :welcome \n\r\n";
+		// send(_pollFD[index].fd, msg.c_str(), msg.length(), 0);
         // if you get a PING, respond with PONG
         // if (message.substr(0, 4) == "PING") {
         //     // Respond with PONG

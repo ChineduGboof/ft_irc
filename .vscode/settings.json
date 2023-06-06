@@ -68,6 +68,11 @@
         "concepts": "cpp",
         "csignal": "cpp",
         "deque": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "*.tcc": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "numbers": "cpp"
     }
 }
