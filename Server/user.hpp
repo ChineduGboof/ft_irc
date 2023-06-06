@@ -28,6 +28,7 @@ public:
     std::string getUserName( void );
     int  getUserFd( void );
 
+	bool operator==(User const &rhs) const;
     void setNickName( std::string nick );
     void setUserName( std::string user );
     void setRealName( std::string real );

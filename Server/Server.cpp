@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/04 00:46:45 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/06 20:13:34 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,5 +225,8 @@ namespace irc {
     // void Server::sendToClient(size_t index, const std::string& message) {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
-    
+    std::vector<Channel> irc::Server::getChannels()
+	{
+		return this->_channels;
+	}
 } // namespace irc

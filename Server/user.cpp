@@ -50,3 +50,10 @@ void User::addMessage(std::string message)
 {
 	this->messages.push_back(message);
 }
+
+bool User::operator==(User const &rhs) const
+{
+	if (this->user_fd == rhs.user_fd)
+		return true;
+	return false;
+}

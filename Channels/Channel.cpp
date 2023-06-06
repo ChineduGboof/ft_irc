@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/04 22:03:14 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/06 23:06:02 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 Channel::Channel(std::string name)
 {
 	this->name = name;
+	this->modes['o'] = false;
+	this->modes['k'] = false;
+	this->modes['t'] = false;
+	this->modes['i'] = false;
+	this->modes['l'] = false;
 }
 
 Channel::~Channel()
@@ -110,7 +115,56 @@ void	Channel::sendMessage(std::string message)
 	}
 }
 
+void Channel::switchMode(User user, std::string message)
+{
+	std::string modes = "oktil";
+	(void) user;
+	std::string mode_change = message.substr(message.find("MODE") + 5);
+	if (mode_change[0] != '+' && mode_change[0] != '-')
+		return;
+	mode_change = mode_change.erase(mode_change[0]);
+	
+	std::cout << "the mode change is " << mode_change << std::endl;
+}
+
 void Channel::execMessage(std::string message, User user)
 {
-	
+	if (message.find("JOIN") != std::string::npos)
+	{
+		joinChannel(*this, user);
+		this->sendMessage(":" + user.getNickName() + " JOIN " + this->getName());
+	}
+	else if (message.find("PART") != std::string::npos)
+	{
+		partChannel(*this, user);
+		this->sendMessage(":" + user.getNickName() + " PART " + this->getName());
+	}
+	else if (message.find("MODE") != std::string::npos)
+	{
+		switchMode(user, message);
+	}
+	else if (message.find("PRIVMSG") != std::string::npos)
+	{
+		std::string msg = message.substr(message.find("PRIVMSG") + 8);
+		this->sendMessage(":" + user.getNickName() + " PRIVMSG " + this->getName() + " :" + msg);
+	}
+	else if (message.find("NAMES") != std::string::npos)
+	{
+		std::string names = "";
+		for (std::vector<User>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+		{
+			names += it->getNickName() + " ";
+		}
+		this->sendMessage(":" + user.getNickName() + " NAMES " + this->getName() + " :" + names);
+	}
+	else if (message.find("TOPIC") != std::string::npos)
+	{
+		std::string topic = message.substr(message.find("TOPIC") + 6);
+		this->sendMessage(":" + user.getNickName() + " TOPIC " + this->getName() + " :" + topic);
+	}
+	else if (message.find("KICK") != std::string::npos)
+	{
+		std::string kick = message.substr(message.find("KICK") + 5);
+		this->sendMessage(":" + user.getNickName() + " KICK " + this->getName() + " :" + kick);
+	}
 }
