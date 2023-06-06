@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 21:36:53 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/06 22:07:54 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,16 +112,14 @@ namespace irc {
                         handleClientData(i);
                     }
                 } 
-                
-                // else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd) {
-                //     // Something in the OUT Queue needs to be sent
-                //     for ( std::deque<std::string>::iterator it = _users[i - 1]->getMsg().begin(); it != _users[i - 1]->getMsg().end(); ++it) {
-                //         send(_pollFD[i].fd, it->c_str(), it->size(), MSG_NOSIGNAL);
-                //         if (!_users[i - 1]->getMsg().empty())
-                //             _users[i - 1]->getMsg().pop_front();
-                //     }
-                // } 
-                
+                else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd) {
+                    // Something in the OUT Queue needs to be sent
+                    for ( std::deque<std::string>::iterator it = _users[i - 1]->getOutgoingMsg().begin(); it != _users[i - 1]->getOutgoingMsg().end(); ++it) {
+                        send(_pollFD[i].fd, it->c_str(), it->size(), MSG_NOSIGNAL);
+                        if (!_users[i - 1]->getOutgoingMsg().empty())
+                            _users[i - 1]->getOutgoingMsg().pop_front();
+                    }
+                } 
                 else if (_pollFD[i].revents & POLLHUP) {
                     // Client socket closed
                     closeClientSocket(i);
@@ -151,15 +149,6 @@ namespace irc {
         printNewConnectionInfo(remoteAddress, fd);
     }
     
-    // User& Server::getUser(int fd){
-    //     for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++) {
-    //         if (it->getUserFd() == fd) {
-    //             return *it;
-    //         }
-    //     }
-    //     return _users[0];
-    // }
-
     void Server::handleClientData(size_t index) {
         if ( _pollFD[index].fd != _sockfd ) {
             int bytesRead = _users[index - 1]->receive();
@@ -172,6 +161,15 @@ namespace irc {
             // execute clieent commands
         }
     }
+
+    // User& Server::getUser(int fd){
+    //     for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++) {
+    //         if (it->getUserFd() == fd) {
+    //             return *it;
+    //         }
+    //     }
+    //     return _users[0];
+    // }
 
     void Server::closeClientSocket(size_t index) {
         close(_pollFD[index].fd);

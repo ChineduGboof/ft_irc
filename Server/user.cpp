@@ -3,7 +3,8 @@
 User::User( void ){}
 
 User::~User( void ) {
-    _messages.clear();
+    _incomingMsgs.clear();
+    _outgoingMsgs.clear();
 }
 
 std::string User::getRealName( void )
@@ -51,10 +52,10 @@ void User::setUserName( std::string user )
  *
  * This function reads data from the user's socket and processes it. It appends the received data
  * to the internal data buffer, splits the buffer into messages using the delimiter "\r\n",
- * and stores each message in the _messages vector after splitting it into words using the
+ * and stores each message in the _incomingMsgs vector after splitting it into words using the
  * delimiter " ".
  *
- * Note: The commented-out code block is used for printing the messages stored in the _messages vector.
+ * Note: The commented-out code block is used for printing the messages stored in the _incomingMsgs vector.
  *
  * @return The number of bytes received from the user, or a value <= 0 if an error occurred or the connection is closed.
  */
@@ -69,12 +70,12 @@ size_t User::receive() {
     std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
     while (!temp.empty()) {
         std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
-        _messages.push_back(splitWords);
+        _incomingMsgs.push_back(splitWords);
         temp.pop();
     }
 
-    // Print the messages stored in the _messages vector
-    for (std::deque<std::vector<std::string> >::iterator it = _messages.begin(); it != _messages.end(); ++it) {
+    // Print the messages stored in the _incomingMsgs vector
+    for (std::deque<std::vector<std::string> >::iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
         for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
             std::cout << *strIt << std::endl;  // Print each word in a new line
         }
@@ -87,5 +88,15 @@ size_t User::receive() {
 
 
 std::deque<std::vector<std::string> >& User::getMessages() {
-    return _messages;
+    return _incomingMsgs;
+}
+
+std::deque<std::string>& User::getOutgoingMsg() {
+    // std::cout << "getters" << std::endl;
+    return _outgoingMsgs;
+}
+
+void User::setOutgoingMsg( std::string msg ) {
+    // std::cout << "setters" << std::endl;
+    _outgoingMsgs.push_back( msg );
 }

@@ -26,7 +26,8 @@ private:
     std::string user_name;
 
     std::string _dataBuffer;
-    std::deque<std::vector<std::string> > _messages;
+    std::deque<std::vector<std::string> > _incomingMsgs;
+    std::deque<std::string> _outgoingMsgs;
     // bool        is_auth;
     // bool        joined_server;
 public:
@@ -43,6 +44,8 @@ public:
 
     size_t receive();
     std::deque<std::vector<std::string> >& getMessages();
+    std::deque<std::string>& getOutgoingMsg();
+    void setOutgoingMsg( std::string msg );
 
     ~User( void );
 };
