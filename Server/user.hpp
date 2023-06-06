@@ -46,6 +46,7 @@ public:
     std::deque<std::vector<std::string> >& getMessages();
     std::deque<std::string>& getOutgoingMsg();
     void setOutgoingMsg( std::string msg );
+    void printOutgoingMsgs();
 
     ~User( void );
 };

@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 19:24:45 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 00:53:21 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,9 @@ namespace irc {
             void createNewUser(int fd);
             void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             // void removeUser(int fd);
-            User &getUser(int fd);
+            // User &getUser(int fd);
+            std::vector<User *>& getUser( void );
+            
             void bye();
 
             bool verifyPassword(std::string userPassword);

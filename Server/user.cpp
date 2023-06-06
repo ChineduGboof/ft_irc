@@ -80,9 +80,6 @@ size_t User::receive() {
             std::cout << *strIt << std::endl;  // Print each word in a new line
         }
     }
-
-    // std::string message(buffer, bytesRead);
-    // std::cout << "Received message from client: " << message << std::endl;
     return bytesRead;
 }
 
@@ -97,6 +94,12 @@ std::deque<std::string>& User::getOutgoingMsg() {
 }
 
 void User::setOutgoingMsg( std::string msg ) {
-    // std::cout << "setters" << std::endl;
     _outgoingMsgs.push_back( msg );
 }
+
+void User::printOutgoingMsgs() {
+    for (std::deque<std::string>::const_iterator it = _outgoingMsgs.begin(); it != _outgoingMsgs.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+}
+

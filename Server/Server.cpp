@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 22:07:54 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 00:47:35 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ namespace irc {
         std::cout << GREEN "Server: Listening on host:  " + _host + " port: " << _port << DEFAULT<< std::flush << std::endl;
     }
 
-    
-
 	void Server::initPollFD(int fd) {
 		struct pollfd pFD = { 
                                 .fd = fd, 
@@ -78,7 +76,6 @@ namespace irc {
 			throw std::runtime_error("Failed to initialize pollfd struct");
 		}
 	}
-
 
     void Server::run() {
         if (!_status)
@@ -162,6 +159,10 @@ namespace irc {
         }
     }
 
+    std::vector<User *>& Server::getUser( void ){
+        return _users;
+    }
+
     // User& Server::getUser(int fd){
     //     for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++) {
     //         if (it->getUserFd() == fd) {
@@ -229,4 +230,5 @@ namespace irc {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
     
+
 } // namespace irc
