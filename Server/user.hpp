@@ -18,6 +18,8 @@ private:
     std::string real_name;
     std::string nick_name;
     std::string user_name;
+    bool        is_auth;
+    bool        joined_server;
 public:
     User( void );
     User(int fd);

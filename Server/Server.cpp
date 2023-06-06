@@ -6,7 +6,7 @@
 /*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/04 00:46:45 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/06 11:39:49 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,12 @@ namespace irc {
     }
     void Server::createNewUser(int fd)
     {
+        std::string msg;
+
         this->users.push_back(User(fd));
         std::cout << "size: " << this->users.size() << std::endl;
+    	msg = "CAP * ACK multi-prefix\r\n";
+	    send(fd, msg.c_str(), msg.length(), 0);
     }
     void Server::handleNewConnection() {
         int fd = -1;
@@ -172,7 +176,10 @@ namespace irc {
         }
         // Process the received message
         std::string message(buffer, bytesRead);
-        
+        // std::string msg = "001 user :welcome \n\r\n";
+        // std::string msg = RPL_WELCOME(getNickname()) + WEBAREBEARS + "\r\n";
+		// send(_pollFD[index].fd, msg.c_str(), msg.length(), 0);
+        // send(_pollFD[index].fd, s.c_str(), s.length(), 0);
         // if you get a PING, respond with PONG
         // if (message.substr(0, 4) == "PING") {
         //     // Respond with PONG
