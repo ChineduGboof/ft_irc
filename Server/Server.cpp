@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 14:51:17 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/06 20:11:39 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,56 +18,69 @@ namespace irc {
 
 	Server::Server(const std::string& host, const int& port, const std::string& password) 
 	: _host(host), _port(port), _password(password), _running(false) {
-		std::cout << YELLOW << "Parameter Constructor Called" << DEFAULT << std::endl;
-		(void)password;
 		serverInstance = this;  // Set the serverInstance pointer to the current instance
+        std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT<< std::flush << std::endl;
 	}
 
-	Server::~Server() {}
+	Server::~Server() {
+        bye();
+        std::cout << YELLOW "Hope You Enjoyed Our IRCServer 🖥️" << DEFAULT << std::endl;
+    }
 
-	void Server::config() {
-		
-		struct sockaddr_in address;
-		socklen_t addressLen = sizeof(address);
-		std::memset(&address, 0, sizeof(address));
-		address.sin_family = AF_INET;
-		address.sin_addr.s_addr = INADDR_ANY;
-		address.sin_port = htons(static_cast<uint16_t>(_port));
+    void Server::config() {
+        struct sockaddr_in address;
+        socklen_t addressLen = sizeof(address);
+        std::memset(&address, 0, sizeof(address));
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = INADDR_ANY;
+        address.sin_port = htons(static_cast<uint16_t>(_port));
 
-		if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-			throw std::runtime_error("Server: socket error");
-		}
+        if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+            throw std::runtime_error("Server: socket error");
+        }
 
-		int optval = 1;
-		if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&optval), sizeof(optval)) < 0) {
-			throw std::runtime_error("Server: socket options error");
-		}
+        int optval = 1;
+        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&optval), sizeof(optval)) < 0) {
+            throw std::runtime_error("Server: socket options error");
+        }
 
-		if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
-			throw std::runtime_error("Server: file control error");
-		}
+        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char*>(&optval), sizeof(optval)) < 0) {
+            throw std::runtime_error("Server: socket options error");
+        }
 
-		if (bind(_sockfd, reinterpret_cast<struct sockaddr*>(&address), addressLen) < 0) {
-			throw std::runtime_error("Server: bind error");
-		}
+        if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
+            throw std::runtime_error("Server: file control error");
+        }
 
-		if (listen(_sockfd, std::numeric_limits<int>::max()) < 0) {
-			throw std::runtime_error("Server: listen error");
-		}
+        if (bind(_sockfd, reinterpret_cast<struct sockaddr*>(&address), addressLen) < 0) {
+            throw std::runtime_error("Server: bind error");
+        }
 
-		_status = ONLINE;
-	}
+        if (listen(_sockfd, std::numeric_limits<int>::max()) < 0) {
+            throw std::runtime_error("Server: listen error");
+        }
+
+        _status = ONLINE;
+        std::cout << GREEN "Server: Listening on host:  " + _host + " port: " << _port << DEFAULT<< std::flush << std::endl;
+    }
+
+    
 
 	void Server::initPollFD(int fd) {
-		struct pollfd pFD = { .fd = fd, .events = POLLIN, .revents = 0 };
+		struct pollfd pFD = { 
+                                .fd = fd, 
+                                .events = POLLIN | POLLOUT, 
+                                .revents = 0 
+                            };
 		_pollFD.push_back(pFD);
 
 		if (_pollFD.back().fd == -1) {
 			throw std::runtime_error("Failed to initialize pollfd struct");
 		}
 	}
+
+
     void Server::run() {
-        std::cout << YELLOW << "Server Run Called" << DEFAULT << std::endl;
         if (!_status)
             throw std::runtime_error("Server: Offline, must init first");
 
@@ -78,7 +91,6 @@ namespace irc {
         while (_running) {
             int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
             if (pollResult < 0) {
-                // Check if the poll was interrupted by a signal
                 if (errno == EINTR) {
                     // Signal interrupted the poll, handle it gracefully
                     handleSignal(SIGINT);
@@ -87,10 +99,9 @@ namespace irc {
                 perror("poll error");
                 throw std::runtime_error("Server: poll error");
             }
-            std::cout << "Number of Clients: " << _pollFD.size() << std::endl;
-
             // Run through the existing connections looking for data to read
             for (size_t i = 0; i < _pollFD.size(); i++) {
+
                 // Check if someone's ready to read
                 if (_pollFD[i].revents & POLLIN) {
                     // We have a new connection, create a new socket for comms
@@ -100,7 +111,18 @@ namespace irc {
                         // Handle the data from existing clients here
                         handleClientData(i);
                     }
-                } else if (_pollFD[i].revents & POLLHUP) {
+                } 
+                
+                // else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd) {
+                //     // Something in the OUT Queue needs to be sent
+                //     for ( std::deque<std::string>::iterator it = _users[i - 1]->getMsg().begin(); it != _users[i - 1]->getMsg().end(); ++it) {
+                //         send(_pollFD[i].fd, it->c_str(), it->size(), MSG_NOSIGNAL);
+                //         if (!_users[i - 1]->getMsg().empty())
+                //             _users[i - 1]->getMsg().pop_front();
+                //     }
+                // } 
+                
+                else if (_pollFD[i].revents & POLLHUP) {
                     // Client socket closed
                     closeClientSocket(i);
                     i--;
@@ -111,27 +133,9 @@ namespace irc {
                 break;
             }
         }
-        // Perform any necessary cleanup before exiting the loop
-        bye();
     }
-    void    Server::removeUser(int fd){
-	for (std::vector<User>::iterator itr = users.begin(); itr != users.end(); itr++) {
-		if (itr->getUserFd() == fd)
-		{
-			users.erase(itr);
-			break ;
-		}
-	}
-    }
-    void Server::createNewUser(int fd)
-    {
-        std::string msg;
 
-        this->users.push_back(User(fd));
-        std::cout << "size: " << this->users.size() << std::endl;
-    	msg = "CAP * ACK multi-prefix\r\n";
-	    send(fd, msg.c_str(), msg.length(), 0);
-    }
+
     void Server::handleNewConnection() {
         int fd = -1;
         socklen_t addressLen = sizeof(struct sockaddr_storage);
@@ -141,60 +145,32 @@ namespace irc {
         if ((fd = accept(_sockfd, (struct sockaddr *)&remoteAddress, &addressLen)) < 0) {
             throw std::runtime_error("Server: client connection error");
         }
-        // Handle the new connection here (e.g., create a new client object, store the new socket)
-        initPollFD(fd);
-        createNewUser(fd);
-        // Print the new connection information
-        char remoteIP[INET6_ADDRSTRLEN];
-        if (remoteAddress.ss_family == AF_INET) {
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)&remoteAddress;
-            inet_ntop(AF_INET, &(ipv4->sin_addr), remoteIP, INET_ADDRSTRLEN);
-        } else if (remoteAddress.ss_family == AF_INET6) {
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)&remoteAddress;
-            inet_ntop(AF_INET6, &(ipv6->sin6_addr), remoteIP, INET6_ADDRSTRLEN);
-        } else {
-            std::cout << "Unknown address family" << std::endl;
-            return;
-        }
-        std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
-    }
-    User&		Server::getUser(int fd){
-	for (std::vector<User>::iterator it = users.begin(); it != users.end(); it++) {
-		if (it->getUserFd() == fd) {
-			return *it;
-		}
-	}
-	return users[0];
-}
-    void Server::handleClientData(size_t index) {
-        char buffer[1024];
-        int bytesRead = recv(_pollFD[index].fd, buffer, sizeof(buffer), 0);
 
-        if (bytesRead <= 0) {
-            // Error or connection closed
-            if (bytesRead < 0) {
+        createNewUser(fd);
+        initPollFD(fd);
+        printNewConnectionInfo(remoteAddress, fd);
+    }
+    
+    // User& Server::getUser(int fd){
+    //     for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++) {
+    //         if (it->getUserFd() == fd) {
+    //             return *it;
+    //         }
+    //     }
+    //     return _users[0];
+    // }
+
+    void Server::handleClientData(size_t index) {
+        if ( _pollFD[index].fd != _sockfd ) {
+            int bytesRead = _users[index - 1]->receive();
+
+            if ( bytesRead <= 0 ) {
                 perror("recv error");
+                close(_pollFD[index].fd);
+                _pollFD.erase(_pollFD.begin() + index);
             }
-            // Close the client socket and remove from poll list
-            removeUser(_pollFD[index].fd);
-            close(_pollFD[index].fd);
-            _pollFD.erase(_pollFD.begin() + index);
-            return;
+            // m_clientCommand->cmdExecute( _users[index - 1] );
         }
-        // Process the received message
-        std::string message(buffer, bytesRead);
-        // std::string msg = "001 user :welcome \n\r\n";
-		// send(_pollFD[index].fd, msg.c_str(), msg.length(), 0);
-        // if you get a PING, respond with PONG
-        // if (message.substr(0, 4) == "PING") {
-        //     // Respond with PONG
-        //     std::string pongMessage = "PONG" + message.substr(4);
-        //     send(_pollFD[index].fd, pongMessage.c_str(), pongMessage.size(), 0);
-        //     return;
-        // }
-        
-        // Print the received message
-        std::cout << GREEN << "Received message from client: " << DEFAULT << message << std::endl;
     }
 
     void Server::closeClientSocket(size_t index) {
@@ -212,12 +188,8 @@ namespace irc {
         }
     }
 
-    // Signal handling function
     void Server::handleSignal(int signal) {
         std::cout << "Received signal: " << signal << std::endl;
-        // Add necessary actions to handle the signal
-        // For example, you can call the stop() function here to stop the server gracefully
-        bye();
         _running = false;  // Set _running to false to stop the server
     }
 
@@ -231,6 +203,27 @@ namespace irc {
         if (userPassword == _password)
             return true;
         return false;
+    }
+
+    void Server::createNewUser(int fd) {
+        _users.push_back( new User(fd) );
+    }
+
+    void Server::printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd) {
+        char remoteIP[INET6_ADDRSTRLEN];
+
+        if (remoteAddress.ss_family == AF_INET) {
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)&remoteAddress;
+            inet_ntop(AF_INET, &(ipv4->sin_addr), remoteIP, INET_ADDRSTRLEN);
+        } else if (remoteAddress.ss_family == AF_INET6) {
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)&remoteAddress;
+            inet_ntop(AF_INET6, &(ipv6->sin6_addr), remoteIP, INET6_ADDRSTRLEN);
+        } else {
+            std::cout << "Unknown address family" << std::endl;
+            return;
+        }
+
+        std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
     }
 
     // function to send messages to specific clients when needed.

@@ -2,7 +2,9 @@
 
 User::User( void ){}
 
-User::~User( void ) {}
+User::~User( void ) {
+    _messages.clear();
+}
 
 std::string User::getRealName( void )
 {
@@ -42,4 +44,48 @@ void User::setNickName( std::string nick )
 void User::setUserName( std::string user )
 {
     this->user_name = user;
+}
+
+/**
+ * @brief Receive data from the user and process it.
+ *
+ * This function reads data from the user's socket and processes it. It appends the received data
+ * to the internal data buffer, splits the buffer into messages using the delimiter "\r\n",
+ * and stores each message in the _messages vector after splitting it into words using the
+ * delimiter " ".
+ *
+ * Note: The commented-out code block is used for printing the messages stored in the _messages vector.
+ *
+ * @return The number of bytes received from the user, or a value <= 0 if an error occurred or the connection is closed.
+ */
+size_t User::receive() {
+
+    char buffer[1024];
+    size_t bytesRead = recv(user_fd, buffer, sizeof(buffer), 0);
+    if (bytesRead <= 0)
+        return bytesRead;
+
+    _dataBuffer.append(buffer, bytesRead);
+    std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
+    while (!temp.empty()) {
+        std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
+        _messages.push_back(splitWords);
+        temp.pop();
+    }
+
+    // Print the messages stored in the _messages vector
+    for (std::deque<std::vector<std::string> >::iterator it = _messages.begin(); it != _messages.end(); ++it) {
+        for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
+            std::cout << *strIt << std::endl;  // Print each word in a new line
+        }
+    }
+
+    // std::string message(buffer, bytesRead);
+    // std::cout << "Received message from client: " << message << std::endl;
+    return bytesRead;
+}
+
+
+std::deque<std::vector<std::string> >& User::getMessages() {
+    return _messages;
 }

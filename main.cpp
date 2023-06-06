@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/04 00:28:35 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/06 19:12:24 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         port = utils::atoi(argv[1]);
         if (port < 0 || port > 65535)
             throw std::out_of_range("Select Port number (0 -> 65535)");
-
+            
         password = utils::whitespace(argv[2]);
 
         irc::Server server("0.0.0.0", port, password);

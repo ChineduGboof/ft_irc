@@ -32,3 +32,10 @@ server args#     ./ircserv 6667 password
 
 It can be any, we just used 6667 because it was kind of the default for irssi or maybe clients 
 in general. If you don't have the authentication ready, you can just do /connect <IP address> (edited) 
+
+
+icommand
+ireplies
+int usage()
+pass.cpp -> cmdExecute
+User.cpp -> cmdExecute

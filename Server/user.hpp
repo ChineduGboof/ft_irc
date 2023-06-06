@@ -10,6 +10,12 @@
 # include <ctime>
 # include <algorithm>
 #include <iostream>
+# include <cstdio>
+# include <deque>
+# include <list>
+# include <sys/socket.h>
+# include <netinet/in.h>
+#include "Utils.hpp"
 
 class User
 {
@@ -18,6 +24,9 @@ private:
     std::string real_name;
     std::string nick_name;
     std::string user_name;
+
+    std::string _dataBuffer;
+    std::deque<std::vector<std::string> > _messages;
     // bool        is_auth;
     // bool        joined_server;
 public:
@@ -31,6 +40,9 @@ public:
     void setNickName( std::string nick );
     void setUserName( std::string user );
     void setRealName( std::string real );
+
+    size_t receive();
+    std::deque<std::vector<std::string> >& getMessages();
 
     ~User( void );
 };

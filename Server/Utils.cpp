@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 23:47:23 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/01 21:36:32 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/06 20:48:52 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,37 @@ namespace utils {
             }
         }
         return val;
+    }
+
+    std::queue<std::string> splitByDelimiter(const std::string& val, const std::string& delim) {
+        std::queue<std::string> ret;
+        size_t startPos = std::string::npos;
+        size_t endPos = 0;
+
+        while ((endPos = val.find(delim, startPos + 1)) != std::string::npos) {
+            std::string word = val.substr(startPos + 1, endPos - startPos - 1);
+            ret.push(word);
+            startPos = endPos;
+        }
+
+        // Add the remaining part of the string if any
+        std::string lastWord = val.substr(startPos + 1);
+        if (!lastWord.empty())
+            ret.push(lastWord);
+
+        return ret;
+    }
+
+    std::vector<std::string> splitBySpace(const std::string& val) {
+        std::vector<std::string> words;
+        std::istringstream iss(val);
+        std::string word;
+
+        while (iss >> word) {
+            words.push_back(word);
+        }
+
+        return words;
     }
 
 }   // namespace utils
