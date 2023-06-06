@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/04 00:40:34 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/06 14:33:43 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ namespace irc {
             void createNewUser(int fd);
             void removeUser(int fd);
             std::vector<User> users;
+            User &getUser(int fd);
             void bye();
 
             bool verifyPassword(std::string userPassword);

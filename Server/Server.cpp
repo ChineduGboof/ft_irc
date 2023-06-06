@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 11:39:49 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/06 14:51:17 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,14 @@ namespace irc {
         }
         std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
     }
-
+    User&		Server::getUser(int fd){
+	for (std::vector<User>::iterator it = users.begin(); it != users.end(); it++) {
+		if (it->getUserFd() == fd) {
+			return *it;
+		}
+	}
+	return users[0];
+}
     void Server::handleClientData(size_t index) {
         char buffer[1024];
         int bytesRead = recv(_pollFD[index].fd, buffer, sizeof(buffer), 0);
@@ -177,9 +184,7 @@ namespace irc {
         // Process the received message
         std::string message(buffer, bytesRead);
         // std::string msg = "001 user :welcome \n\r\n";
-        // std::string msg = RPL_WELCOME(getNickname()) + WEBAREBEARS + "\r\n";
 		// send(_pollFD[index].fd, msg.c_str(), msg.length(), 0);
-        // send(_pollFD[index].fd, s.c_str(), s.length(), 0);
         // if you get a PING, respond with PONG
         // if (message.substr(0, 4) == "PING") {
         //     // Respond with PONG
