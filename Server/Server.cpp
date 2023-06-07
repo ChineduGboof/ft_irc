@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 03:54:36 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 17:31:20 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,8 @@ namespace irc {
                 close(_pollFD[index].fd);
                 _pollFD.erase(_pollFD.begin() + index);
             }
+            std::string message = "001 " +  _users[index - 1]->getNickName() + " :Welcome to the Internet Relay Network " + "\r\n";
+		    send(_users[index - 1]->getUserFd(), message.c_str(), message.length(), 0);
             // execute clieent commands
         }
     }
@@ -208,6 +210,10 @@ namespace irc {
 
     void Server::createNewUser(int fd) {
         _users.push_back( new User(fd) );
+        std::string message;
+
+        message = "CAP * ACK multi-prefix\r\n";
+        send(fd, message.c_str(), message.length(), 0);
     }
 
     void Server::printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd) {
