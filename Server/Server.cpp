@@ -6,7 +6,7 @@
 /*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 17:31:20 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/07 18:36:29 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,10 @@ namespace irc {
 			throw std::runtime_error("Failed to initialize pollfd struct");
 		}
 	}
-
+    void Server::sendMsg(int fd, std::string msg)
+    {
+        send(fd, msg.c_str(), msg.length(), 0);
+    }
     void Server::run() {
         if (!_status)
             throw std::runtime_error("Server: Offline, must init first");
@@ -157,8 +160,15 @@ namespace irc {
                 close(_pollFD[index].fd);
                 _pollFD.erase(_pollFD.begin() + index);
             }
-            std::string message = "001 " +  _users[index - 1]->getNickName() + " :Welcome to the Internet Relay Network " + "\r\n";
-		    send(_users[index - 1]->getUserFd(), message.c_str(), message.length(), 0);
+            std::string message =   ("001 :Welcome to the " + utils::convertToString(SERVER) + " Network, " + _users[index - 1]->getNickName() + 
+            utils::convertToString(Responses::RPL_YOURHOST) + " Your host is Chinedu, Yonathan & Omar " +
+            utils::convertToString(Responses::RPL_CREATED) + " This server was created to meet your chat needs " +
+            utils::convertToString(Responses::RPL_MYINFO) + utils::convertToString(SERVER) +
+            utils::convertToString(Responses::RPL_ISUPPORT) + "Kindly Support this Project" +
+            utils::convertToString(Responses::RPL_LUSERCLIENT) + "There are a number of users on the Server " +
+            utils::convertToString(Responses::RPL_LUSERME) + "Have fun "
+             + "\r\n");
+            this->sendMsg(_users[index - 1]->getUserFd(), message);
             // execute clieent commands
         }
     }

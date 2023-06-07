@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 03:54:07 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 18:18:08 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@
 #include <cerrno>
 #include <algorithm>
 #include "user.hpp"
+#include "Responses.hpp"
+// #include "Cap.hpp"
 
 namespace irc {
 
@@ -81,7 +83,7 @@ namespace irc {
             // void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
-            void Handshake();
+            void sendMsg(int fd, std::string msg);
             
             void bye();
 
