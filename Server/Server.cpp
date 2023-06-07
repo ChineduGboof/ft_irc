@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 00:47:35 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 03:54:36 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ namespace irc {
 
 	Server* Server::serverInstance = NULL;
 
+    Server::Server(){}
+    
 	Server::Server(const std::string& host, const int& port, const std::string& password) 
 	: _host(host), _port(port), _password(password), _running(false) {
 		serverInstance = this;  // Set the serverInstance pointer to the current instance
@@ -230,5 +232,6 @@ namespace irc {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
     
+
 
 } // namespace irc

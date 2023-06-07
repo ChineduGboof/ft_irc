@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 00:53:21 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 03:54:07 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,10 @@ namespace irc {
             bool                _running;
             std::vector<User *> _users;
 
-            Server();
             void initPollFD(int fd);
 
         public:
+            Server();
             Server( const std::string& host, const int& port, const std::string& password );
             ~Server();
 
@@ -81,6 +81,7 @@ namespace irc {
             // void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
+            void Handshake();
             
             void bye();
 

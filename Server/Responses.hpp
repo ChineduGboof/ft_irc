@@ -6,7 +6,7 @@
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/06 23:59:57 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/07 00:05:24 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/07 02:31:30 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <string>
 # include <iostream>
+# define SERVER "Ft_IRC"
 
 namespace irc {
     class Responses {
