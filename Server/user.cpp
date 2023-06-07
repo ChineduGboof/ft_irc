@@ -89,7 +89,6 @@ std::deque<std::vector<std::string> >& User::getMessages() {
 }
 
 std::deque<std::string>& User::getOutgoingMsg() {
-    // std::cout << "getters" << std::endl;
     return _outgoingMsgs;
 }
 
