@@ -69,10 +69,15 @@
         "csignal": "cpp",
         "deque": "cpp",
         "queue": "cpp",
+<<<<<<< Updated upstream
         "*.tcc": "cpp",
         "memory_resource": "cpp",
         "numeric": "cpp",
         "random": "cpp",
         "numbers": "cpp"
+=======
+        "__tree": "cpp",
+        "map": "cpp"
+>>>>>>> Stashed changes
     }
 }

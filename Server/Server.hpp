@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 20:13:38 by Omar             ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/06 23:36:59 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
@@ -35,7 +37,9 @@
 #include <poll.h>
 #include <csignal>
 #include <cctype>
-#include <vector>
+# include <vector>
+#include <deque>
+# include <map>
 #include <sstream>
 #include <limits>
 #include <string>
@@ -58,8 +62,7 @@ namespace irc {
             std::string         _password;
             std::vector<pollfd> _pollFD;
             bool                _running;
-
-
+			std::vector<User *> _users;
             Server();
             void initPollFD(int fd);
 			
@@ -78,8 +81,9 @@ namespace irc {
             static void signalHandler(int signal);
             
             void createNewUser(int fd);
-            void removeUser(int fd);
-            std::vector<User> users;
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
+            // void removeUser(int fd);
+            User &getUser(int fd);
             void bye();
 
             bool verifyPassword(std::string userPassword);

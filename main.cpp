@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 23:08:33 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/06 23:25:44 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         port = utils::atoi(argv[1]);
         if (port < 0 || port > 65535)
             throw std::out_of_range("Select Port number (0 -> 65535)");
-
+            
         password = utils::whitespace(argv[2]);
 
         irc::Server server("0.0.0.0", port, password);
