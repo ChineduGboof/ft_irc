@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/06 23:36:59 by Omar             ###   ########.fr       */
+/*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
+/*   Updated: 2023/06/07 11:48:31 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,11 @@ namespace irc {
             std::vector<pollfd> _pollFD;
             bool                _running;
 			std::vector<User *> _users;
-            Server();
             void initPollFD(int fd);
 			
 			std::vector<Channel> _channels;
         public:
+            Server();
             Server( const std::string& host, const int& port, const std::string& password );
             ~Server();
 
@@ -83,7 +83,10 @@ namespace irc {
             void createNewUser(int fd);
             void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             // void removeUser(int fd);
-            User &getUser(int fd);
+            // User &getUser(int fd);
+            std::vector<User *>& getUser( void );
+            void Handshake();
+            
             void bye();
 
             bool verifyPassword(std::string userPassword);

@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 23:34:21 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/07 11:46:45 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 namespace irc {
 
 	Server* Server::serverInstance = NULL;
-
+    Server::Server(){}
+    
 	Server::Server(const std::string& host, const int& port, const std::string& password) 
 	: _host(host), _port(port), _password(password), _running(false) {
 		serverInstance = this;  // Set the serverInstance pointer to the current instance
@@ -64,8 +65,6 @@ namespace irc {
         std::cout << GREEN "Server: Listening on host:  " + _host + " port: " << _port << DEFAULT<< std::flush << std::endl;
     }
 
-    
-
 	void Server::initPollFD(int fd) {
 		struct pollfd pFD = { 
                                 .fd = fd, 
@@ -78,7 +77,6 @@ namespace irc {
 			throw std::runtime_error("Failed to initialize pollfd struct");
 		}
 	}
-
 
     void Server::run() {
         if (!_status)
@@ -160,6 +158,10 @@ namespace irc {
             }
             // execute clieent commands
         }
+    }
+
+    std::vector<User *>& Server::getUser( void ){
+        return _users;
     }
 
     // User& Server::getUser(int fd){
