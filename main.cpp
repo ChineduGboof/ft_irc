@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 23:25:44 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/07 15:29:39 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,5 @@ int main(int argc, char *argv[])
         std::cout << "Fatal Error: An unhandled exception occurred." << std::endl;
         return EXIT_FAILURE;
     }
+	return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/06 19:38:32 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/07 15:11:24 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,15 @@ class Channel
 	public:
 		Channel(std::string name);
 		~Channel();
-		void				addUser(User user);
-		bool				operator==(Channel const &rhs) const;
-		void				removeUser(User user);
-		std::string			getName();
-		std::vector<User>	getUsers();
-		void				sendMessage(std::string message);
-		void				execMessage(std::string message, User user);
-		void				switchMode(User user, std::string message);
+		void					addUser(User user);
+		bool					operator==(Channel const &rhs) const;
+		void					removeUser(User user);
+		std::string				getName();
+		std::vector<User>		getUsers();
+		void					sendMessage(std::string message);
+		void					execMessage(std::vector<std::string> messages, User user);
+		void					switchMode(User user, std::vector<std::string> messages);
+		std::map<char, bool>	getModes();
 };
 
 bool	findString(std::string str, std::vector<std::string> vec);

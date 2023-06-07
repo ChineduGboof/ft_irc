@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/06 23:06:02 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/07 15:26:13 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ Channel::Channel(std::string name)
 	this->modes['t'] = false;
 	this->modes['i'] = false;
 	this->modes['l'] = false;
+}
+
+std::map<char, bool> Channel::getModes()
+{
+	return this->modes;
 }
 
 Channel::~Channel()
@@ -115,20 +120,72 @@ void	Channel::sendMessage(std::string message)
 	}
 }
 
-void Channel::switchMode(User user, std::string message)
+void Channel::switchMode(User user, std::vector<std::string> messages)
 {
-	std::string modes = "oktil";
-	(void) user;
-	std::string mode_change = message.substr(message.find("MODE") + 5);
-	if (mode_change[0] != '+' && mode_change[0] != '-')
+	if (messages.size() < 3 || messages[0] != "/mode" || messages[1] != this->getName())
 		return;
-	mode_change = mode_change.erase(mode_change[0]);
-	
-	std::cout << "the mode change is " << mode_change << std::endl;
+	std::string mode = messages[2];
+	// std::cout << mode[0] << std::endl;
+	if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
+		return;
+	for (unsigned int i = 1; i < mode.length(); i++)
+	{
+		if (mode[i] == 'o')
+		{
+			if (std::find(this->users.begin(), this->users.end(), user) == this->users.end())
+				return;
+			std::cout << "switchMode & mode = " << mode << std::endl;
+			if (mode[0] == '+')
+				this->modes['o'] = true;
+			else
+				this->modes['o'] = false;
+		}
+		else if (mode[i] == 'k')
+		{
+			if (std::find(this->users.begin(), this->users.end(), user) == this->users.end())
+				return;
+			if (mode[0] == '+')
+				this->modes['k'] = true;
+			else
+				this->modes['k'] = false;
+		}
+		else if (mode[i] == 't')
+		{
+			if (std::find(this->users.begin(), this->users.end(), user) == this->users.end())
+				return;
+			if (mode[0] == '+')
+				this->modes['t'] = true;
+			else
+				this->modes['t'] = false;
+		}
+		else if (mode[i] == 'i')
+		{
+			if (std::find(this->users.begin(), this->users.end(), user) == this->users.end())
+				return;
+			if (mode[0] == '+')
+				this->modes['i'] = true;
+			else
+				this->modes['i'] = false;
+		}
+		else if (mode[i] == 'l')
+		{
+			if (std::find(this->users.begin(), this->users.end(), user) == this->users.end())
+				return;
+			if (mode[0] == '+')
+				this->modes['l'] = true;
+			else
+				this->modes['l'] = false;
+		}
+		else
+			return;
+	}
 }
 
-void Channel::execMessage(std::string message, User user)
+void Channel::execMessage(std::vector<std::string> messages, User user)
 {
+	if (std::find (this->users.begin(), this->users.end(), user) == this->users.end())
+		return;
+	std::string message = messages[0];
 	if (message.find("JOIN") != std::string::npos)
 	{
 		joinChannel(*this, user);
@@ -141,7 +198,7 @@ void Channel::execMessage(std::string message, User user)
 	}
 	else if (message.find("MODE") != std::string::npos)
 	{
-		switchMode(user, message);
+		switchMode(user, messages);
 	}
 	else if (message.find("PRIVMSG") != std::string::npos)
 	{
