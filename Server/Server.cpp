@@ -6,12 +6,13 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/08 14:29:16 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/08 14:47:09 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
+#define HOST_P "002"
 namespace irc
 {
 
@@ -242,7 +243,7 @@ namespace irc
             // std::vector<std::string> splitted = utils::splitBySpace("hello world");
             std::cout << "--------------------------\n"
                       << std::endl;
-            std::cout << "password: " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ") << std::endl;
+            std::cout << "password: " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
             std::cout << "message: " << _users[index - 1]->_dataBuffer << std::endl;
             std::cout << "\n--------------------------" << std::endl;
             if (_users[index - 1]->getIsAuth() == false)
@@ -250,14 +251,8 @@ namespace irc
                 authenticate_user(index);
                 if (_users[index - 1]->getIsAuth() == true)
                 {
-                    std::string message = ("001 :Welcome Welcome to the " + utils::convertToString(SERVER) + " Network, " + _users[index - 1]->getNickName() +
-                                           utils::convertToString(Responses::RPL_YOURHOST) + " Your host is Chinedu, Yonathan & Omar " +
-                                           utils::convertToString(Responses::RPL_CREATED) + " This server was created to meet your chat needs " +
-                                           utils::convertToString(Responses::RPL_MYINFO) + utils::convertToString(SERVER) +
-                                           utils::convertToString(Responses::RPL_ISUPPORT) + "Kindly Support this Project" +
-                                           utils::convertToString(Responses::RPL_LUSERCLIENT) + "There are a number of users on the Server " +
-                                           utils::convertToString(Responses::RPL_LUSERME) + "Have fun " + "\r\n");
                     this->sendMsg(_users[index - 1]->getUserFd(), "001 :Welcome\r\n");
+                    // this->sendMsg(_users[index - 1]->getUserFd(), message);
                 }
                 else
                 {
