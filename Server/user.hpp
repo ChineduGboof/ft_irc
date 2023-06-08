@@ -24,8 +24,6 @@ private:
     std::string real_name;
     std::string nick_name;
     std::string user_name;
-
-    std::deque<std::string> _outgoingMsgs;
     bool        is_auth;
 public:
     std::string _dataBuffer;

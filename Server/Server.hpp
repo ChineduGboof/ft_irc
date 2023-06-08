@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/08 15:59:59 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/08 16:17:08 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ namespace irc {
             std::string         _password;
             std::vector<pollfd> _pollFD;
             bool                _running;
-			std::vector<User *> _users;
             void initPollFD(int fd);
 			
 			std::vector<Channel> _channels;
