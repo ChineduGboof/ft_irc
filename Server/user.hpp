@@ -25,11 +25,10 @@ private:
     std::string nick_name;
     std::string user_name;
 
-    std::string _dataBuffer;
     std::deque<std::string> _outgoingMsgs;
-    // bool        is_auth;
-    // bool        joined_server;
+    bool        is_auth;
 public:
+    std::string _dataBuffer;
     std::deque<std::vector<std::string> > _incomingMsgs;
     User( void );
     User(int fd);
@@ -37,6 +36,8 @@ public:
     std::string getNickName( void );
     std::string getUserName( void );
     int  getUserFd( void );
+    bool getIsAuth(void);
+    void setIsAuth( bool auth );
 
     void setNickName( std::string nick );
     void setUserName( std::string user );

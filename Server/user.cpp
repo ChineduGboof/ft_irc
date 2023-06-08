@@ -24,6 +24,15 @@ int User::getUserFd( void )
     return (this->user_fd);
 }
 
+bool User::getIsAuth( void )
+{
+    return (this->is_auth);
+}
+void User::setIsAuth( bool auth )
+{
+    this->is_auth = auth;
+}
+
 User::User(int fd)
 {  
     this->user_fd = fd;
@@ -67,20 +76,20 @@ size_t User::receive() {
         return bytesRead;
 
     _dataBuffer.append(buffer, bytesRead);
-    std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
-    while (!temp.empty()) {
-        std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
-        _incomingMsgs.push_back(splitWords);
-        temp.pop();
-    }
+    // std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
+    // while (!temp.empty()) {
+    //     std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
+    //     _incomingMsgs.push_back(splitWords);
+    //     temp.pop();
+    // }
 
     // Print the messages stored in the _incomingMsgs vector
-    int i = 0;
-    for (std::deque<std::vector<std::string> >::iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
-        for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
-            std::cout << "Index " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
-        }
-    }
+    // int i = 0;
+    // for (std::deque<std::vector<std::string> >::iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
+    //     for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
+    //         std::cout << "Index " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
+    //     }
+    // }
     return bytesRead;
 }
 

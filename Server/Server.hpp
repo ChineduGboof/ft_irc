@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 20:29:18 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/08 14:27:55 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@
 #include <cerrno>
 #include <algorithm>
 #include "user.hpp"
+#include "Utils.hpp"
 #include "Responses.hpp"
+#include <sys/socket.h>
 // #include "Cap.hpp"
 
 namespace irc {
@@ -60,7 +62,6 @@ namespace irc {
             std::string         _password;
             std::vector<pollfd> _pollFD;
             bool                _running;
-            std::vector<User *> _users;
 
             void initPollFD(int fd);
 
@@ -78,15 +79,16 @@ namespace irc {
             void handleSignal(int signal);
             static void signalHandler(int signal);
             
+            std::vector<User *> _users;
             void createNewUser(int fd);
             void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
-            // void removeUser(int fd);
+            void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
             void sendMsg(int fd, std::string msg);
             void authenticate_user(int index);
+            std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
             void bye();
-
             bool verifyPassword(std::string userPassword);
 
     };
