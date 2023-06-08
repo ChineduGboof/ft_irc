@@ -30,6 +30,7 @@ User::User(int fd)
     this->nick_name = "";
     this->user_name = "";
     this->real_name = "";
+	this->is_channel_op = false;
 }
 
 void User::setRealName( std::string name )
@@ -59,6 +60,16 @@ bool User::operator==(User const &rhs) const
 	if (this->user_fd == rhs.user_fd)
 		return true;
 	return false;
+}
+
+void	User::setChannelOp(bool op)
+{
+	this->is_channel_op = op;
+}
+
+bool	User::is_op()
+{
+	return this->is_channel_op;
 }
 
 /**

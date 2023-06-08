@@ -28,6 +28,8 @@ private:
     std::string _dataBuffer;
     std::deque<std::vector<std::string> > _incomingMsgs;
     std::deque<std::string> _outgoingMsgs;
+
+	bool		is_channel_op;
     // bool        is_auth;
     // bool        joined_server;
 	std::deque<std::string> messages;
@@ -51,6 +53,8 @@ public:
     void setOutgoingMsg( std::string msg );
     void printOutgoingMsgs();
 	void addMessage(std::string message);
+	void setChannelOp(bool op);
+	bool is_op();
     ~User( void );
 };
 
