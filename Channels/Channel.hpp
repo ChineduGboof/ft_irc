@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/08 14:40:19 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/08 15:42:18 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class Channel
 		void					sendMessage(std::string message);
 		void					execMessage(std::vector<std::string> messages, User user);
 		void					switchMode(User user, std::vector<std::string> messages);
-		void					kickUser(Channel channel, User user, std::vector<std::string> messages);
+		void					kickUser(Channel &channel, User user, std::vector<std::string> messages);
 		std::map<char, bool>	getModes();
 };
 

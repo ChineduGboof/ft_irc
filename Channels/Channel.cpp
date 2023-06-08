@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/08 14:48:59 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/08 15:23:46 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,12 @@ void Channel::addUser(User &user)
 		std::cout << "Error: User " << user.getNickName() << " is already in channel " << this->name << "." << std::endl;
 		return;
 	}
-	this->users.push_back(user);
-	if (this->users.size() == 1)
+	if (this->users.size() == 0)
 	{
-		this->users.back().setChannelOp(true);
+		user.setChannelOp(true);
+		// this->users.back().setChannelOp(true);
 	}
+	this->users.push_back(user);
 }
 
 void Channel::removeUser(User user)

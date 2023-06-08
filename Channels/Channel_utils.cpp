@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-void	Channel::kickUser(Channel channel, User user, std::vector<std::string> messages)
+void	Channel::kickUser(Channel &channel, User user, std::vector<std::string> messages)
 {
 	if (messages.size() < 3 || messages[0] != "/kick" || messages[1] != channel.getName() || user.is_op() == false)
 		return;
@@ -14,8 +14,8 @@ void	Channel::kickUser(Channel channel, User user, std::vector<std::string> mess
 			break;
 		}
 	}
-	std::string kick = messages[0].substr(messages[0].find("KICK") + 5);
-	channel.sendMessage(":" + user.getNickName() + " KICK " + channel.getName() + " :" + kick);
+	// std::string kick = messages[0].substr(messages[0].find("KICK") + 5);
+	// channel.sendMessage(":" + user.getNickName() + " KICK " + channel.getName() + " :" + kick);
 }
 
 void Channel::switchMode(User user, std::vector<std::string> messages)
