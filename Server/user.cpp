@@ -75,9 +75,10 @@ size_t User::receive() {
     }
 
     // Print the messages stored in the _incomingMsgs vector
+    int i = 0;
     for (std::deque<std::vector<std::string> >::iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
         for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
-            std::cout << *strIt << std::endl;  // Print each word in a new line
+            std::cout << "Index " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
         }
     }
     return bytesRead;
