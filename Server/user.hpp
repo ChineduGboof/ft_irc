@@ -26,11 +26,11 @@ private:
     std::string user_name;
 
     std::string _dataBuffer;
-    std::deque<std::vector<std::string> > _incomingMsgs;
     std::deque<std::string> _outgoingMsgs;
     // bool        is_auth;
     // bool        joined_server;
 public:
+    std::deque<std::vector<std::string> > _incomingMsgs;
     User( void );
     User(int fd);
     std::string getRealName( void );

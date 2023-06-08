@@ -6,7 +6,7 @@
 /*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/07 18:18:08 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/07 20:29:18 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ namespace irc {
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
             void sendMsg(int fd, std::string msg);
-            
+            void authenticate_user(int index);
             void bye();
 
             bool verifyPassword(std::string userPassword);
