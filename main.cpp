@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/06 19:12:24 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/08 15:46:15 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server/Server.hpp"
 #include "Server/Utils.hpp"
+
 int main(int argc, char *argv[])
 {
     int         port;
@@ -46,6 +47,5 @@ int main(int argc, char *argv[])
         std::cout << "Fatal Error: An unhandled exception occurred." << std::endl;
         return EXIT_FAILURE;
     }
-
-    return (0);
+	return EXIT_SUCCESS;
 }

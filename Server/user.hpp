@@ -9,14 +9,14 @@
 # include <queue>
 # include <ctime>
 # include <algorithm>
-#include <iostream>
+# include <iostream>
 # include <cstdio>
 # include <deque>
 # include <list>
 # include <sys/socket.h>
 # include <netinet/in.h>
 #include "Utils.hpp"
-
+# include <deque>
 class User
 {
 private:
@@ -30,6 +30,14 @@ private:
 public:
     std::string _dataBuffer;
     std::deque<std::vector<std::string> > _incomingMsgs;
+    std::deque<std::string> _outgoingMsgs;
+
+	bool		is_channel_op;
+    // bool        is_auth;
+    // bool        joined_server;
+	std::deque<std::string> messages;
+
+public:
     User( void );
     User(int fd);
     std::string getRealName( void );
@@ -39,6 +47,7 @@ public:
     bool getIsAuth(void);
     void setIsAuth( bool auth );
 
+	bool operator==(User const &rhs) const;
     void setNickName( std::string nick );
     void setUserName( std::string user );
     void setRealName( std::string real );
@@ -48,7 +57,9 @@ public:
     std::deque<std::string>& getOutgoingMsg();
     void setOutgoingMsg( std::string msg );
     void printOutgoingMsgs();
-
+	void addMessage(std::string message);
+	void setChannelOp(bool op);
+	bool is_op();
     ~User( void );
 };
 

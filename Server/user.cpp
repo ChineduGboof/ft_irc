@@ -39,6 +39,7 @@ User::User(int fd)
     this->nick_name = "";
     this->user_name = "";
     this->real_name = "";
+	this->is_channel_op = false;
 }
 
 void User::setRealName( std::string name )
@@ -54,6 +55,30 @@ void User::setNickName( std::string nick )
 void User::setUserName( std::string user )
 {
     this->user_name = user;
+}
+
+// Channel changes:
+
+void User::addMessage(std::string message)
+{
+	this->messages.push_back(message);
+}
+
+bool User::operator==(User const &rhs) const
+{
+	if (this->user_fd == rhs.user_fd)
+		return true;
+	return false;
+}
+
+void	User::setChannelOp(bool op)
+{
+	this->is_channel_op = op;
+}
+
+bool	User::is_op()
+{
+	return this->is_channel_op;
 }
 
 /**

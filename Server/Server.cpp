@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:53 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/08 14:47:09 by yonamog2         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/08 15:59:31 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "Server.hpp"
 
@@ -17,7 +18,6 @@ namespace irc
 {
 
     Server *Server::serverInstance = NULL;
-
     Server::Server() {}
 
     Server::Server(const std::string &host, const int &port, const std::string &password)
@@ -360,5 +360,8 @@ namespace irc
     // void Server::sendToClient(size_t index, const std::string& message) {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
-
+    std::vector<Channel> irc::Server::getChannels()
+	{
+		return this->_channels;
+	}
 } // namespace irc
