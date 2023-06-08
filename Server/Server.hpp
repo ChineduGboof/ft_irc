@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/08 14:52:23 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/08 15:15:19 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #define RED			"\033[0;31m"
 #define GREEN		"\033[0;32m"
 #define YELLOW		"\033[0;33m"
-
-#define ONLINE  1
 
 #include <iostream>
 #include <stdexcept>
@@ -47,7 +45,6 @@
 #include "Utils.hpp"
 #include "Responses.hpp"
 #include <sys/socket.h>
-// #include "Cap.hpp"
 
 namespace irc {
 

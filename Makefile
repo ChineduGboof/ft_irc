@@ -1,7 +1,7 @@
 NAME	=	ircserv
 COMPILER=	c++
 FLAGS	=	-std=c++98 -Wall -Wextra #-Werror
-SRC		=	main.cpp Server/Utils.cpp Server/Server.cpp Server/user.cpp Server/Cap.cpp
+SRC		=	main.cpp Server/Utils.cpp Server/Server.cpp Server/user.cpp
 OBJ		=	$(SRC:.cpp=.o)
 INC		=	
 
