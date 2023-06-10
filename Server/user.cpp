@@ -64,6 +64,11 @@ void User::addMessage(std::string message)
 	this->messages.push_back(message);
 }
 
+std::deque<std::string> User::getMessagesDeque()
+{
+	return this->messages;
+}
+
 bool User::operator==(User const &rhs) const
 {
 	if (this->user_fd == rhs.user_fd)
@@ -81,6 +86,15 @@ bool	User::is_op()
 	return this->is_channel_op;
 }
 
+void	User::setInvited(Channel channel_name, bool invited)
+{
+	this->invited_channels[channel_name] = invited;
+}
+
+// bool	User::getInvited(Channel channel_name)
+// {
+// 	return this->invited_channels[channel_name];
+// }
 /**
  * @brief Receive data from the user and process it.
  *
