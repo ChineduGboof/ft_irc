@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 15:43:54 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/11 18:24:02 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,11 +141,14 @@ namespace irc
             else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
             {
                 // Something in the OUT Queue needs to be sent
-                for (std::deque<std::string>::iterator it = _users[i - 1]->getOutgoingMsg().begin(); it != _users[i - 1]->getOutgoingMsg().end(); ++it)
+                std::vector<std::string>& outgoingMsg = _users[i - 1]->getOutgoingMsg();
+                for (std::vector<std::string>::iterator it = outgoingMsg.begin(); it != outgoingMsg.end(); ++it)
                 {
                     send(_pollFD[i].fd, it->c_str(), it->size(), 0);
-                    if (!_users[i - 1]->getOutgoingMsg().empty())
-                        _users[i - 1]->getOutgoingMsg().pop_front();
+                }
+                if (!outgoingMsg.empty())
+                {
+                    outgoingMsg.erase(outgoingMsg.begin());
                 }
             }
             else if (_pollFD[i].revents & POLLHUP)
@@ -273,7 +276,7 @@ namespace irc
             {
                 closeSocketAndRemoveUser(index);
             }
-            if(_users[index - 1]->_dataBuffer == "CAP LS\r\n" || _users[index - 1]->_dataBuffer == "CAP END\r\n")
+            if(_users[index - 1]->_dataBuffer == "CAP LS 302\r\n" || _users[index - 1]->_dataBuffer == "CAP END\r\n" || _users[index - 1]->_dataBuffer == "JOIN :\r\n")
             {
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
@@ -287,9 +290,9 @@ namespace irc
                else
                {
                     std::cout << "not authenticated\n";
-                     close(_pollFD[index].fd);
-                    _pollFD.erase(_pollFD.begin() + index);
-                    removeUser(_users[index - 1]->getUserFd());
+                    //  close(_pollFD[index].fd);
+                    // _pollFD.erase(_pollFD.begin() + index);
+                    // removeUser(_users[index - 1]->getUserFd());
                }
             }
             else

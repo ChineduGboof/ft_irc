@@ -107,35 +107,38 @@ bool	User::getInvited(Channel channel_name)
  * @return The number of bytes received from the user, or a value <= 0 if an error occurred or the connection is closed.
  */
 size_t User::receive() {
-
     char buffer[1024];
     size_t bytesRead = recv(user_fd, buffer, sizeof(buffer), 0);
-    buffer[bytesRead] = '\0';
-    if (bytesRead <= 0)
+    if (bytesRead <= 0) {
         return bytesRead;
+    }
+    buffer[bytesRead] = '\0';
 
-    _dataBuffer = "";
     _dataBuffer = buffer;
-    // _dataBuffer.append(buffer);
-    // std::cout << "----------------------------------------------\n";
-    // std::cout << "msg[" <<user_fd<<"]: "  << _dataBuffer << std::endl;
-    // std::cout << "----------------------------------------------\n";
-    // std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
-    // while (!temp.empty()) {
-    //     std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
-    //     _incomingMsgs.push_back(splitWords);
-    //     temp.pop();
-    // }
+
+    std::vector<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
+    while (!temp.empty()) {
+        std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
+
+        std::ostringstream oss;
+        for (std::vector<std::string>::size_type i = 0; i < splitWords.size(); ++i) {
+            oss << splitWords[i] << " ";
+        }
+        std::string message = oss.str();
+
+        _incomingMsgs.push_back(message);
+        temp.erase(temp.begin(), temp.begin() + 1);
+    }
+    // printIncomingMsgs();
 
     return bytesRead;
 }
 
-
-std::deque<std::vector<std::string> >& User::getMessages() {
+std::vector<std::string> & User::getMessages() {
     return _incomingMsgs;
 }
 
-std::deque<std::string>& User::getOutgoingMsg() {
+std::vector<std::string> & User::getOutgoingMsg() {
     return _outgoingMsgs;
 }
 
@@ -144,8 +147,13 @@ void User::setOutgoingMsg( std::string msg ) {
 }
 
 void User::printOutgoingMsgs() {
-    for (std::deque<std::string>::const_iterator it = _outgoingMsgs.begin(); it != _outgoingMsgs.end(); ++it) {
+    for (std::vector<std::string>::const_iterator it = _outgoingMsgs.begin(); it != _outgoingMsgs.end(); ++it) {
         std::cout << *it << std::endl;
     }
 }
 
+void User::printIncomingMsgs() {
+    for (std::vector<std::string>::const_iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
+        std::cout << "Incoming Message => " << *it << std::endl;
+    }
+}
