@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/06 23:59:57 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/08 15:15:44 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 15:36:34 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define RESPONSES_HPP
 
 # define SERVER "Ft_IRC"
+# define HOST_P "002"
 
 // Positive replies
 # define ONLINE  1

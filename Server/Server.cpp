@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 15:31:08 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 15:35:29 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 
 #include "Server.hpp"
 
-#define HOST_P "002"
 namespace irc
 {
 
     Server *Server::serverInstance = NULL;
+
     Server::Server() {}
 
     Server::Server(const std::string &host, const int &port, const std::string &password)
@@ -313,52 +313,15 @@ namespace irc
         //     // execute clieent commands
         }
     }
-void Server::handleClientData(size_t index)
-{
-    if (_pollFD[index].fd != _sockfd)
+
+    void Server::closeSocketAndRemoveUser(size_t index)
     {
-        int bytesRead = _users[index - 1]->receive();
-
-        if (bytesRead <= 0) {
-            closeSocketAndRemoveUser(index);
-        }
-
-        std::cout << "--------------------------\n"
-                  << std::endl;
-        std::cout << "password: " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
-        std::cout << "message: " << _users[index - 1]->_dataBuffer << std::endl;
-        std::cout << "\n--------------------------" << std::endl;
-
-        if (_users[index - 1]->getIsAuth() == false)
-        {
-            authenticate_user(index);
-            if (_users[index - 1]->getIsAuth() == true)
-            {
-                this->sendMsg(_users[index - 1]->getUserFd(), "001 :Welcome\r\n");
-            }
-            else
-            {
-                //do something else if it's not authenticated
-                std::cout << "not authenticated\n";
-            }
-        }
-        else
-        {
-            std::cout << "---------------------\n";
-            std::cout << "already member\n"
-                      << _users.size() << std::endl;
-            std::cout << "---------------------\n";
-        }
-    }
-}
-
- void Server::closeSocketAndRemoveUser(size_t index)
-{
-    std::cerr << "recv error" << std::endl;
-    close(_pollFD[index].fd);
-    _pollFD.erase(_pollFD.begin() + index);
-    removeUser(_users[index - 1]->getUserFd());
-}
+        std::cerr << "recv error" << std::endl;
+        close(_pollFD[index].fd);
+        _pollFD.erase(_pollFD.begin() + index);
+        removeUser(_users[index - 1]->getUserFd());
+    } 
+   
     std::vector<User *> &Server::getUser(void)
     {
         return _users;
@@ -386,7 +349,6 @@ void Server::handleClientData(size_t index)
             std::cout << RED << "Server: Stopped socket closed" << DEFAULT << std::endl;
             close(_sockfd);
             _sockfd = -1;
-
             // Add any additional cleanup code here
         }
     }
