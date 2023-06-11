@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/11 13:27:49 by gboof            ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/11 13:46:22 by gboof            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 
 
@@ -35,9 +36,9 @@
 #include <poll.h>
 #include <csignal>
 #include <cctype>
-# include <vector>
+#include <vector>
 #include <deque>
-# include <map>
+#include <map>
 #include <sstream>
 #include <limits>
 #include <string>
@@ -50,10 +51,10 @@
 #include <sys/socket.h>
 
 class Channel;
+class User;
 namespace irc {
 
     class Server {
-
         private:
 
             std::string         _host;
