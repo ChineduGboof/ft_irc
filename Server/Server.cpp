@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/11 15:29:52 by cegbulef         ###   ########.fr       */
+/*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
+/*   Updated: 2023/06/11 15:31:08 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,7 +224,7 @@ namespace irc
                 std::cout << "nick:\t" << _users.at(x)->getNickName() << std::endl;
                 std::cout << "user:\t" << _users.at(x)->getUserName() << std::endl;
                 std::cout << "is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
-                std::cout << "users:\t" << _users.size() << std::endl;
+                std::cout << "users:\t" << _users.size() << std::endl << std::endl << std::endl;
                 x++;
             }
             return true;
@@ -294,6 +294,13 @@ namespace irc
                         // _pollFD.erase(_pollFD.begin() + index);
                         // removeUser(_users[index - 1]->getUserFd());
                     }
+               }
+               else
+               {
+                    std::cout << "not authenticated\n";
+                     close(_pollFD[index].fd);
+                    _pollFD.erase(_pollFD.begin() + index);
+                    removeUser(_users[index - 1]->getUserFd());
                }
             }
             else
