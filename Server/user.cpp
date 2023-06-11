@@ -126,7 +126,6 @@ size_t User::receive() {
         temp.erase(temp.begin(), temp.begin() + 1);
     }
     printIncomingMsgs();
-
     return bytesRead;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 19:20:02 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 20:07:56 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,12 +190,12 @@ namespace irc
         std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
         std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
         std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-        std::cout << "pass: " << pass << std::endl;
-        std::cout << "user: " << user_name << std::endl;
-        std::cout << "nick: " << nick_name << std::endl;
+        // std::cout << "pass: " << pass << std::endl;
+        // std::cout << "user: " << user_name << std::endl;
+        // std::cout << "nick: " << nick_name << std::endl;
         if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
         {
-            // std::cout << "correct pass\n";
+            std::cout << "correct pass\n";
             size_t x = 0;
             _users[index - 1]->setNickName(nick_name);
             _users[index - 1]->setUserName(user_name);
@@ -247,6 +247,28 @@ namespace irc
             // If no "PASS" line found, return an empty string or handle the case accordingly
             return "";
     }
+    // int Server::getFdByNick(std::string nick)
+    // {
+    //     std::vector<User *>::iterator it = _users.begin();
+    //     while (it != _users.end())
+    //     {
+    //         if((*it)->getUserNick() == nick)
+    //             return ((*it)->getNickName());
+    //         it++;
+    //     }
+    //     return "";
+    // }
+    int Server::getFdByNick(std::string nick)
+    {
+        std::vector<User *>::iterator it = _users.begin();
+        while (it != _users.end())
+        {
+            if((*it)->getNickName() == nick)
+                return ((*it)->getUserFd());
+            it++;
+        }
+        return -1;
+    }
 
     void Server::handleClientData(size_t index)
     {
@@ -257,13 +279,14 @@ namespace irc
             {
                 closeSocketAndRemoveUser(index);
             }
-            if(_users[index - 1]->_dataBuffer == "CAP LS 302\r\n" || _users[index - 1]->_dataBuffer == "CAP END\r\n" || _users[index - 1]->_dataBuffer == "JOIN :\r\n")
+            if(_users[index - 1]->_incomingMsgs.at(0) == "CAP")
             {
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
             }
             if (_users[index - 1]->getIsAuth() == false)
             {
+                // _users.at(0)->printIncomingMsgs();
                if(authenticate_user(index))
                {
                     this->sendMsg(_users[index - 1]->getUserFd(), "001 :Ft_irc_server\r\n");
@@ -280,7 +303,19 @@ namespace irc
             {
                 //once already a memeber
                 std::cout << "---------------------\n";
-                std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                // _users.at(0)->printIncomingMsgs();
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
+                    this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
+                {
+                    std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
+                    if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
+                    {
+                        std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
+                        this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
+                    }
+                }
                 std::cout << "---------------------\n";
             }
         //     // execute clieent commands
