@@ -96,10 +96,6 @@ bool	User::getInvited(Channel channel_name)
 	return this->invited_channels[channel_name];
 }
 
-// bool	User::getInvited(Channel channel_name)
-// {
-// 	return this->invited_channels[channel_name];
-// }
 /**
  * @brief Receive data from the user and process it.
  *
@@ -107,8 +103,6 @@ bool	User::getInvited(Channel channel_name)
  * to the internal data buffer, splits the buffer into messages using the delimiter "\r\n",
  * and stores each message in the _incomingMsgs vector after splitting it into words using the
  * delimiter " ".
- *
- * Note: The commented-out code block is used for printing the messages stored in the _incomingMsgs vector.
  *
  * @return The number of bytes received from the user, or a value <= 0 if an error occurred or the connection is closed.
  */
@@ -127,13 +121,6 @@ size_t User::receive() {
     //     temp.pop();
     // }
 
-    // Print the messages stored in the _incomingMsgs vector
-    // int i = 0;
-    // for (std::deque<std::vector<std::string> >::iterator it = _incomingMsgs.begin(); it != _incomingMsgs.end(); ++it) {
-    //     for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
-    //         std::cout << "Index " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
-    //     }
-    // }
     return bytesRead;
 }
 

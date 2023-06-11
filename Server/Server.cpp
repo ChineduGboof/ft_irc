@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gboof <gboof@student.42.fr>                +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 13:43:22 by gboof            ###   ########.fr       */
+/*   Updated: 2023/06/11 15:06:46 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,23 +49,18 @@ namespace irc
         if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
-
         if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
-
         if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
             throw std::runtime_error("Server: file control error");
         }
-
         if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&address), addressLen) < 0) {
             throw std::runtime_error("Server: bind error");
         }
-
         if (listen(_sockfd, std::numeric_limits<int>::max()) < 0) {
             throw std::runtime_error("Server: listen error");
         }
-
         _status = ONLINE;
         std::cout << GREEN "Server: Listening on host:  " + _host + " port: " << _port << DEFAULT << std::flush << std::endl;
     }
@@ -86,7 +81,9 @@ namespace irc
 
     void Server::sendMsg(int fd, std::string msg)
     {
-        send(fd, msg.c_str(), msg.length(), 0);
+        if (send(fd, msg.c_str(), msg.length(), 0) < 0){
+            throw std::runtime_error("Send error"); 
+        }
     }
     
     void Server::polling()
@@ -97,7 +94,7 @@ namespace irc
             if (errno == EINTR)
             {
                 handleSignal(SIGINT);
-                perror("poll error");
+                std::cerr << RED << "POLL: poll error" << DEFAULT << std::endl;
                 throw std::runtime_error(" ");
             }
         }
@@ -115,44 +112,45 @@ namespace irc
         while (_running)
         {
             polling();
-            // Run through the existing connections looking for data to read
-            for (size_t i = 0; i < _pollFD.size(); i++)
+            searchingForConnections();
+
+            if (!_running) {
+                break;
+            }
+        }
+    }
+
+/**
+ * @brief: If someone's ready to read.
+ * Check if it is a new connection and create a new socket for communicaion
+ * else its an existing client, so handle the data
+*/
+    void Server::searchingForConnections()
+    {
+        for (size_t i = 0; i < _pollFD.size(); i++)
+        {
+            if (_pollFD[i].revents & POLLIN)
             {
-                // Check if someone's ready to read
-                if (_pollFD[i].revents & POLLIN)
+                if (_pollFD[i].fd == _sockfd)
+                    handleNewConnection();
+                else
+                    handleClientData(i);
+            }
+            else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
+            {
+                // Something in the OUT Queue needs to be sent
+                for (std::deque<std::string>::iterator it = _users[i - 1]->getOutgoingMsg().begin(); it != _users[i - 1]->getOutgoingMsg().end(); ++it)
                 {
-                    // We have a new connection, create a new socket for comms
-                    if (_pollFD[i].fd == _sockfd)
-                    {
-                        handleNewConnection();
-                    }
-                    else
-                    {
-                        // Handle the data from existing clients here
-                        handleClientData(i);
-                    }
-                }
-                else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
-                {
-                    // Something in the OUT Queue needs to be sent
-                    for (std::deque<std::string>::iterator it = _users[i - 1]->getOutgoingMsg().begin(); it != _users[i - 1]->getOutgoingMsg().end(); ++it)
-                    {
-                        send(_pollFD[i].fd, it->c_str(), it->size(), 0);
-                        if (!_users[i - 1]->getOutgoingMsg().empty())
-                            _users[i - 1]->getOutgoingMsg().pop_front();
-                    }
-                }
-                else if (_pollFD[i].revents & POLLHUP)
-                {
-                    // Client socket closed
-                    closeClientSocket(i);
-                    i--;
+                    send(_pollFD[i].fd, it->c_str(), it->size(), 0);
+                    if (!_users[i - 1]->getOutgoingMsg().empty())
+                        _users[i - 1]->getOutgoingMsg().pop_front();
                 }
             }
-            // Check if the server should stop
-            if (!_running)
+            else if (_pollFD[i].revents & POLLHUP)
             {
-                break;
+                // Client socket closed
+                closeClientSocket(i);
+                i--;
             }
         }
     }
@@ -164,8 +162,7 @@ namespace irc
         struct sockaddr_storage remoteAddress;
         std::memset(&remoteAddress, 0, sizeof(remoteAddress));
 
-        if ((fd = accept(_sockfd, (struct sockaddr *)&remoteAddress, &addressLen)) < 0)
-        {
+        if ((fd = accept(_sockfd, (struct sockaddr *)&remoteAddress, &addressLen)) < 0) {
             throw std::runtime_error("Server: client connection error");
         }
 
@@ -173,6 +170,7 @@ namespace irc
         initPollFD(fd);
         printNewConnectionInfo(remoteAddress, fd);
     }
+    
     void Server::removeUser(int fd)
     {
         for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++)
@@ -224,50 +222,53 @@ namespace irc
             return "";
     }
 
-    void Server::handleClientData(size_t index)
+void Server::handleClientData(size_t index)
+{
+    if (_pollFD[index].fd != _sockfd)
     {
-        if (_pollFD[index].fd != _sockfd)
+        int bytesRead = _users[index - 1]->receive();
+
+        if (bytesRead <= 0) {
+            closeSocketAndRemoveUser(index);
+        }
+
+        std::cout << "--------------------------\n"
+                  << std::endl;
+        std::cout << "password: " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
+        std::cout << "message: " << _users[index - 1]->_dataBuffer << std::endl;
+        std::cout << "\n--------------------------" << std::endl;
+
+        if (_users[index - 1]->getIsAuth() == false)
         {
-            int bytesRead = _users[index - 1]->receive();
-            // char buffer[1024];
-            // size_t bytesRead = recv(_users[index - 1]->getUserFd(), buffer, sizeof(buffer), 0);
-            if (bytesRead <= 0)
+            authenticate_user(index);
+            if (_users[index - 1]->getIsAuth() == true)
             {
-                perror("recv error");
-                close(_pollFD[index].fd);
-                _pollFD.erase(_pollFD.begin() + index);
-                removeUser(_users[index - 1]->getUserFd());
-            }
-            // std::vector<std::string> splitted = utils::splitBySpace("hello world");
-            std::cout << "--------------------------\n"
-                      << std::endl;
-            std::cout << "password: " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
-            std::cout << "message: " << _users[index - 1]->_dataBuffer << std::endl;
-            std::cout << "\n--------------------------" << std::endl;
-            if (_users[index - 1]->getIsAuth() == false)
-            {
-                authenticate_user(index);
-                if (_users[index - 1]->getIsAuth() == true)
-                {
-                    this->sendMsg(_users[index - 1]->getUserFd(), "001 :Welcome\r\n");
-                    // this->sendMsg(_users[index - 1]->getUserFd(), message);
-                }
-                else
-                {
-                    //do smtn else if it's not authenticated
-                    std::cout << "not authenticated\n";
-                }
+                this->sendMsg(_users[index - 1]->getUserFd(), "001 :Welcome\r\n");
             }
             else
             {
-                std::cout << "---------------------\n";
-                std::cout << "already member\n"
-                            << _users.size() << std::endl;
-                std::cout << "---------------------\n";
+                //do something else if it's not authenticated
+                std::cout << "not authenticated\n";
             }
-        //     // execute clieent commands
+        }
+        else
+        {
+            std::cout << "---------------------\n";
+            std::cout << "already member\n"
+                      << _users.size() << std::endl;
+            std::cout << "---------------------\n";
         }
     }
+}
+
+void Server::closeSocketAndRemoveUser(size_t index)
+{
+    std::cerr << "recv error" << std::endl;
+    close(_pollFD[index].fd);
+    _pollFD.erase(_pollFD.begin() + index);
+    removeUser(_users[index - 1]->getUserFd());
+}
+
 
     std::vector<User *> &Server::getUser(void)
     {
@@ -324,6 +325,9 @@ namespace irc
 
     void Server::createNewUser(int fd)
     {
+        if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
+            throw std::runtime_error("Server: file control error"); 
+        }
         _users.push_back(new User(fd));
         std::string message;
 
