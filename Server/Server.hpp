@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/10 01:05:23 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/10 18:06:46 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@
 #include <poll.h>
 #include <csignal>
 #include <cctype>
-# include <vector>
+#include <vector>
 #include <deque>
-# include <map>
+#include <map>
 #include <sstream>
 #include <limits>
 #include <string>
@@ -54,7 +54,6 @@ class User;
 namespace irc {
 
     class Server {
-
         private:
 
             std::string         _host;

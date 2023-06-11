@@ -91,6 +91,11 @@ void	User::setInvited(Channel channel_name, bool invited)
 	this->invited_channels[channel_name] = invited;
 }
 
+bool	User::getInvited(Channel channel_name)
+{
+	return this->invited_channels[channel_name];
+}
+
 // bool	User::getInvited(Channel channel_name)
 // {
 // 	return this->invited_channels[channel_name];

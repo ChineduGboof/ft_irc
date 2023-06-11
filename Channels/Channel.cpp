@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/10 01:21:03 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/11 09:38:29 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ Channel::~Channel()
 {
 }
 
-void Channel::joinChannel(User &user)
+void Channel::joinChannel(User *user)
 {
-	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end())
 	{
-		std::cout << "Error: User " << user.getNickName() << " is already in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user->getNickName() << " is already in channel " << this->name << "." << std::endl;
 		return;
 	}
 	if (this->users.size() >= this->maxUsers)
@@ -65,23 +65,28 @@ void Channel::joinChannel(User &user)
 		std::cout << "Error: Channel " << this->name << " is full." << std::endl;
 		return;
 	}
+	if (this->modes['i'] == true && user->getInvited(*this) == false)
+	{
+		std::cout << "Error: Channel " << this->name << " is invite only." << std::endl;
+		return;
+	}
 	if (this->users.size() == 0)
 	{
-		user.setChannelOp(true);
+		user->setChannelOp(true);
 	}
 	this->users.push_back(user);
 }
 
-void Channel::partChannel(User &user)
+void Channel::partChannel(User *user)
 {
-	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end())
 	{
-		user.setChannelOp(false);
+		user->setChannelOp(false);
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: User " << user.getNickName() << " is not in channel " << this->name << "." << std::endl;
+		std::cout << "Error: User " << user->getNickName() << " is not in channel " << this->name << "." << std::endl;
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
@@ -97,7 +102,7 @@ std::string Channel::getName()
 	return this->name;
 }
 
-std::vector<User> Channel::getUsers()
+std::vector<User *> Channel::getUsers()
 {
 	return this->users;
 }
@@ -141,8 +146,8 @@ void	irc::Server::deleteChannel(const Channel channel)
 
 void	Channel::sendMessage(std::string message)
 {
-	for (std::vector<User>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+	for (std::vector<User *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
 	{
-		it->addMessage(message);
+		(*it)->addMessage(message);
 	}
 }
