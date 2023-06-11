@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 18:24:02 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 19:20:02 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,25 +137,6 @@ namespace irc
                     handleNewConnection();
                 else
                     handleClientData(i);
-            }
-            else if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
-            {
-                // Something in the OUT Queue needs to be sent
-                std::vector<std::string>& outgoingMsg = _users[i - 1]->getOutgoingMsg();
-                for (std::vector<std::string>::iterator it = outgoingMsg.begin(); it != outgoingMsg.end(); ++it)
-                {
-                    send(_pollFD[i].fd, it->c_str(), it->size(), 0);
-                }
-                if (!outgoingMsg.empty())
-                {
-                    outgoingMsg.erase(outgoingMsg.begin());
-                }
-            }
-            else if (_pollFD[i].revents & POLLHUP)
-            {
-                // Client socket closed
-                closeClientSocket(i);
-                i--;
             }
         }
     }
