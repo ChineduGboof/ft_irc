@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 15:35:29 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 15:43:54 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,18 +282,7 @@ namespace irc
             {
                if(authenticate_user(index))
                {
-                    if (_users[index - 1]->getIsAuth() == true)
-                    {
-                        this->sendMsg(_users[index - 1]->getUserFd(), "001 :Ft_irc_server\r\n");
-                        // this->sendMsg(_users[index - 1]->getUserFd(), message);
-                    }
-                    else
-                    {
-                        //do smtn else if it's not authenticated
-                        // close(_pollFD[index].fd);
-                        // _pollFD.erase(_pollFD.begin() + index);
-                        // removeUser(_users[index - 1]->getUserFd());
-                    }
+                    this->sendMsg(_users[index - 1]->getUserFd(), "001 :Ft_irc_server\r\n");
                }
                else
                {
