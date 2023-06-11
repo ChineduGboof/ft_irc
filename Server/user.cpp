@@ -110,10 +110,16 @@ size_t User::receive() {
 
     char buffer[1024];
     size_t bytesRead = recv(user_fd, buffer, sizeof(buffer), 0);
+    buffer[bytesRead] = '\0';
     if (bytesRead <= 0)
         return bytesRead;
 
-    _dataBuffer.append(buffer, bytesRead);
+    _dataBuffer = "";
+    _dataBuffer = buffer;
+    // _dataBuffer.append(buffer);
+    // std::cout << "----------------------------------------------\n";
+    // std::cout << "msg[" <<user_fd<<"]: "  << _dataBuffer << std::endl;
+    // std::cout << "----------------------------------------------\n";
     // std::queue<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
     // while (!temp.empty()) {
     //     std::vector<std::string> splitWords = utils::splitBySpace(temp.front());

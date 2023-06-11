@@ -6,9 +6,10 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/11 14:41:57 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/11 15:26:23 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 
 
@@ -80,16 +81,19 @@ namespace irc {
             void closeClientSocket(size_t index);
             void handleSignal(int signal);
             static void signalHandler(int signal);
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             
+            //user
             std::vector<User *> _users;
             void createNewUser(int fd);
-            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
             void sendMsg(int fd, std::string msg);
-            void authenticate_user(int index);
+            bool authenticate_user(int index);
             std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
+            bool check_duplicate(std::string nick);
+
             void bye();
             bool verifyPassword(std::string userPassword);
 			

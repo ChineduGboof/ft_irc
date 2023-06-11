@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 15:06:46 by cegbulef         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/11 15:29:52 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 
 #include "Server.hpp"
@@ -182,7 +184,18 @@ namespace irc
             }
         }
     }
-    void Server::authenticate_user(int index)
+    bool Server::check_duplicate(std::string nick)
+    {
+        std::vector<User *>::iterator it = _users.begin();
+        while (it != _users.end())
+        {
+            if((*it)->getNickName() == nick)
+                return (true);
+            it++;
+        }
+        return (false);
+    }
+    bool Server::authenticate_user(int index)
     {
         // int i = 0;
         // for (std::deque<std::vector<std::string> >::iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
@@ -190,30 +203,59 @@ namespace irc
         //         std::cout << "new_get " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
         //     }
         // }
-        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
+        std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
+        std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
+        std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
+        std::cout << "pass: " << pass << std::endl;
+        std::cout << "user: " << user_name << std::endl;
+        std::cout << "nick: " << nick_name << std::endl;
+        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
         {
-            std::cout << "correct pass\n";
+            // std::cout << "correct pass\n";
+            size_t x = 0;
+            _users[index - 1]->setNickName(nick_name);
+            _users[index - 1]->setUserName(user_name);
+            // nick_name = "";
+            // user_name = "";
+            _users[index - 1]->setIsAuth(true);
+            while (x < _users.size())
+            {
+                std::cout << "fd:\t" << _users.at(x)->getUserFd() << std::endl;
+                std::cout << "nick:\t" << _users.at(x)->getNickName() << std::endl;
+                std::cout << "user:\t" << _users.at(x)->getUserName() << std::endl;
+                std::cout << "is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
+                std::cout << "users:\t" << _users.size() << std::endl;
+                x++;
+            }
+            return true;
+
         }
         else
         {
-            std::cout << "incorrect password\n";
+            // std::cout << "-----------------------------------------------------------------------------\n";
+            // std::cout << "duplicate or incorrect pass" << std::endl;
+            // std::cout << "pass= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
+            // std::cout << "nick= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ") << std::endl;
+            // std::cout << "-----------------------------------------------------------------------------\n";
+            // if(!pass.empty() || !nick_name.empty())
+            //     removeUser(_users[index - 1]->getUserFd());
         }
-        _users[index - 1]->setIsAuth(true);
+        return false;
     }
 
     std::string Server::ExtractFromMessage(const std::string& message, const std::string &to_find) {
         // Find the line starting with "PASS"
-            size_t passLineStart = message.find(to_find);
+            size_t lineStart = message.find(to_find);
             
             // If "PASS" line found, extract the password
-            if (passLineStart != std::string::npos) {
-                size_t passwordStart = passLineStart + std::string(to_find).length();
+            if (lineStart != std::string::npos) {
+                size_t toFindStart = lineStart + std::string(to_find).length();
                 
                 // Find the end of the password
-                size_t passwordEnd = message.find_first_of("\r\n", passwordStart);
+                size_t passwordEnd = message.find_first_of("\r\n", toFindStart);
                 
                 // Extract the password substring
-                std::string password = message.substr(passwordStart, passwordEnd - passwordStart);
+                std::string password = message.substr(toFindStart, passwordEnd - toFindStart);
                 
                 return password;
             }
@@ -222,6 +264,48 @@ namespace irc
             return "";
     }
 
+    void Server::handleClientData(size_t index)
+    {
+        if (_pollFD[index].fd != _sockfd)
+        {
+            int bytesRead = _users[index - 1]->receive();
+            if (bytesRead <= 0)
+            {
+                closeSocketAndRemoveUser(index);
+            }
+            if(_users[index - 1]->_dataBuffer == "CAP LS\r\n" || _users[index - 1]->_dataBuffer == "CAP END\r\n")
+            {
+                // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
+                return ;
+            }
+            if (_users[index - 1]->getIsAuth() == false)
+            {
+               if(authenticate_user(index))
+               {
+                    if (_users[index - 1]->getIsAuth() == true)
+                    {
+                        this->sendMsg(_users[index - 1]->getUserFd(), "001 :Ft_irc_server\r\n");
+                        // this->sendMsg(_users[index - 1]->getUserFd(), message);
+                    }
+                    else
+                    {
+                        //do smtn else if it's not authenticated
+                        // close(_pollFD[index].fd);
+                        // _pollFD.erase(_pollFD.begin() + index);
+                        // removeUser(_users[index - 1]->getUserFd());
+                    }
+               }
+            }
+            else
+            {
+                //once already a memeber
+                std::cout << "---------------------\n";
+                std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                std::cout << "---------------------\n";
+            }
+        //     // execute clieent commands
+        }
+    }
 void Server::handleClientData(size_t index)
 {
     if (_pollFD[index].fd != _sockfd)
@@ -261,15 +345,13 @@ void Server::handleClientData(size_t index)
     }
 }
 
-void Server::closeSocketAndRemoveUser(size_t index)
+ void Server::closeSocketAndRemoveUser(size_t index)
 {
     std::cerr << "recv error" << std::endl;
     close(_pollFD[index].fd);
     _pollFD.erase(_pollFD.begin() + index);
     removeUser(_users[index - 1]->getUserFd());
 }
-
-
     std::vector<User *> &Server::getUser(void)
     {
         return _users;
