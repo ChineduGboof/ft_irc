@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/08 16:17:08 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/11 12:35:20 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,16 +79,19 @@ namespace irc {
             void closeClientSocket(size_t index);
             void handleSignal(int signal);
             static void signalHandler(int signal);
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             
+            //user
             std::vector<User *> _users;
             void createNewUser(int fd);
-            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
             void sendMsg(int fd, std::string msg);
-            void authenticate_user(int index);
+            bool authenticate_user(int index);
             std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
+            bool check_duplicate(std::string nick);
+
             void bye();
             bool verifyPassword(std::string userPassword);
 			
