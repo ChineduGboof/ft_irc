@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/11 15:05:02 by yonamog2         ###   ########.fr       */
+/*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
+/*   Updated: 2023/06/11 15:11:03 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 
 #include "Server.hpp"
@@ -42,34 +43,27 @@ namespace irc
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(static_cast<uint16_t>(_port));
 
-        if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        {
+        if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
             throw std::runtime_error("Server: socket error");
         }
-
         int optval = 1;
-        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0)
-        {
+        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
 
-        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0)
-        {
+        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
 
-        if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0)
-        {
+        if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
             throw std::runtime_error("Server: file control error");
         }
 
-        if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&address), addressLen) < 0)
-        {
+        if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&address), addressLen) < 0) {
             throw std::runtime_error("Server: bind error");
         }
 
-        if (listen(_sockfd, std::numeric_limits<int>::max()) < 0)
-        {
+        if (listen(_sockfd, std::numeric_limits<int>::max()) < 0) {
             throw std::runtime_error("Server: listen error");
         }
 
@@ -82,18 +76,34 @@ namespace irc
         struct pollfd pFD = {
             .fd = fd,
             .events = POLLIN | POLLOUT,
-            .revents = 0};
+            .revents = 0 
+        };
         _pollFD.push_back(pFD);
 
-        if (_pollFD.back().fd == -1)
-        {
+        if (_pollFD.back().fd == -1) {
             throw std::runtime_error("Failed to initialize pollfd struct");
         }
     }
+
     void Server::sendMsg(int fd, std::string msg)
     {
         send(fd, msg.c_str(), msg.length(), 0);
     }
+    
+    void Server::polling()
+    {
+        int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
+        if (pollResult < 0)
+        {
+            if (errno == EINTR)
+            {
+                handleSignal(SIGINT);
+                perror("poll error");
+                throw std::runtime_error(" ");
+            }
+        }
+    }
+
     void Server::run()
     {
         if (!_status)
@@ -105,22 +115,10 @@ namespace irc
 
         while (_running)
         {
-            int pollResult = poll(_pollFD.data(), _pollFD.size(), -1);
-            if (pollResult < 0)
-            {
-                if (errno == EINTR)
-                {
-                    // Signal interrupted the poll, handle it gracefully
-                    handleSignal(SIGINT);
-                    continue;
-                }
-                perror("poll error");
-                throw std::runtime_error("Server: poll error");
-            }
+            polling();
             // Run through the existing connections looking for data to read
             for (size_t i = 0; i < _pollFD.size(); i++)
             {
-
                 // Check if someone's ready to read
                 if (_pollFD[i].revents & POLLIN)
                 {
@@ -245,6 +243,7 @@ namespace irc
         }
         return false;
     }
+
     std::string Server::ExtractFromMessage(const std::string& message, const std::string &to_find) {
         // Find the line starting with "PASS"
             size_t lineStart = message.find(to_find);
@@ -264,7 +263,7 @@ namespace irc
             
             // If no "PASS" line found, return an empty string or handle the case accordingly
             return "";
-        }
+    }
 
     void Server::handleClientData(size_t index)
     {

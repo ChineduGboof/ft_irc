@@ -6,9 +6,10 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/11 12:35:20 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/11 15:11:25 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 
 
@@ -35,9 +36,9 @@
 #include <poll.h>
 #include <csignal>
 #include <cctype>
-# include <vector>
+#include <vector>
 #include <deque>
-# include <map>
+#include <map>
 #include <sstream>
 #include <limits>
 #include <string>
@@ -50,10 +51,10 @@
 #include <sys/socket.h>
 
 class Channel;
+class User;
 namespace irc {
 
     class Server {
-
         private:
 
             std::string         _host;
@@ -99,6 +100,7 @@ namespace irc {
 			void createChannel(std::string name);
 			void deleteChannel(Channel channel);
 			std::vector<Channel> getChannels();
+            void polling();
     };
 }
 

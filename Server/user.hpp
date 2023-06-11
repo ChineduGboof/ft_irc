@@ -16,7 +16,10 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 #include "Utils.hpp"
+#include "../Channels/Channel.hpp"
 # include <deque>
+
+class Channel;
 class User
 {
 private:
@@ -25,6 +28,8 @@ private:
     std::string nick_name;
     std::string user_name;
     bool        is_auth;
+
+	std::map<Channel, bool> invited_channels;
 public:
     std::string _dataBuffer;
     std::deque<std::vector<std::string> > _incomingMsgs;
@@ -45,7 +50,10 @@ public:
     bool getIsAuth(void);
     void setIsAuth( bool auth );
 
+	void setInvited(Channel channel_name, bool invited);
+	bool getInvited(Channel channel_name);
 	bool operator==(User const &rhs) const;
+	std::deque<std::string> getMessagesDeque();
     void setNickName( std::string nick );
     void setUserName( std::string user );
     void setRealName( std::string real );
