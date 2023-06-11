@@ -117,19 +117,15 @@ size_t User::receive() {
     _dataBuffer = buffer;
 
     std::vector<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
+    _incomingMsgs.clear();
     while (!temp.empty()) {
         std::vector<std::string> splitWords = utils::splitBySpace(temp.front());
-
-        std::ostringstream oss;
         for (std::vector<std::string>::size_type i = 0; i < splitWords.size(); ++i) {
-            oss << splitWords[i] << " ";
+            _incomingMsgs.push_back(splitWords[i]);
         }
-        std::string message = oss.str();
-
-        _incomingMsgs.push_back(message);
         temp.erase(temp.begin(), temp.begin() + 1);
     }
-    // printIncomingMsgs();
+    printIncomingMsgs();
 
     return bytesRead;
 }
