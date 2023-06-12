@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/11 19:57:03 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/12 18:47:59 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ namespace irc {
             bool                _running;
             void initPollFD(int fd);
 			
-			std::vector<Channel> _channels;
+			std::vector<Channel *> _channels;
         public:
             Server();
             Server( const std::string& host, const int& port, const std::string& password );
@@ -100,9 +100,9 @@ namespace irc {
             bool verifyPassword(std::string userPassword);
 			
 			// Channels
-			void createChannel(std::string name);
+			Channel *createChannel(std::string name);
 			void deleteChannel(Channel channel);
-			std::vector<Channel> getChannels();
+			std::vector<Channel *> getChannels();
             void polling();
             void searchingForConnections();
             void closeSocketAndRemoveUser(size_t index);
