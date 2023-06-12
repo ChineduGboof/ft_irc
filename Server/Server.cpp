@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/12 19:15:22 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/12 20:39:25 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ namespace irc
 {
 
     Server *Server::serverInstance = NULL;
-
-    Server::Server() {}
 
     Server::Server(const std::string &host, const int &port, const std::string &password)
         : _host(host), _port(port), _password(password), _running(false)
