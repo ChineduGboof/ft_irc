@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/12 20:39:25 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/12 22:31:35 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,6 @@ namespace irc
         }
         int optval = 1;
         if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
-            throw std::runtime_error("Server: socket options error");
-        }
-        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
         if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
