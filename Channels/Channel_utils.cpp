@@ -1,16 +1,16 @@
 #include "Channel.hpp"
 
-void	Channel::kickUser(Channel &channel, User *user, std::vector<std::string> messages)
+void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> messages)
 {
-	if (messages.size() < 3 || messages[0] != "/kick" || messages[1] != channel.getName() || user->is_op() == false)
+	if (messages.size() < 3 || messages[0] != "KICK" || messages[1] != channel->getName() || user->is_op() == false)
 		return;
 	std::string nick = messages[2];
-	std::vector<User *> users = channel.getUsers();
+	std::vector<User *> users = channel->getUsers();
 	for(std::vector<User *>::iterator it = users.begin(); it != users.end(); ++it)
 	{
 		if ((*it)->getNickName() == nick)
 		{
-			channel.partChannel(*it);
+			channel->partChannel(*it);
 			break;
 		}
 	}
@@ -100,7 +100,6 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
            	topic += " " + messages[i];
     }
     this->setTopic(topic);
-
 }
 
 void	Channel::setInvited(User *user, Channel &channel_name)
@@ -129,43 +128,45 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 	}
 }
 
-void Channel::execMessage(std::vector<std::string> messages, User *user)
+void execMessage(std::vector<std::string> messages, User *user, Channel *channel)
 {
-	// std::cout << "here" << std::endl;
-	// std::cout << this->users.back()->getNickName() << std::endl;
-	if (std::find (this->users.begin(), this->users.end(), user) == this->users.end())
-		return;
 	std::string message = messages[0];
-	if (message.find("JOIN") != std::string::npos)
+	if (message == "JOIN")
 	{
-		this->joinChannel(user);
-		this->sendMessage(":" + user->getNickName() + " JOIN " + this->getName());
+		if (channel->getName() == "")
+			channel = irc::Server::serverInstance->createChannel(messages[1]);
+		joinChannel(user, channel);
+		channel->sendMessage(":" + user->getNickName() + " JOIN " + channel->getName());
 	}
-	else if (message.find("PART") != std::string::npos)
+	else if (channel->getName() == "")
 	{
-		this->partChannel(user);
-		this->sendMessage(":" + user->getNickName() + " PART " + this->getName());
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
+		return;
 	}
-	else if (message.find("MODE") != std::string::npos)
+	else if (std::find (channel->getUsers().begin(), channel->getUsers().end(), user) == channel->getUsers().end())
 	{
-		switchMode(user, messages);
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
+		return;
 	}
-	else if (message.find("PRIVMSG") != std::string::npos)
+	else if (message == "PART")
 	{
-		std::string msg = 	this->users.back()->getNickName();
-		message.substr(message.find("PRIVMSG") + 8);
-		this->sendMessage(":" + user->getNickName() + " PRIVMSG " + this->getName() + " :" + msg);
+		channel->partChannel(user);
+		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName());
 	}
-	else if (message.find("TOPIC") != std::string::npos)
+	else if (message == "MODE")
 	{
-		execTopic(user, messages);
+		channel->switchMode(user, messages);
 	}
-	else if (message.find("KICK") != std::string::npos && user->is_op() == true)
+	else if (message == "TOPIC")
 	{
-		kickUser(*this, user, messages);
+		channel->execTopic(user, messages);
 	}
-	else if (message.find("INVITE") != std::string::npos)
+	else if (message == "KICK" && user->is_op() == true)
 	{
-		inviteUser(user, messages);
+		channel->kickUser(channel, user, messages);
+	}
+	else if (message == "INVITE")
+	{
+		channel->inviteUser(user, messages);
 	}
 }

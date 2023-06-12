@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 15:43:54 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/12 18:37:28 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ namespace irc
         std::cout << "pass: " << pass << std::endl;
         std::cout << "user: " << user_name << std::endl;
         std::cout << "nick: " << nick_name << std::endl;
-        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
+        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
         {
             // std::cout << "correct pass\n";
             size_t x = 0;
@@ -287,14 +287,17 @@ namespace irc
                else
                {
                     std::cout << "not authenticated\n";
-                     close(_pollFD[index].fd);
-                    _pollFD.erase(_pollFD.begin() + index);
-                    removeUser(_users[index - 1]->getUserFd());
+                    //  close(_pollFD[index].fd);
+                    // _pollFD.erase(_pollFD.begin() + index);
+                    // removeUser(_users[index - 1]->getUserFd());
                }
             }
             else
             {
                 //once already a memeber
+				Channel DummyChannel("");
+				execMessage(irc::Server::serverInstance.get)
+				// give me the split here so I can call execMessage
                 std::cout << "---------------------\n";
                 std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
                 std::cout << "---------------------\n";
@@ -402,7 +405,7 @@ namespace irc
     // void Server::sendToClient(size_t index, const std::string& message) {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
-    std::vector<Channel> irc::Server::getChannels()
+    std::vector<Channel *> irc::Server::getChannels()
 	{
 		return this->_channels;
 	}
