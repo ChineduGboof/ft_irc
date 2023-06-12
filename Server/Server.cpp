@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 20:07:56 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/12 18:47:42 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,10 +190,10 @@ namespace irc
         std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
         std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
         std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-        // std::cout << "pass: " << pass << std::endl;
-        // std::cout << "user: " << user_name << std::endl;
-        // std::cout << "nick: " << nick_name << std::endl;
-        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
+        std::cout << "pass: " << pass << std::endl;
+        std::cout << "user: " << user_name << std::endl;
+        std::cout << "nick: " << nick_name << std::endl;
+        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
         {
             std::cout << "correct pass\n";
             size_t x = 0;
@@ -302,6 +302,9 @@ namespace irc
             else
             {
                 //once already a memeber
+				Channel DummyChannel("");
+				execMessage(irc::Server::serverInstance.get)
+				// give me the split here so I can call execMessage
                 std::cout << "---------------------\n";
                 // _users.at(0)->printIncomingMsgs();
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
@@ -421,7 +424,7 @@ namespace irc
     // void Server::sendToClient(size_t index, const std::string& message) {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
-    std::vector<Channel> irc::Server::getChannels()
+    std::vector<Channel *> irc::Server::getChannels()
 	{
 		return this->_channels;
 	}
