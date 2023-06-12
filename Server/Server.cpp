@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/11 20:07:56 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/12 13:15:44 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,17 @@ namespace irc
         }
         else
         {
+            if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
+            {
+                std::string store = ("464 : INCORRECT PASSWORD \r\n");
+                this->sendMsg(_users[index - 1]->getUserFd(), store);
+                throw std::runtime_error("password incorrect\n");
+            }
+            if(check_duplicate(nick_name) == true)
+            {
+                this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
+                throw std::runtime_error("duplicate user\n");
+            }
             // std::cout << "-----------------------------------------------------------------------------\n";
             // std::cout << "duplicate or incorrect pass" << std::endl;
             // std::cout << "pass= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
@@ -289,17 +300,20 @@ namespace irc
                 // _users.at(0)->printIncomingMsgs();
                if(authenticate_user(index))
                {
-                    this->sendMsg(_users[index - 1]->getUserFd(), "001 :Ft_irc_server\r\n");
+                    this->sendMsg(_users[index - 1]->getUserFd(), "001 : Ft_irc_server\r\n");
                }
                else
                {
                     std::cout << "not authenticated\n";
-                    //  close(_pollFD[index].fd);
-                    // _pollFD.erase(_pollFD.begin() + index);
-                    // removeUser(_users[index - 1]->getUserFd());
+                    std::cout << "------------------------------------------------------------" << std::endl;
+                    _users[index - 1]->printIncomingMsgs();
+                    std::cout << "------------------------------------------------------------" << std::endl;
+                     close(_pollFD[index].fd);
+                    _pollFD.erase(_pollFD.begin() + index);
+                    removeUser(_users[index - 1]->getUserFd());
                }
             }
-            else
+            else if(_users[index - 1]->getIsAuth() == true)
             {
                 //once already a memeber
                 std::cout << "---------------------\n";
