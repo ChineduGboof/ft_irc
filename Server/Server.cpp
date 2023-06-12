@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/12 18:47:42 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/12 19:04:23 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,8 +302,8 @@ namespace irc
             else
             {
                 //once already a memeber
-				Channel DummyChannel("");
-				execMessage(irc::Server::serverInstance.get)
+				// Channel DummyChannel("");
+				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
                 std::cout << "---------------------\n";
                 // _users.at(0)->printIncomingMsgs();

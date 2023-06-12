@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/12 18:22:53 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/12 19:02:09 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,22 +128,22 @@ bool Channel::operator<(Channel const &rhs) const
 Channel	*irc::Server::createChannel(std::string name)
 {
 	if ((name[0] != '#' && name[0] != '&') || name.length() > 100)
-		return;
+		return (NULL);
 	if (name.find(' ') != std::string::npos || name.find(',') != std::string::npos)
-		return;
+		return (NULL);
 	for (std::vector<Channel *>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
 	{
 		if ((*it)->getName() == name)
-			return;
+			return (NULL);
 	}
 	Channel *newChannel = new Channel(name);
 	this->_channels.push_back(newChannel);
 	return newChannel;
 }
 
-void	irc::Server::deleteChannel(const Channel channel)
+void	irc::Server::deleteChannel(Channel channel)
 {
-	std::vector<Channel *>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), channel);
+	std::vector<Channel *>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), &channel);
 	if (it != this->_channels.end())
 	{
 		delete *it;

@@ -131,6 +131,7 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 void execMessage(std::vector<std::string> messages, User *user, Channel *channel)
 {
 	std::string message = messages[0];
+	std::vector<User *> users = channel->getUsers();
 	if (message == "JOIN")
 	{
 		if (channel->getName() == "")
@@ -143,7 +144,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
 		return;
 	}
-	else if (std::find (channel->getUsers().begin(), channel->getUsers().end(), user) == channel->getUsers().end())
+	else if (std::find (users.begin(), users.end(), user) == users.end())
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
 		return;
