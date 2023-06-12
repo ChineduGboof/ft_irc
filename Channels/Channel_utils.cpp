@@ -128,10 +128,38 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 	}
 }
 
+bool	server_messages(std::vector<std::string> messages)
+{
+	std::string message = messages[0];
+	if (message == "WHOIS" || (message == "MODE" && messages[1] == "FT_irc_server"))
+	{
+		return (true);
+	}
+	return (false);
+}
+
+void	handle_nickname(User *user, std::vector<std::string> messages)
+{
+	// if (messages.size() < 2)
+	// 	return;
+	std::string nick = messages[1];
+	std::cout << "nick: " << nick << std::endl;
+	if (irc::Server::serverInstance->check_duplicate(nick) == true)
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 433, Nickname is already in use\r\n");
+		return;
+	}
+	irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have changed your nickname to " + nick + "\r\n");
+	user->setNickName(nick);
+}
+
 void execMessage(std::vector<std::string> messages, User *user, Channel *channel)
 {
 	std::string message = messages[0];
 	std::vector<User *> users = channel->getUsers();
+	std::cout << "message: " << message << std::endl;
+	if (server_messages(messages) == true)
+		return;
 	if (message == "JOIN")
 	{
 		if (channel->getName() == "")
@@ -139,24 +167,33 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		joinChannel(user, channel);
 		channel->sendMessage(":" + user->getNickName() + " JOIN " + channel->getName());
 	}
-	else if (channel->getName() == "")
+	else if (message == "PING")
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "PONG\r\n");
 		return;
+	}
+	else if (message == "NICK")
+	{
+		handle_nickname(user, messages);
+	}
+	else if (message == "MODE")
+	{
+		channel->switchMode(user, messages);
 	}
 	else if (std::find (users.begin(), users.end(), user) == users.end())
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channellllll\r\n");
+		return;
+	}
+	else if (channel->getName() == "")
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channnnel\r\n");
 		return;
 	}
 	else if (message == "PART")
 	{
 		channel->partChannel(user);
 		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName());
-	}
-	else if (message == "MODE")
-	{
-		channel->switchMode(user, messages);
 	}
 	else if (message == "TOPIC")
 	{
