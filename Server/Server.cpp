@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 16:20:21 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:27:20 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,7 +348,9 @@ namespace irc
              }
              catch(std::exception & e)
              {
+				std::cout << _users[index - 1]->getNickName() + " Not Authenticated\n";
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
+				std::cout << RED << "Error : " + std::string(e.what()) << std::endl << DEFAULT;
 				closeSocketAndRemoveUser(index);
              }
             }
@@ -359,8 +361,8 @@ namespace irc
 				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
                 std::cout << "------------------------------------------------------------------------------------\n";
-				std::cout << "\t\tincomming messages" << std::endl;
-                if (_users.size() != 0)
+				std::cout << "\t\t Incomming messages" << std::endl;
+				if(_users.size() != 0)
 					_users.at(0)->printIncomingMsgs();
                 std::cout << "------------------------------------------------------------------------------------\n";
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
@@ -385,6 +387,8 @@ namespace irc
 
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
+		if(index  == 0)
+			std::cerr << "recv error" << std::endl;
 		close(_pollFD[index].fd);
 		_pollFD.erase(_pollFD.begin() + index);
 		removeUser(_users[index - 1]->getUserFd());
