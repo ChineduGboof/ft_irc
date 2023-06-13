@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/13 11:16:03 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 11:26:13 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Channel
 	public:
 		Channel(std::string name);
 		~Channel();
+		void					joinChannel(User *user);
 		bool					operator==(Channel const &rhs) const;
 		bool					operator<(Channel const &rhs) const;
 		void					partChannel(User *user);
@@ -42,16 +43,15 @@ class Channel
 		std::string				getTopic();
 
 		void					sendMessage(std::string message);
+		void					execMessage(std::vector<std::string> messages, User *user);
 		void					switchMode(User *user, std::vector<std::string> messages);
-		void					kickUser(Channel *channel, User *user, std::vector<std::string> messages);
+		void					kickUser(Channel &channel, User *user, std::vector<std::string> messages);
 		void					execTopic(User *user, std::vector<std::string> messages);
 		void					inviteUser(User *user, std::vector<std::string> messages);
 		void					setInvited(User *user, Channel &channel_name);
-		void					addUser(User *user);
+		void					getInvited(User *user, Channel &channel_name);
 };
 
-void	joinChannel(User *user, Channel *channel);
-void	execMessage(std::vector<std::string> messages, User *user, Channel *channel);
 bool	findString(std::string str, std::vector<std::string> vec);
 
 #endif
