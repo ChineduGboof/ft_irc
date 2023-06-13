@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 13:10:12 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 13:14:26 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,30 +241,30 @@ namespace irc
 			}
 			return true;
 
-		}
-		else
-		{
-			if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
-			{
-				// std::string store = ("464 : INCORRECT PASSWORD \r\n");
-				// this->sendMsg(_users[index - 1]->getUserFd(), store);
-				throw std::runtime_error("INCORRECT PASSWORD\n");
-			}
-			if(check_duplicate(nick_name) == true)
-			{
-				// this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
-				throw std::runtime_error("duplicate user\n");
-			}
-			// std::cout << "-----------------------------------------------------------------------------\n";
-			// std::cout << "duplicate or incorrect pass" << std::endl;
-			// std::cout << "pass= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
-			// std::cout << "nick= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ") << std::endl;
-			// std::cout << "-----------------------------------------------------------------------------\n";
-			// if(!pass.empty() || !nick_name.empty())
-			//     removeUser(_users[index - 1]->getUserFd());
-		}
-		return false;
-	}
+        }
+        else
+        {
+            if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "" || ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") != _password)
+            {
+                // std::string store = ("464 : INCORRECT PASSWORD \r\n");
+                // this->sendMsg(_users[index - 1]->getUserFd(), store);
+                throw std::runtime_error("INCORRECT PASSWORD\n");
+            }
+            if(check_duplicate(nick_name) == true)
+            {
+                // this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
+                throw std::runtime_error("duplicate user\n");
+            }
+            // std::cout << "-----------------------------------------------------------------------------\n";
+            // std::cout << "duplicate or incorrect pass" << std::endl;
+            // std::cout << "pass= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
+            // std::cout << "nick= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ") << std::endl;
+            // std::cout << "-----------------------------------------------------------------------------\n";
+            // if(!pass.empty() || !nick_name.empty())
+            //     removeUser(_users[index - 1]->getUserFd());
+        }
+        return false;
+    }
 
 	std::string Server::ExtractFromMessage(const std::string& message, const std::string &to_find) {
 		// Find the line starting with "PASS"
