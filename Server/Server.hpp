@@ -3,15 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/12 18:47:59 by Omar             ###   ########.fr       */
+/*   Created: 2023/06/13 11:37:16 by cegbulef          #+#    #+#             */
+/*   Updated: 2023/06/13 11:37:20 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
 
 
 #ifndef SERVER_HPP

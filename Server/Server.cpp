@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/12 19:15:22 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 11:36:54 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace irc
     Server::Server(const std::string &host, const int &port, const std::string &password)
         : _host(host), _port(port), _password(password), _running(false)
     {
-        serverInstance = this; // Set the serverInstance pointer to the current instance
+        serverInstance = this;
         std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT << std::flush << std::endl;
     }
 
@@ -204,12 +204,14 @@ namespace irc
             _users[index - 1]->setIsAuth(true);
             while (x < _users.size())
             {
+                std::cout << "-----------------------------------------------------------------------------\n";
                 std::cout << "fd:\t" << _users.at(x)->getUserFd() << std::endl;
                 std::cout << "nick:\t" << _users.at(x)->getNickName() << std::endl;
                 std::cout << "user:\t" << _users.at(x)->getUserName() << std::endl;
                 std::cout << "is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
                 std::cout << "users:\t" << _users.size() << std::endl << std::endl << std::endl;
                 x++;
+                std::cout << "-----------------------------------------------------------------------------\n";
             }
             return true;
 
@@ -290,7 +292,7 @@ namespace irc
             {
                 closeSocketAndRemoveUser(index);
             }
-            if(_users[index - 1]->_incomingMsgs.at(0) == "CAP")
+            if(_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
             {
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
@@ -305,9 +307,9 @@ namespace irc
                else
                {
                     std::cout << "not authenticated\n";
-                    std::cout << "------------------------------------------------------------" << std::endl;
-                    _users[index - 1]->printIncomingMsgs();
-                    std::cout << "------------------------------------------------------------" << std::endl;
+                    // std::cout << "------------------------------------------------------------" << std::endl;
+                    // _users[index - 1]->printIncomingMsgs();
+                    // std::cout << "------------------------------------------------------------" << std::endl;
                      close(_pollFD[index].fd);
                     _pollFD.erase(_pollFD.begin() + index);
                     removeUser(_users[index - 1]->getUserFd());
@@ -325,13 +327,15 @@ namespace irc
                     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
                 {
-                    std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
-                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
-                    if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
-                    {
-                        std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
-                        this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
-                    }
+                    this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
+                    // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                    // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
+                    // std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
+                    // std::cout << "user_Fd: " <<  getFdByNick(_users[0]->_incomingMsgs.at(1))  << std::endl;
+                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
+                    // {
+                    //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
+                    // }
                 }
                 std::cout << "---------------------\n";
             }
