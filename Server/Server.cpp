@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 16:20:42 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:25:25 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,6 @@ namespace irc
 			std::cout << "Unknown address family" << std::endl;
 			return;
 		}
-
 		std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
 	}
 
@@ -307,6 +306,7 @@ namespace irc
 		}
 		return -1;
 	}
+
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
@@ -316,6 +316,7 @@ namespace irc
         }
         return false;
     }
+	
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -323,6 +324,7 @@ namespace irc
             int bytesRead = _users[index - 1]->receive();
             if (bytesRead <= 0)
             {
+				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
             if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
@@ -344,12 +346,10 @@ namespace irc
                 else
                 {
                         std::cout << "not authenticated\n";
-                        std::cout << "------------------------------------------------------------" << std::endl;
-                        _users[index - 1]->printIncomingMsgs();
-                        std::cout << "------------------------------------------------------------" << std::endl;
-                        close(_pollFD[index].fd);
-                        _pollFD.erase(_pollFD.begin() + index);
-                        removeUser(_users[index - 1]->getUserFd());
+                        // std::cout << "------------------------------------------------------------" << std::endl;
+                        // _users[index - 1]->printIncomingMsgs();
+                        // std::cout << "------------------------------------------------------------" << std::endl;
+						closeSocketAndRemoveUser(index);
                 }
              }
              catch(std::exception & e)
@@ -357,9 +357,7 @@ namespace irc
 				std::cout << _users[index - 1]->getNickName() + " Not Authenticated\n";
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
 				std::cout << RED << "Error : " + std::string(e.what()) << std::endl << DEFAULT;
-                close(_pollFD[index].fd);
-                _pollFD.erase(_pollFD.begin() + index);
-                removeUser(_users[index - 1]->getUserFd());
+				closeSocketAndRemoveUser(index);
              }
             }
             else if(_users[index - 1]->getIsAuth() == true)
