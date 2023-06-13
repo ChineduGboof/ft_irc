@@ -6,12 +6,9 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 12:45:42 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 12:46:24 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
 
 #include "Server.hpp"
 
@@ -27,6 +24,9 @@ namespace irc
     {
         serverInstance = this;
         std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT << std::flush << std::endl;
+        std::signal(SIGINT, signalHandler);
+        config();
+        run();
     }
 
     Server::~Server()
@@ -67,6 +67,26 @@ namespace irc
         std::cout << GREEN "Server: Listening on host:  " + _host + " port: " << _port << DEFAULT << std::flush << std::endl;
     }
 
+    void Server::run()
+    {
+        if (!_status)
+            throw std::runtime_error("Server: Offline, must init first");
+
+        std::signal(SIGINT, signalHandler);
+        _running = true;
+        initPollFD(_sockfd);
+
+        while (_running)
+        {
+            polling();
+            searchingForConnections();
+
+            if (!_running) {
+                break;
+            }
+        }
+    }
+
     void Server::initPollFD(int fd)
     {
         struct pollfd pFD = {
@@ -102,25 +122,7 @@ namespace irc
         }
     }
 
-    void Server::run()
-    {
-        if (!_status)
-            throw std::runtime_error("Server: Offline, must init first");
 
-        std::signal(SIGINT, signalHandler);
-        _running = true;
-        initPollFD(_sockfd);
-
-        while (_running)
-        {
-            polling();
-            searchingForConnections();
-
-            if (!_running) {
-                break;
-            }
-        }
-    }
 
 /**
  * @brief: If someone's ready to read.
@@ -292,7 +294,7 @@ namespace irc
             {
                 closeSocketAndRemoveUser(index);
             }
-            if(_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
+            if((_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "") || _users[index - 1]->_incomingMsgs.at(0) == "JOIN")
             {
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
