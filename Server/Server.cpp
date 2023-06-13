@@ -6,9 +6,12 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 11:34:40 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 11:36:54 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
+
 
 #include "Server.hpp"
 
@@ -191,15 +194,6 @@ namespace irc
         std::cout << "user: " << user_name << std::endl;
         std::cout << "nick: " << nick_name << std::endl;
         if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
-=======
-        std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
-        std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
-        std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-        // std::cout << "pass: " << pass << std::endl;
-        // std::cout << "user: " << user_name << std::endl;
-        // std::cout << "nick: " << nick_name << std::endl;
-        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
->>>>>>> parent of 6c631c5 (Merge branch 'main' of /ft_irc into main)
         {
             std::cout << "correct pass\n";
             size_t x = 0;
@@ -324,6 +318,9 @@ namespace irc
             else if(_users[index - 1]->getIsAuth() == true)
             {
                 //once already a memeber
+				// Channel DummyChannel("");
+				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
+				// give me the split here so I can call execMessage
                 std::cout << "---------------------\n";
                 // _users.at(0)->printIncomingMsgs();
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
@@ -445,7 +442,7 @@ namespace irc
     // void Server::sendToClient(size_t index, const std::string& message) {
     //     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
     // }
-    std::vector<Channel> irc::Server::getChannels()
+    std::vector<Channel *> irc::Server::getChannels()
 	{
 		return this->_channels;
 	}

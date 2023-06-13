@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-<<<<<<< HEAD
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/13 11:13:04 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/13 11:13:11 by cegbulef         ###   ########.fr       */
+/*   Created: 2023/06/13 11:37:16 by cegbulef          #+#    #+#             */
+/*   Updated: 2023/06/13 11:37:20 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
@@ -71,31 +71,38 @@ namespace irc {
             Server( const std::string& host, const int& port, const std::string& password );
             ~Server();
 
-        static Server* serverInstance;
-        
-        void config();
-        void run();
-        void handleNewConnection();
-        void handleClientData(size_t index);
-        static void signalHandler(int signal);
-        
-        void createNewUser(int fd);
-        void removeUser(int fd);
-        std::vector<User*>& getUser();
-        void sendMsg(int fd, std::string msg);
-        bool authenticate_user(int index);
-        std::string ExtractFromMessage(const std::string& message, const std::string& to_find);
-        bool check_duplicate(std::string nick);
-        int getFdByNick(std::string nick);
-        
-        void bye();
-        bool verifyPassword(std::string userPassword);
-        
-        Channel* createChannel(std::string name);
-        void deleteChannel(Channel channel);
-        std::vector<Channel*> getChannels();
-        void polling();
-        void searchingForConnections();
+            static Server*      serverInstance;
+            void config();
+            void run();
+            void handleNewConnection();
+            void handleClientData(size_t index);
+            void closeClientSocket(size_t index);
+            void handleSignal(int signal);
+            static void signalHandler(int signal);
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
+            
+            //user
+            std::vector<User *> _users;
+            void createNewUser(int fd);
+            void removeUser(int fd);
+            // User &getUser(int fd);
+            std::vector<User *>& getUser( void );
+            void sendMsg(int fd, std::string msg);
+            bool authenticate_user(int index);
+            std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
+            bool check_duplicate(std::string nick);
+            int getFdByNick(std::string nick);
+
+            void bye();
+            bool verifyPassword(std::string userPassword);
+			
+			// Channels
+			Channel *createChannel(std::string name);
+			void deleteChannel(Channel channel);
+			std::vector<Channel *> getChannels();
+            void polling();
+            void searchingForConnections();
+            void closeSocketAndRemoveUser(size_t index);
     };
 }
 

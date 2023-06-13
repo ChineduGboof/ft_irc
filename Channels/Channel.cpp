@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/13 11:26:00 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 11:39:23 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,33 +48,38 @@ std::string Channel::getTopic()
 	return this->topic;
 }
 
+void	Channel::addUser(User *user)
+{
+	this->users.push_back(user);
+}
+
 Channel::~Channel()
 {
 }
 
-void Channel::joinChannel(User *user)
+void joinChannel(User *user, Channel *channel)
 {
-	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
-	if (it != this->users.end())
+	std::vector<User *>::iterator it = std::find(channel->getUsers().begin(), channel->getUsers().end(), user);
+	if (it != channel->getUsers().end())
 	{
-		std::cout << "Error: User " << user->getNickName() << " is already in channel " << this->name << "." << std::endl;
+		std::cout << "Error: 443, User " << user->getNickName() << " is already in channel " << channel->getName() << "." << std::endl;
 		return;
 	}
-	if (this->users.size() >= this->maxUsers)
+	if (channel->getUsers().size() >= channel->getmaxUsers())
 	{
-		std::cout << "Error: Channel " << this->name << " is full." << std::endl;
+		std::cout << "Error: 471, Channel " << channel->getName() << " is full." << std::endl;
 		return;
 	}
-	if (this->modes['i'] == true && user->getInvited(*this) == false)
+	if (channel->getModes()['i'] == true && user->getInvited(*channel) == false)
 	{
-		std::cout << "Error: Channel " << this->name << " is invite only." << std::endl;
+		std::cout << "Error: 473, Channel " << channel->getName() << " is invite only." << std::endl;
 		return;
 	}
-	if (this->users.size() == 0)
+	if (channel->getUsers().size() == 0)
 	{
 		user->setChannelOp(true);
 	}
-	this->users.push_back(user);
+	channel->addUser(user);
 }
 
 void Channel::partChannel(User *user)
@@ -86,7 +91,7 @@ void Channel::partChannel(User *user)
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: User " << user->getNickName() << " is not in channel " << this->name << "." << std::endl;
+		std::cout << "Error: 441, User " << user->getNickName() << " is not in channel " << this->name << "." << std::endl;
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
@@ -120,26 +125,30 @@ bool Channel::operator<(Channel const &rhs) const
 		return true;
 	return false;
 }
-void	irc::Server::createChannel(std::string name)
+Channel	*irc::Server::createChannel(std::string name)
 {
 	if ((name[0] != '#' && name[0] != '&') || name.length() > 100)
-		return;
+		return (NULL);
 	if (name.find(' ') != std::string::npos || name.find(',') != std::string::npos)
-		return;
-	for (std::vector<Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
+		return (NULL);
+	for (std::vector<Channel *>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
 	{
-		if (it->getName() == name)
-			return;
+		if ((*it)->getName() == name)
+			return (NULL);
 	}
-	Channel newChannel(name);
+	Channel *newChannel = new Channel(name);
 	this->_channels.push_back(newChannel);
+	return newChannel;
 }
 
-void	irc::Server::deleteChannel(const Channel channel)
+void	irc::Server::deleteChannel(Channel channel)
 {
-	std::vector<Channel>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), channel);
+	std::vector<Channel *>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), &channel);
 	if (it != this->_channels.end())
+	{
+		delete *it;
 		this->_channels.erase(it);
+	}
 	else
 		return;
 }
