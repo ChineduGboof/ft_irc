@@ -5,14 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/12 22:25:23 by cegbulef         ###   ########.fr       */
+/*   Created: 2023/06/13 11:13:04 by cegbulef          #+#    #+#             */
+/*   Updated: 2023/06/13 11:13:11 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
-
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
@@ -44,73 +40,69 @@
 #include <limits>
 #include <string>
 #include <cerrno>
-#include <algorithm>
 #include "../Channels/Channel.hpp"
+#include <algorithm>
 #include "user.hpp"
 #include "Utils.hpp"
 #include "Responses.hpp"
+#include <sys/socket.h>
 
-/*
-You can pass these as pointers or references
-        void deleteChannel(Channel* channel);
-        std::vector<Channel*>& getChannels();
-*/
 
 class Channel;
 class User;
-
 namespace irc {
+
     class Server {
-    private:
-        Server();
-        void initPollFD(int fd);
-        void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
-        void handleSignal(int signal);
-        void closeClientSocket(size_t index);
-        void closeSocketAndRemoveUser(size_t index);
+        private:
 
-        std::string _host;
-        int _port;
-        int _status;
-        int _sockfd;
-        std::string _password;
-        std::vector<pollfd> _pollFD;
-        bool _running;
+            std::string         _host;
+            int                 _port;
+            int                 _status;
+            int                 _sockfd;
+            std::string         _password;
+            std::vector<pollfd> _pollFD;
+            bool                _running;
+            void initPollFD(int fd);
+			
+			std::vector<Channel *> _channels;
+        public:
+            Server();
+            Server( const std::string& host, const int& port, const std::string& password );
+            ~Server();
 
-        std::vector<Channel*> _channels;
-        std::vector<User*> _users;
+            static Server*      serverInstance;
+            void config();
+            void run();
+            void handleNewConnection();
+            void handleClientData(size_t index);
+            void closeClientSocket(size_t index);
+            void handleSignal(int signal);
+            static void signalHandler(int signal);
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
+            
+            //user
+            std::vector<User *> _users;
+            void createNewUser(int fd);
+            void removeUser(int fd);
+            // User &getUser(int fd);
+            std::vector<User *>& getUser( void );
+            void sendMsg(int fd, std::string msg);
+            bool authenticate_user(int index);
+            std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
+            bool check_duplicate(std::string nick);
+            int getFdByNick(std::string nick);
 
-    public:
-        Server(const std::string& host, const int& port, const std::string& password);
-        ~Server();
-
-        static Server* serverInstance;
-        
-        void config();
-        void run();
-        void handleNewConnection();
-        void handleClientData(size_t index);
-        static void signalHandler(int signal);
-        
-        void createNewUser(int fd);
-        void removeUser(int fd);
-        std::vector<User*>& getUser();
-        void sendMsg(int fd, std::string msg);
-        bool authenticate_user(int index);
-        std::string ExtractFromMessage(const std::string& message, const std::string& to_find);
-        bool check_duplicate(std::string nick);
-        int getFdByNick(std::string nick);
-        
-        void bye();
-        bool verifyPassword(std::string userPassword);
-        
-        Channel* createChannel(std::string name);
-        void deleteChannel(Channel channel);
-        std::vector<Channel*> getChannels();
-        void polling();
-        void searchingForConnections();
+            void bye();
+            bool verifyPassword(std::string userPassword);
+			
+			// Channels
+			Channel *createChannel(std::string name);
+			void deleteChannel(Channel channel);
+			std::vector<Channel *> getChannels();
+            void polling();
+            void searchingForConnections();
+            void closeSocketAndRemoveUser(size_t index);
     };
-}  // namespace irc
-
+}
 
 #endif

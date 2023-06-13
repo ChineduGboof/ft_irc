@@ -6,12 +6,9 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/12 22:59:15 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 11:12:37 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
 
 #include "Server.hpp"
 
@@ -20,10 +17,12 @@ namespace irc
 
     Server *Server::serverInstance = NULL;
 
+    Server::Server() {}
+
     Server::Server(const std::string &host, const int &port, const std::string &password)
         : _host(host), _port(port), _password(password), _running(false)
     {
-        serverInstance = this; // Set the serverInstance pointer to the current instance
+        serverInstance = this;
         std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT << std::flush << std::endl;
     }
 
@@ -47,6 +46,9 @@ namespace irc
         }
         int optval = 1;
         if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
+            throw std::runtime_error("Server: socket options error");
+        }
+        if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
             throw std::runtime_error("Server: socket options error");
         }
         if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
@@ -131,7 +133,7 @@ namespace irc
                 if (_pollFD[i].fd == _sockfd)
                     handleNewConnection();
                 else
-                    handleClientData(i + 1);
+                    handleClientData(i);
             }
         }
     }
@@ -163,7 +165,6 @@ namespace irc
             }
         }
     }
-    
     bool Server::check_duplicate(std::string nick)
     {
         std::vector<User *>::iterator it = _users.begin();
@@ -175,7 +176,6 @@ namespace irc
         }
         return (false);
     }
-
     bool Server::authenticate_user(int index)
     {
         // int i = 0;
@@ -184,44 +184,46 @@ namespace irc
         //         std::cout << "new_get " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
         //     }
         // }
-        std::string pass = ExtractFromMessage(_users[index]->_dataBuffer, "PASS ");
-        std::string user_name = ExtractFromMessage(_users[index]->_dataBuffer, "USER ");
-        std::string nick_name = ExtractFromMessage(_users[index]->_dataBuffer, "NICK ");
+        std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
+        std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
+        std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
         std::cout << "pass: " << pass << std::endl;
         std::cout << "user: " << user_name << std::endl;
         std::cout << "nick: " << nick_name << std::endl;
-        if(ExtractFromMessage(_users[index]->_dataBuffer, "PASS ") == _password)
+        if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
         {
             std::cout << "correct pass\n";
             size_t x = 0;
-            _users[index]->setNickName(nick_name);
-            _users[index]->setUserName(user_name);
+            _users[index - 1]->setNickName(nick_name);
+            _users[index - 1]->setUserName(user_name);
             // nick_name = "";
             // user_name = "";
-            _users[index]->setIsAuth(true);
+            _users[index - 1]->setIsAuth(true);
             while (x < _users.size())
             {
+                std::cout << "-----------------------------------------------------------------------------\n";
                 std::cout << "fd:\t" << _users.at(x)->getUserFd() << std::endl;
                 std::cout << "nick:\t" << _users.at(x)->getNickName() << std::endl;
                 std::cout << "user:\t" << _users.at(x)->getUserName() << std::endl;
                 std::cout << "is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
                 std::cout << "users:\t" << _users.size() << std::endl << std::endl << std::endl;
                 x++;
+                std::cout << "-----------------------------------------------------------------------------\n";
             }
             return true;
 
         }
         else
         {
-            if(ExtractFromMessage(_users[index]->_dataBuffer, "PASS ") == "")
+            if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
             {
                 std::string store = ("464 : INCORRECT PASSWORD \r\n");
-                this->sendMsg(_users[index]->getUserFd(), store);
+                this->sendMsg(_users[index - 1]->getUserFd(), store);
                 throw std::runtime_error("password incorrect\n");
             }
             if(check_duplicate(nick_name) == true)
             {
-                this->sendMsg(_users[index]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
+                this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
                 throw std::runtime_error("duplicate user\n");
             }
             // std::cout << "-----------------------------------------------------------------------------\n";
@@ -282,35 +284,35 @@ namespace irc
     {
         if (_pollFD[index].fd != _sockfd)
         {
-            int bytesRead = _users[index]->receive();
+            int bytesRead = _users[index - 1]->receive();
             if (bytesRead <= 0)
             {
                 closeSocketAndRemoveUser(index);
             }
-            if(_users[index]->_incomingMsgs.at(0) == "CAP")
+            if(_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
             {
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
             }
-            if (_users[index]->getIsAuth() == false)
+            if (_users[index - 1]->getIsAuth() == false)
             {
                 // _users.at(0)->printIncomingMsgs();
                if(authenticate_user(index))
                {
-                    this->sendMsg(_users[index]->getUserFd(), "001 : Ft_irc_server\r\n");
+                    this->sendMsg(_users[index - 1]->getUserFd(), "001 : Ft_irc_server\r\n");
                }
                else
                {
                     std::cout << "not authenticated\n";
-                    std::cout << "------------------------------------------------------------" << std::endl;
-                    _users[index]->printIncomingMsgs();
-                    std::cout << "------------------------------------------------------------" << std::endl;
+                    // std::cout << "------------------------------------------------------------" << std::endl;
+                    // _users[index - 1]->printIncomingMsgs();
+                    // std::cout << "------------------------------------------------------------" << std::endl;
                      close(_pollFD[index].fd);
                     _pollFD.erase(_pollFD.begin() + index);
-                    removeUser(_users[index]->getUserFd());
+                    removeUser(_users[index - 1]->getUserFd());
                }
             }
-            else if(_users[index]->getIsAuth() == true)
+            else if(_users[index - 1]->getIsAuth() == true)
             {
                 //once already a memeber
 				// Channel DummyChannel("");
@@ -318,17 +320,19 @@ namespace irc
 				// give me the split here so I can call execMessage
                 std::cout << "---------------------\n";
                 // _users.at(0)->printIncomingMsgs();
-                if(_users[index]->_incomingMsgs.at(0) == "PING")
-                    this->sendMsg(_users[index]->getUserFd(), "PONG\r\n");
-                if(_users[index]->_incomingMsgs.at(0) == "PRIVMSG")
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
+                    this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
                 {
-                    std::cout << "got new msg: " <<  _users[index]->getNickName() << " : " << _users[index]->_dataBuffer  << std::endl;
-                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
-                    if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
-                    {
-                        std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
-                        this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index]->_incomingMsgs.at(0) + "\r\n");
-                    }
+                    this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
+                    // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                    // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
+                    // std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
+                    // std::cout << "user_Fd: " <<  getFdByNick(_users[0]->_incomingMsgs.at(1))  << std::endl;
+                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
+                    // {
+                    //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
+                    // }
                 }
                 std::cout << "---------------------\n";
             }
@@ -341,7 +345,7 @@ namespace irc
         std::cerr << "recv error" << std::endl;
         close(_pollFD[index].fd);
         _pollFD.erase(_pollFD.begin() + index);
-        removeUser(_users[index]->getUserFd());
+        removeUser(_users[index - 1]->getUserFd());
     } 
    
     std::vector<User *> &Server::getUser(void)
