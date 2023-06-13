@@ -3,10 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+<<<<<<< HEAD
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
 /*   Updated: 2023/06/12 22:25:23 by cegbulef         ###   ########.fr       */
+=======
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/11 19:57:03 by yonamog2         ###   ########.fr       */
+>>>>>>> parent of 6c631c5 (Merge branch 'main' of /ft_irc into main)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +76,7 @@ namespace irc {
         void closeClientSocket(size_t index);
         void closeSocketAndRemoveUser(size_t index);
 
+<<<<<<< HEAD
         std::string _host;
         int _port;
         int _status;
@@ -76,10 +84,27 @@ namespace irc {
         std::string _password;
         std::vector<pollfd> _pollFD;
         bool _running;
+=======
+            std::string         _host;
+            int                 _port;
+            int                 _status;
+            int                 _sockfd;
+            std::string         _password;
+            std::vector<pollfd> _pollFD;
+            bool                _running;
+            void initPollFD(int fd);
+			
+			std::vector<Channel> _channels;
+        public:
+            Server();
+            Server( const std::string& host, const int& port, const std::string& password );
+            ~Server();
+>>>>>>> parent of 6c631c5 (Merge branch 'main' of /ft_irc into main)
 
         std::vector<Channel*> _channels;
         std::vector<User*> _users;
 
+<<<<<<< HEAD
     public:
         Server(const std::string& host, const int& port, const std::string& password);
         ~Server();
@@ -109,6 +134,18 @@ namespace irc {
         std::vector<Channel*> getChannels();
         void polling();
         void searchingForConnections();
+=======
+            void bye();
+            bool verifyPassword(std::string userPassword);
+			
+			// Channels
+			void createChannel(std::string name);
+			void deleteChannel(Channel channel);
+			std::vector<Channel> getChannels();
+            void polling();
+            void searchingForConnections();
+            void closeSocketAndRemoveUser(size_t index);
+>>>>>>> parent of 6c631c5 (Merge branch 'main' of /ft_irc into main)
     };
 }  // namespace irc
 
