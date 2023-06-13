@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 16:17:51 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:20:21 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,12 +206,6 @@ namespace irc
 	}
 	bool Server::authenticate_user(int index)
 	{
-		// int i = 0;
-		// for (std::deque<std::vector<std::string> >::iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-		//     for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
-		//         std::cout << "new_get " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
-		//     }
-		// }
 		std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
 		std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
 		std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
