@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 13:55:59 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 18:55:37 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,6 @@ namespace irc
 			throw std::runtime_error("Send error"); 
 		}
 	}
-	
 	void Server::removeUser(int fd)
 	{
 		for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++)
