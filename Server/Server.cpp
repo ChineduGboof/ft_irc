@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 13:02:22 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 13:06:21 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,11 +234,11 @@ namespace irc
 			while (x < _users.size())
 			{
 				std::cout << "-----------------------------------------------------------------------------\n";
-				std::cout << "fd:\t" << _users.at(x)->getUserFd() << std::endl;
-				std::cout << "nick:\t" << _users.at(x)->getNickName() << std::endl;
-				std::cout << "user:\t" << _users.at(x)->getUserName() << std::endl;
-				std::cout << "is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
-				std::cout << "users:\t" << _users.size() << std::endl << std::endl << std::endl;
+				std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
+				std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
+				std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
+				std::cout << "Is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
+				std::cout << "Users:\t" << _users.size() << std::endl << std::endl << std::endl;
 				x++;
 				std::cout << "-----------------------------------------------------------------------------\n";
 			}
@@ -249,13 +249,13 @@ namespace irc
 		{
 			if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
 			{
-				std::string store = ("464 : INCORRECT PASSWORD \r\n");
-				this->sendMsg(_users[index - 1]->getUserFd(), store);
-				throw std::runtime_error("password incorrect\n");
+				// std::string store = ("464 : INCORRECT PASSWORD \r\n");
+				// this->sendMsg(_users[index - 1]->getUserFd(), store);
+				throw std::runtime_error("INCORRECT PASSWORD\n");
 			}
 			if(check_duplicate(nick_name) == true)
 			{
-				this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
+				// this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
 				throw std::runtime_error("duplicate user\n");
 			}
 			// std::cout << "-----------------------------------------------------------------------------\n";
@@ -312,66 +312,75 @@ namespace irc
 		return -1;
 	}
 
-	void Server::handleClientData(size_t index)
-	{
-		if (_pollFD[index].fd != _sockfd)
-		{
-			int bytesRead = _users[index - 1]->receive();
-			if (bytesRead <= 0)
-			{
-				closeSocketAndRemoveUser(index);
-			}
-			if((_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "") || _users[index - 1]->_incomingMsgs.at(0) == "JOIN")
-			{
-				// std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
-				return ;
-			}
-			if (_users[index - 1]->getIsAuth() == false)
-			{
-				// _users.at(0)->printIncomingMsgs();
-			   if(authenticate_user(index))
-			   {
-					std::string msg = "001 : " + _users[index - 1]->getNickName() + " \r\n";
-					this->sendMsg(_users[index - 1]->getUserFd(), msg);
-			   }
-			   else
-			   {
-					std::cout << "not authenticated\n";
-					// std::cout << "------------------------------------------------------------" << std::endl;
-					// _users[index - 1]->printIncomingMsgs();
-					// std::cout << "------------------------------------------------------------" << std::endl;
-					 close(_pollFD[index].fd);
-					_pollFD.erase(_pollFD.begin() + index);
-					removeUser(_users[index - 1]->getUserFd());
-			   }
-			}
-			else if(_users[index - 1]->getIsAuth() == true)
-			{
-				//once already a memeber
+    void Server::handleClientData(size_t index)
+    {
+        if (_pollFD[index].fd != _sockfd)
+        {
+            int bytesRead = _users[index - 1]->receive();
+            if (bytesRead <= 0)
+            {
+                closeSocketAndRemoveUser(index);
+            }
+            if((_users[index - 1]->_incomingMsgs.at(0) == "CAP" && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == ""))
+            {
+                // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
+                return ;
+            }
+            if (_users[index - 1]->getIsAuth() == false)
+            {
+                // _users.at(0)->printIncomingMsgs();
+             try{
+                  if(authenticate_user(index))
+                {
+                        std::string msg = "001 : " + _users[index - 1]->getNickName() + " \r\n";
+                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
+                }
+                else
+                {
+                        std::cout << "not authenticated\n";
+                        // std::cout << "------------------------------------------------------------" << std::endl;
+                        // _users[index - 1]->printIncomingMsgs();
+                        // std::cout << "------------------------------------------------------------" << std::endl;
+                        close(_pollFD[index].fd);
+                        _pollFD.erase(_pollFD.begin() + index);
+                        removeUser(_users[index - 1]->getUserFd());
+                }
+             }
+             catch(std::exception & e)
+             {
+                this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
+                close(_pollFD[index].fd);
+                _pollFD.erase(_pollFD.begin() + index);
+                removeUser(_users[index - 1]->getUserFd());
+             }
+            }
+            else if(_users[index - 1]->getIsAuth() == true)
+            {
+                //once already a memeber
 				// Channel DummyChannel("");
 				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
-				std::cout << "---------------------\n";
-				// _users.at(0)->printIncomingMsgs();
-				if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
-					this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
-				if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
-				{
-					this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
-					// std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
-					// // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
-					// std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
-					// std::cout << "user_Fd: " <<  getFdByNick(_users[0]->_incomingMsgs.at(1))  << std::endl;
-					// if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
-					// {
-					//     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
-					// }
-				}
-				std::cout << "---------------------\n";
-			}
-		//     // execute clieent commands
-		}
-	}
+                std::cout << "---------------------\n";
+                _users.at(0)->printIncomingMsgs();
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
+                    this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
+                if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
+                {
+                    // this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
+                    // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
+                    // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
+                    // std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
+                    // std::cout << "user_Fd: " <<  getFdByNick(_users[0]->_incomingMsgs.at(1))  << std::endl;
+                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
+                    // {
+                    //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
+                    // }
+                }
+                std::cout << "---------------------\n";
+            }
+        //     // execute clieent commands
+        }
+    }
 
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
