@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 11:36:54 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 12:45:42 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,7 +302,8 @@ namespace irc
                 // _users.at(0)->printIncomingMsgs();
                if(authenticate_user(index))
                {
-                    this->sendMsg(_users[index - 1]->getUserFd(), "001 : Ft_irc_server\r\n");
+                    std::string msg = "001 : " + _users[index - 1]->getNickName() + " \r\n";
+                    this->sendMsg(_users[index - 1]->getUserFd(), msg);
                }
                else
                {
