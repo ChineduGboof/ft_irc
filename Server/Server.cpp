@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 13:36:14 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 15:52:25 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,18 +219,17 @@ namespace irc
 		std::cout << "pass: " << pass << std::endl;
 		std::cout << "user: " << user_name << std::endl;
 		std::cout << "nick: " << nick_name << std::endl;
-		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
+		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
 		{
-			std::cout << "correct pass\n";
+			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
 			size_t x = 0;
 			_users[index - 1]->setNickName(nick_name);
 			_users[index - 1]->setUserName(user_name);
-			// nick_name = "";
-			// user_name = "";
 			_users[index - 1]->setIsAuth(true);
 			while (x < _users.size())
 			{
 				std::cout << "-----------------------------------------------------------------------------\n";
+				std::cout << "\t\t\tUser Info" << std::endl;
 				std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
 				std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
 				std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
@@ -311,7 +310,7 @@ namespace irc
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-            std::cout << "Incoming Message => " << *it << std::endl;
+            // std::cout << "Incoming Message => " << *it << std::endl;
             if(*it == "CAP")
                 return true;
         }
@@ -356,6 +355,7 @@ namespace irc
              catch(std::exception & e)
              {
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
+				std::cout << "Error : " + std::string(e.what()) << std::endl;
                 close(_pollFD[index].fd);
                 _pollFD.erase(_pollFD.begin() + index);
                 removeUser(_users[index - 1]->getUserFd());
@@ -367,12 +367,14 @@ namespace irc
 				// Channel DummyChannel("");
 				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
-                std::cout << "---------------------\n";
+                std::cout << "------------------------------------------------------------------------------------\n";
+				std::cout << "\t\tincomming messages" << std::endl;
                 _users.at(0)->printIncomingMsgs();
+                std::cout << "------------------------------------------------------------------------------------\n";
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
                     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
-                if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
-                {
+                // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
+                // {
                     // this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
                     // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
                     // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
@@ -382,8 +384,8 @@ namespace irc
                     // {
                     //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
                     // }
-                }
-                std::cout << "---------------------\n";
+                // }
+            //     std::cout << "---------------------\n";
             }
         //     // execute clieent commands
         }
