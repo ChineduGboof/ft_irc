@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/13 13:24:59 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 15:44:00 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ namespace irc {
             bool check_duplicate(std::string nick);
             int getFdByNick(std::string nick);
             bool findCap(int index);
+            // std::string find(std::string, )
 
             void bye();
             bool verifyPassword(std::string userPassword);

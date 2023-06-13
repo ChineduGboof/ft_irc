@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 18:55:37 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 18:58:29 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,6 @@ namespace irc
 			std::cout << "Unknown address family" << std::endl;
 			return;
 		}
-
 		std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
 	}
 
@@ -206,30 +205,23 @@ namespace irc
 	}
 	bool Server::authenticate_user(int index)
 	{
-		// int i = 0;
-		// for (std::deque<std::vector<std::string> >::iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-		//     for (std::vector<std::string>::iterator strIt = it->begin(); strIt != it->end(); ++strIt) {
-		//         std::cout << "new_get " << i++ << " => " << *strIt << std::endl;  // Print each word in a new line
-		//     }
-		// }
 		std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
 		std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
 		std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
 		std::cout << "pass: " << pass << std::endl;
 		std::cout << "user: " << user_name << std::endl;
 		std::cout << "nick: " << nick_name << std::endl;
-		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password)
+		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
 		{
-			std::cout << "correct pass\n";
+			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
 			size_t x = 0;
 			_users[index - 1]->setNickName(nick_name);
 			_users[index - 1]->setUserName(user_name);
-			// nick_name = "";
-			// user_name = "";
 			_users[index - 1]->setIsAuth(true);
 			while (x < _users.size())
 			{
 				std::cout << "-----------------------------------------------------------------------------\n";
+				std::cout << "\t\t\tUser Info" << std::endl;
 				std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
 				std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
 				std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
@@ -307,15 +299,17 @@ namespace irc
 		}
 		return -1;
 	}
+
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-            std::cout << "Incoming Message => " << *it << std::endl;
+            // std::cout << "Incoming Message => " << *it << std::endl;
             if(*it == "CAP")
                 return true;
         }
         return false;
     }
+	
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -323,6 +317,7 @@ namespace irc
             int bytesRead = _users[index - 1]->receive();
             if (bytesRead <= 0)
             {
+				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
             if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
@@ -347,17 +342,15 @@ namespace irc
                         // std::cout << "------------------------------------------------------------" << std::endl;
                         // _users[index - 1]->printIncomingMsgs();
                         // std::cout << "------------------------------------------------------------" << std::endl;
-                        close(_pollFD[index].fd);
-                        _pollFD.erase(_pollFD.begin() + index);
-                        removeUser(_users[index - 1]->getUserFd());
+						closeSocketAndRemoveUser(index);
                 }
              }
              catch(std::exception & e)
              {
+				std::cout << _users[index - 1]->getNickName() + " Not Authenticated\n";
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
-                close(_pollFD[index].fd);
-                _pollFD.erase(_pollFD.begin() + index);
-                removeUser(_users[index - 1]->getUserFd());
+				std::cout << RED << "Error : " + std::string(e.what()) << std::endl << DEFAULT;
+				closeSocketAndRemoveUser(index);
              }
             }
             else if(_users[index - 1]->getIsAuth() == true)
@@ -366,12 +359,15 @@ namespace irc
 				Channel DummyChannel("");
 				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
-                std::cout << "---------------------\n";
-                _users.at(0)->printIncomingMsgs();
+                std::cout << "------------------------------------------------------------------------------------\n";
+				std::cout << "\t\t Incomming messages" << std::endl;
+				if(_users.size() != 0)
+					_users.at(0)->printIncomingMsgs();
+                std::cout << "------------------------------------------------------------------------------------\n";
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
                     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
-                if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
-                {
+                // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
+                // {
                     // this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
                     // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
                     // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
@@ -381,8 +377,8 @@ namespace irc
                     // {
                     //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
                     // }
-                }
-                std::cout << "---------------------\n";
+                // }
+            //     std::cout << "---------------------\n";
             }
         //     // execute clieent commands
         }
@@ -390,7 +386,8 @@ namespace irc
 
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
-		std::cerr << "recv error" << std::endl;
+		if(index  == 0)
+			std::cerr << "recv error" << std::endl;
 		close(_pollFD[index].fd);
 		_pollFD.erase(_pollFD.begin() + index);
 		removeUser(_users[index - 1]->getUserFd());
