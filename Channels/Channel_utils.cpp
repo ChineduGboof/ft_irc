@@ -26,7 +26,6 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 	std::string mode = messages[2];
 	if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
 		return;
-	// std::cout << "here" << std::endl;
 	for (unsigned int i = 0; i < mode.length(); i++)
 	{
 		if (mode[i] == '+')
@@ -87,7 +86,7 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 		return;
 	if (messages.size() == 2)
 	{
-		std::cout << "Topic: " << this->getTopic() << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
 		return;
 	}
 	// std::cout << "here" << std::endl;
@@ -176,24 +175,24 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 	{
 		handle_nickname(user, messages);
 	}
-	else if (message == "MODE")
-	{
-		channel->switchMode(user, messages);
-	}
 	else if (std::find (users.begin(), users.end(), user) == users.end())
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channellllll\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
 		return;
 	}
 	else if (channel->getName() == "")
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channnnel\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
 		return;
+	}
+	else if (message == "MODE")
+	{
+		channel->switchMode(user, messages);
 	}
 	else if (message == "PART")
 	{
 		channel->partChannel(user);
-		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName());
+		channel->sendMessage(":" + user->getNickName() + "Has left the channel\r\n");
 	}
 	else if (message == "TOPIC")
 	{

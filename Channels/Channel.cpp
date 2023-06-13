@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/12 19:02:09 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 13:23:26 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void Channel::partChannel(User *user)
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: 441, User " << user->getNickName() << " is not in channel " << this->name << "." << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You are not in channel " + this->getName() + ".\r\n");
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
