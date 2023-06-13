@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 15:52:25 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:20:42 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,9 +344,9 @@ namespace irc
                 else
                 {
                         std::cout << "not authenticated\n";
-                        // std::cout << "------------------------------------------------------------" << std::endl;
-                        // _users[index - 1]->printIncomingMsgs();
-                        // std::cout << "------------------------------------------------------------" << std::endl;
+                        std::cout << "------------------------------------------------------------" << std::endl;
+                        _users[index - 1]->printIncomingMsgs();
+                        std::cout << "------------------------------------------------------------" << std::endl;
                         close(_pollFD[index].fd);
                         _pollFD.erase(_pollFD.begin() + index);
                         removeUser(_users[index - 1]->getUserFd());
@@ -354,8 +354,9 @@ namespace irc
              }
              catch(std::exception & e)
              {
+				std::cout << _users[index - 1]->getNickName() + " Not Authenticated\n";
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
-				std::cout << "Error : " + std::string(e.what()) << std::endl;
+				std::cout << RED << "Error : " + std::string(e.what()) << std::endl << DEFAULT;
                 close(_pollFD[index].fd);
                 _pollFD.erase(_pollFD.begin() + index);
                 removeUser(_users[index - 1]->getUserFd());
@@ -368,8 +369,9 @@ namespace irc
 				// execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
                 std::cout << "------------------------------------------------------------------------------------\n";
-				std::cout << "\t\tincomming messages" << std::endl;
-                _users.at(0)->printIncomingMsgs();
+				std::cout << "\t\t Incomming messages" << std::endl;
+				if(_users.size() != 0)
+					_users.at(0)->printIncomingMsgs();
                 std::cout << "------------------------------------------------------------------------------------\n";
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
                     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
@@ -393,7 +395,8 @@ namespace irc
 
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
-		std::cerr << "recv error" << std::endl;
+		if(index  == 0)
+			std::cerr << "recv error" << std::endl;
 		close(_pollFD[index].fd);
 		_pollFD.erase(_pollFD.begin() + index);
 		removeUser(_users[index - 1]->getUserFd());
