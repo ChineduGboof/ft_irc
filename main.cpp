@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/11 09:54:29 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 12:34:24 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,8 @@ int main(int argc, char *argv[])
         password = utils::whitespace(argv[2]);
 
         irc::Server server("0.0.0.0", port, password);
-        irc::Server::serverInstance = &server;  // Set the serverInstance pointer
-        // server.users.push_back(User("yoni", "yoni1", "yonatan", 1));
-        std::signal(SIGINT, irc::Server::signalHandler);  // Register the signal handler
-        server.config();
-        server.run();
-        
-        // server.users.at(1).getNickName();
-        // server.users.at(1).getNickName();
+        irc::Server::serverInstance = &server;
+
     }
     catch (std::exception &e) 
     {

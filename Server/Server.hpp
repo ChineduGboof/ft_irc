@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/12 18:47:59 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 13:24:59 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ namespace irc {
             std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
             bool check_duplicate(std::string nick);
             int getFdByNick(std::string nick);
+            bool findCap(int index);
 
             void bye();
             bool verifyPassword(std::string userPassword);
