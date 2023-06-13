@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 13:06:21 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 13:10:12 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,9 +146,6 @@ namespace irc
 
 	void Server::createNewUser(int fd)
 	{
-		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
-			throw std::runtime_error("Server: file control error"); 
-		}
 		_users.push_back(new User(fd));
 		std::string message;
 
