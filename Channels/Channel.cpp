@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/13 13:55:33 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 21:12:16 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	Channel::addUser(User *user)
 
 Channel::~Channel()
 {
+	irc::Server::serverInstance->deleteChannel(*this);
 }
 
 void joinChannel(User *user, Channel *channel)
@@ -62,17 +63,17 @@ void joinChannel(User *user, Channel *channel)
 	std::vector<User *>::iterator it = std::find(channel->getUsers().begin(), channel->getUsers().end(), user);
 	if (it != channel->getUsers().end())
 	{
-		std::cout << "Error: 443, User " << user->getNickName() << " is already in channel " << channel->getName() << "." << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 443, You are already in channel " + channel->getName() + ".\r\n");
 		return;
 	}
 	if (channel->getUsers().size() >= channel->getmaxUsers())
 	{
-		std::cout << "Error: 471, Channel " << channel->getName() << " is full." << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 471, Channel " + channel->getName() + " is full.\r\n");
 		return;
 	}
 	if (channel->getModes()['i'] == true && user->getInvited(*channel) == false)
 	{
-		std::cout << "Error: 473, Channel " << channel->getName() << " is invite only." << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 473, You are not invited to channel " + channel->getName() + ".\r\n");
 		return;
 	}
 	if (channel->getUsers().size() == 0)
@@ -157,6 +158,6 @@ void	Channel::sendMessage(std::string message)
 {
 	for (std::vector<User *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
 	{
-		(*it)->addMessage(message);
+		irc::Server::serverInstance->sendMsg((*it)->getUserFd(), message + "\r\n");
 	}
 }

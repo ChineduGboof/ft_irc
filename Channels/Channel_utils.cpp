@@ -121,7 +121,7 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 		{
 			// std::cout << "here cond" << std::endl;
 			this->setInvited(*it, *this);
-			(*it)->addMessage(":" + user->getNickName() + " INVITE " + (*it)->getNickName() + " " + this->getName());
+			irc::Server::serverInstance->sendMsg((*it)->getUserFd(), "You have been invited to channel " + this->getName() + "\r\n");
 			break;
 		}
 	}
@@ -164,12 +164,58 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		if (channel->getName() == "")
 			channel = irc::Server::serverInstance->createChannel(messages[1]);
 		joinChannel(user, channel);
-		channel->sendMessage(":" + user->getNickName() + " JOIN " + channel->getName());
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have joined channel " + channel->getName() + "\r\n");
 	}
 	else if (message == "PING")
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "PONG\r\n");
 		return;
+	}
+	else if (message == "PRIVMSG")
+	{
+		// int i = 0;
+		// for(std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
+		// {
+		// 	std::cout << i++ <<":" << *it << std::endl;
+
+		// }
+		std::string msg = messages[2];
+		if (messages[1][0] != '#')
+		{
+			if(irc::Server::serverInstance->getFdByNick(messages[1]) != -1)
+            {
+				irc::Server::serverInstance->sendMsg(irc::Server::serverInstance->getFdByNick(messages[1]), "PRIVMSG " + user->getNickName() + " :" + msg + "\r\n");
+        	}
+			else
+			{
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, No such nick/channel\r\n");
+			}
+		}
+		else if (messages[1][0] == '#')
+		{
+			std::vector<Channel *> channels = irc::Server::serverInstance->getChannels();
+			std::vector<Channel *>::iterator it;
+			std::cout << "channel name: " << messages[1] << std::endl;
+			for (it = channels.begin();  it != channels.end(); ++it)
+			{
+				if ((*it)->getName() == messages[1]){
+
+				std::cout << "channel nammme: " << (*it)->getName() << std::endl;
+					break;
+				}
+			}
+			if (it == channels.end())
+			{
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, No such nick/channel\r\n");
+				std::cout << "here lol" << std::endl;
+				return;
+			}
+			msg = messages[2];
+			for (unsigned int i = 3; i < messages.size(); i++)
+				msg += " " + messages[i];
+			std::string msg2 = ":" + user->getNickName() + "!" + user->getUserName() + "@localhostPRIVMSG " + channel->getName() + " :" + msg + "\r\n";
+			channel->sendMessage(msg2);
+		}
 	}
 	else if (message == "NICK")
 	{
@@ -192,7 +238,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 	else if (message == "PART")
 	{
 		channel->partChannel(user);
-		channel->sendMessage(":" + user->getNickName() + "Has left the channel\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have left channel " + channel->getName() + "\r\n");
 	}
 	else if (message == "TOPIC")
 	{

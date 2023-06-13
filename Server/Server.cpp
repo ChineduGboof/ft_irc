@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 18:58:29 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 21:23:08 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,11 +320,13 @@ namespace irc
 				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
-            if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
-            {
-                // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
-                return ;
-            }
+			std::cerr << "error" << std::endl;
+            // if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
+            // {
+			// 	std::cout << "yoniiiiii" << std::endl;
+            //     // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
+            //     return ;
+            // }
             if (_users[index - 1]->getIsAuth() == false)
             {
 				if(_users[index - 1]->_incomingMsgs.at(0) == "JOIN" && _users[index - 1]->_incomingMsgs.size() == 2)
@@ -364,19 +366,15 @@ namespace irc
 				if(_users.size() != 0)
 					_users.at(0)->printIncomingMsgs();
                 std::cout << "------------------------------------------------------------------------------------\n";
-                if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
-                    this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
-                // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG")
+                // if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
+                //     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
+                // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG" && _users[index - 1]->_incomingMsgs.at(1).at(0) != '#')
                 // {
-                    // this->sendMsg(4, "353 : " + _users[0]->getNickName() +" HELLO BRO \r\n");
-                    // std::cout << "got new msg: " <<  _users[index - 1]->getNickName() << " : " << _users[index - 1]->_dataBuffer  << std::endl;
-                    // // if(getFdByNick(_users[0]->_incomingMsgs.at(1))
-                    // std::cout << "nick_name: " <<  _users[0]->_incomingMsgs.at(1)  << std::endl;
-                    // std::cout << "user_Fd: " <<  getFdByNick(_users[0]->_incomingMsgs.at(1))  << std::endl;
-                    // if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
-                    // {
-                    //     this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
-                    // }
+				// 	std::cout << "PRIVMSG forrrrr client " << std::endl;
+                //     if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
+                //     {
+                //  	   this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
+                //     }
                 // }
             //     std::cout << "---------------------\n";
             }
