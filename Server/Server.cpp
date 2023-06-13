@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 15:57:59 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/13 16:17:51 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,6 @@ namespace irc
 			std::cout << "Unknown address family" << std::endl;
 			return;
 		}
-
 		std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
 	}
 
@@ -367,7 +366,8 @@ namespace irc
 				// give me the split here so I can call execMessage
                 std::cout << "------------------------------------------------------------------------------------\n";
 				std::cout << "\t\tincomming messages" << std::endl;
-                _users.at(0)->printIncomingMsgs();
+                if (_users.size() != 0)
+					_users.at(0)->printIncomingMsgs();
                 std::cout << "------------------------------------------------------------------------------------\n";
                 if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
                     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
