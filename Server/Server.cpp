@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 15:52:25 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/13 15:57:59 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,6 +307,7 @@ namespace irc
 		}
 		return -1;
 	}
+
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
@@ -316,6 +317,7 @@ namespace irc
         }
         return false;
     }
+	
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -323,6 +325,7 @@ namespace irc
             int bytesRead = _users[index - 1]->receive();
             if (bytesRead <= 0)
             {
+				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
             if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
@@ -347,18 +350,13 @@ namespace irc
                         // std::cout << "------------------------------------------------------------" << std::endl;
                         // _users[index - 1]->printIncomingMsgs();
                         // std::cout << "------------------------------------------------------------" << std::endl;
-                        close(_pollFD[index].fd);
-                        _pollFD.erase(_pollFD.begin() + index);
-                        removeUser(_users[index - 1]->getUserFd());
+						closeSocketAndRemoveUser(index);
                 }
              }
              catch(std::exception & e)
              {
                 this->sendMsg(_users[index - 1]->getUserFd(), "Error : " + std::string(e.what()));
-				std::cout << "Error : " + std::string(e.what()) << std::endl;
-                close(_pollFD[index].fd);
-                _pollFD.erase(_pollFD.begin() + index);
-                removeUser(_users[index - 1]->getUserFd());
+				closeSocketAndRemoveUser(index);
              }
             }
             else if(_users[index - 1]->getIsAuth() == true)
@@ -393,7 +391,6 @@ namespace irc
 
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
-		std::cerr << "recv error" << std::endl;
 		close(_pollFD[index].fd);
 		_pollFD.erase(_pollFD.begin() + index);
 		removeUser(_users[index - 1]->getUserFd());
