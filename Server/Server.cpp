@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 13:31:21 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:35:07 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,13 @@ namespace irc
 			std::cout << "Unknown address family" << std::endl;
 			return;
 		}
+		_remoteIP = remoteIP;
 		std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
 	}
+
+	std::string Server::getRemoteIP() const {
+        return _remoteIP;
+    }
 
 	void Server::sendMsg(int fd, std::string msg)
 	{

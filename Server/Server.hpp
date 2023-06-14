@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/14 14:08:29 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:32:51 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ namespace irc {
             std::string         _password;
             std::vector<pollfd> _pollFD;
             bool                _running;
+            std::string         _remoteIP;
+            
             void initPollFD(int fd);
 			
         public:
@@ -107,6 +109,7 @@ namespace irc {
 			Channel *createChannel(std::string name);
 			// void deleteChannel(Channel channel);
             void deleteChannel(Channel* channel);
+            std::string getRemoteIP() const;
             
 			std::vector<Channel *> getChannels();
             void polling();
