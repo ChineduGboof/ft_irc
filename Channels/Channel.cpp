@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 12:15:13 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:26:52 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	Channel::addUser(User *user)
 
 Channel::~Channel()
 {
-		// irc::Server::serverInstance->deleteChannel(*this);
+	// irc::Server::serverInstance->deleteChannel(this);
 }
 
 void joinChannel(User *user, Channel *channel)
@@ -142,16 +142,16 @@ Channel	*irc::Server::createChannel(std::string name)
 	return newChannel;
 }
 
-void	irc::Server::deleteChannel(Channel channel)
+void irc::Server::deleteChannel(Channel* channel)
 {
-	std::vector<Channel *>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), &channel);
-	if (it != this->_channels.end())
-	{
-		delete *it;
-		this->_channels.erase(it);
-	}
-	else
-		return;
+    std::vector<Channel*>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), channel);
+    if (it != this->_channels.end())
+    {
+        delete *it;
+        this->_channels.erase(it);
+    }
+    else
+        return;
 }
 
 void	Channel::sendMessage(std::string message)

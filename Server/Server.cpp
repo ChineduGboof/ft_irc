@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 14:54:54 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:56:57 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,13 @@ namespace irc
 			std::cout << "Unknown address family" << std::endl;
 			return;
 		}
+		_remoteIP = remoteIP;
 		std::cout << YELLOW << "pollserver: new connection from " << remoteIP << " on socket " << fd << DEFAULT << std::endl;
 	}
+
+	std::string Server::getRemoteIP() const {
+        return _remoteIP;
+    }
 
 	void Server::sendMsg(int fd, std::string msg)
 	{
