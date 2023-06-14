@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 16:28:16 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 22:26:15 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,7 +339,7 @@ namespace irc
 				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
-            if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
+            if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "")
             {
 				// std::cout << "yoniiiiii" << std::endl;
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;

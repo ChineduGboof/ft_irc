@@ -40,6 +40,7 @@ User::User(int fd)
     this->user_name = "";
     this->real_name = "";
 	this->is_channel_op = false;
+    this->is_auth = false;
 }
 
 void User::setRealName( std::string name )
