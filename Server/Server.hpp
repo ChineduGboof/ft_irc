@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/14 11:44:02 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:08:29 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,9 @@ namespace irc {
 			// Channels
 			std::vector<Channel *> _channels;
 			Channel *createChannel(std::string name);
-			void deleteChannel(Channel channel);
+			// void deleteChannel(Channel channel);
+            void deleteChannel(Channel* channel);
+            
 			std::vector<Channel *> getChannels();
             void polling();
             void searchingForConnections();
