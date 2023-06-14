@@ -1,5 +1,5 @@
 NAME	=	ircserv
-COMPILER=	c++ #-g3 -fsanitize=address
+COMPILER=	c++ -g3 -fsanitize=address
 FLAGS	=	-std=c++98 -Wall -Wextra #-Werror
 SRC		=	main.cpp Server/Utils.cpp Server/Server.cpp Channels/Channel.cpp \
 			 Channels/Channel_utils.cpp Server/user.cpp

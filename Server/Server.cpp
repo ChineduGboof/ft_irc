@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 21:23:08 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/14 11:49:09 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,28 +208,28 @@ namespace irc
 		std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
 		std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
 		std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-		std::cout << "pass: " << pass << std::endl;
-		std::cout << "user: " << user_name << std::endl;
-		std::cout << "nick: " << nick_name << std::endl;
+		// std::cout << "pass: " << pass << std::endl;
+		// std::cout << "user: " << user_name << std::endl;
+		// std::cout << "nick: " << nick_name << std::endl;
 		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
 		{
 			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
-			size_t x = 0;
+			// size_t x = 0;
 			_users[index - 1]->setNickName(nick_name);
 			_users[index - 1]->setUserName(user_name);
 			_users[index - 1]->setIsAuth(true);
-			while (x < _users.size())
-			{
-				std::cout << "-----------------------------------------------------------------------------\n";
-				std::cout << "\t\t\tUser Info" << std::endl;
-				std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
-				std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
-				std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
-				std::cout << "Is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
-				std::cout << "Users:\t" << _users.size() << std::endl << std::endl << std::endl;
-				x++;
-				std::cout << "-----------------------------------------------------------------------------\n";
-			}
+			// while (x < _users.size())
+			// {
+			// 	std::cout << "-----------------------------------------------------------------------------\n";
+			// 	std::cout << "\t\t\tUser Info" << std::endl;
+			// 	std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
+			// 	std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
+			// 	std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
+			// 	std::cout << "Is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
+			// 	std::cout << "Users:\t" << _users.size() << std::endl << std::endl << std::endl;
+			// 	x++;
+			// 	std::cout << "-----------------------------------------------------------------------------\n";
+			// }
 			return true;
 
         }
@@ -320,13 +320,12 @@ namespace irc
 				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
             }
-			std::cerr << "error" << std::endl;
-            // if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
-            // {
-			// 	std::cout << "yoniiiiii" << std::endl;
-            //     // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
-            //     return ;
-            // }
+            if(findCap(index) == true && ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "")
+            {
+				// std::cout << "yoniiiiii" << std::endl;
+                // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
+                return ;
+            }
             if (_users[index - 1]->getIsAuth() == false)
             {
 				if(_users[index - 1]->_incomingMsgs.at(0) == "JOIN" && _users[index - 1]->_incomingMsgs.size() == 2)
@@ -361,11 +360,11 @@ namespace irc
 				Channel DummyChannel("");
 				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
 				// give me the split here so I can call execMessage
-                std::cout << "------------------------------------------------------------------------------------\n";
-				std::cout << "\t\t Incomming messages" << std::endl;
-				if(_users.size() != 0)
-					_users.at(0)->printIncomingMsgs();
-                std::cout << "------------------------------------------------------------------------------------\n";
+                // std::cout << "------------------------------------------------------------------------------------\n";
+				// std::cout << "\t\t Incomming messages" << std::endl;
+				// if(_users.size() != 0)
+				// 	_users.at(0)->printIncomingMsgs();
+                // std::cout << "------------------------------------------------------------------------------------\n";
                 // if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
                 //     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
                 // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG" && _users[index - 1]->_incomingMsgs.at(1).at(0) != '#')
@@ -377,11 +376,36 @@ namespace irc
                 //     }
                 // }
             //     std::cout << "---------------------\n";
+				displayUsers();
+				displayChannels();
             }
         //     // execute clieent commands
         }
     }
-
+	void Server::displayUsers()
+	{
+		size_t x = 0;
+		std::cout << "-----------------------------------------------------------------------------\n";
+		std::cout << "\t\t\tUsers List" << std::endl;
+		while (x < _users.size())
+		{
+			std::cout << "User_Nick:\t" << _users.at(x)->getNickName() << std::endl;
+			x++;
+		}
+		std::cout << "-----------------------------------------------------------------------------\n";
+	}
+	void Server::displayChannels()
+	{
+		size_t x = 0;
+		std::cout << "-----------------------------------------------------------------------------\n";
+		std::cout << "\t\t\t Channels List" << std::endl;
+		while (x < this->_channels.size())
+		{
+			std::cout << "channel_name:\t" << _channels.at(x)->getName() << std::endl;
+			x++;
+		}
+		std::cout << "-----------------------------------------------------------------------------\n";
+	}
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
 		if(index  == 0)

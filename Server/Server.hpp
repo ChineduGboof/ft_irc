@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/13 15:44:00 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 11:44:02 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ namespace irc {
             bool                _running;
             void initPollFD(int fd);
 			
-			std::vector<Channel *> _channels;
         public:
             Server();
             Server( const std::string& host, const int& port, const std::string& password );
@@ -96,12 +95,15 @@ namespace irc {
             bool check_duplicate(std::string nick);
             int getFdByNick(std::string nick);
             bool findCap(int index);
+            void displayUsers();
+            void displayChannels();
             // std::string find(std::string, )
 
             void bye();
             bool verifyPassword(std::string userPassword);
 			
 			// Channels
+			std::vector<Channel *> _channels;
 			Channel *createChannel(std::string name);
 			void deleteChannel(Channel channel);
 			std::vector<Channel *> getChannels();
