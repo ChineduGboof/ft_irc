@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/14 15:48:17 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 16:20:07 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,13 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		if (channel->getName() == "")
 			channel = irc::Server::serverInstance->createChannel(messages[1]);
 		joinChannel(user, channel);
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":" + user->getNickName() + " JOIN " + messages[1] + "\r\n");
+		// std::cout << "got : " << channel->users.size() << std::endl;
+		for (size_t i = 0; i < channel->users.size() ; i++)
+		{
+			std::string msg2 = ":" + user->getNickName() + "!" + user->getUserName() + "@" + irc::Server::serverInstance->getRemoteIP() +  " JOIN " + messages[1] + " \r\n";
+			irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);//":" + user->getNickName() + " JOIN " + messages[1] + "\r\n"
+		}
+		// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":" + user->getNickName() + " JOIN " + messages[1] + "\r\n");
 	}
 	else if (message == "PING")
 	{
@@ -199,7 +205,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 				msg = messages[2];
 				for (unsigned int i = 3; i < messages.size(); i++)
 					msg += " " + messages[i];
-				std::string msg2 = ":" + user->getNickName() + " PRIVMSG " + messages[1] + " " +  msg + "\r\n";//"PRIVMSG " + user->getNickName() + " :" + msg + "\r\n"
+				std::string msg2 = ":" + user->getNickName() + " PRIVMSG " + messages[1] + " " +  msg + "\r\n";
 				std::cout << "sending: " << msg2 << std::endl;
 				irc::Server::serverInstance->sendMsg(irc::Server::serverInstance->getFdByNick(messages[1]), msg2);
         	}
