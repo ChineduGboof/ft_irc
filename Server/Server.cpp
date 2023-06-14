@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 15:47:32 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 16:28:16 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,7 @@ namespace irc
 		std::cout << "pass: " << pass << std::endl;
 		std::cout << "user: " << user_name << std::endl;
 		std::cout << "nick: " << nick_name << std::endl;
-		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
+		if(pass == _password && check_duplicate(nick_name) == false)
 		{
 			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
 			// size_t x = 0;
@@ -255,7 +255,7 @@ namespace irc
         }
         else
         {
-            if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == "" || ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") != _password)
+            if(pass == "" || pass != _password)
             {
                 // std::string store = ("464 : INCORRECT PASSWORD \r\n");
                 // this->sendMsg(_users[index - 1]->getUserFd(), store);
