@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/14 19:05:00 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/14 19:54:17 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,8 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 			std::vector<Channel *> channels = irc::Server::serverInstance->getChannels();
 			std::vector<Channel *>::iterator it;
 			std::cout << "channel name: " << messages[1] << std::endl;
+			
+
 			for (it = channels.begin();  it != channels.end(); ++it)
 			{
 				if ((*it)->getName() == messages[1]){
@@ -235,6 +237,22 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 			}
 			channel = *it;
 			msg = messages[2];
+			std::vector<User *>::iterator it2;
+			for (it2 = channel->users.begin(); it2 != channel->users.end(); ++it2)
+			{
+				// std::cout << "send for : " << (*it2)->getNickName() << std::endl;
+				if((*it2)->getNickName() == user->getNickName())
+				{
+					std::cout << "found user" << std::endl;
+					break ;
+				}
+					// irc::Server::serverInstance->sendMsg((*it)->getUserFd(), message + "\r\n");
+			}
+			if(it2 == channel->users.end())
+			{
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, User not in channel\r\n");
+				return;
+			}
 			for (unsigned int i = 3; i < messages.size(); i++)
 				msg += " " + messages[i];
 			// std::string msg2 = ":" + user->getNickName() + "!" + user->getUserName() + "@localhostPRIVMSG " + channel->getName() + " :" + msg + "\r\n";
@@ -263,10 +281,10 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 	}
 	if (message == "PART")
 	{
-		// std::cout << ":" + user->getNickName() + " PART " + channel->getName() + " :leaving" +"\r\n" << std::endl;
+		std::cout << ":" + user->getNickName() + " PART " + channel->getName() + " :leaving " +"\r\n" << std::endl;
 		channel->partChannel(user);
-		channel->sendMessage(user->getNickName() + "PART :" + channel->getName() + "\r\n", user->getNickName());
-		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + "!" + user->getUserName() + "@" + irc::Server::serverInstance->getRemoteIP() + " PART " + channel->getName() + " :leaving" +"\r\n");
+		// channel->sendMessage(user->getNickName() + "PART :" + channel->getName() + "\r\n", user->getNickName());
+		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + " PART " + channel->getName() + " :leaving " +"\r\n");
 	}
 	else if (message == "MODE")
 	{
