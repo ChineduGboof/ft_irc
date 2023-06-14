@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/14 20:08:58 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/14 22:59:37 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		return;
 	if (message == "JOIN")
 	{
+		std::cout << "coming to join" << std::endl;
 		if (channel->getName() == "")
 			channel = irc::Server::serverInstance->createChannel(messages[1]);
 		joinChannel(user, channel);
@@ -285,6 +286,11 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		channel->partChannel(user);
 		// channel->sendMessage(user->getNickName() + "PART :" + channel->getName() + "\r\n", user->getNickName());
 		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + " PART " + channel->getName() + " :leaving " +"\r\n");
+		if(channel->users.size() == 0)
+		{
+			irc::Server::serverInstance->deleteChannel(channel);
+			return ;
+		}
 	}
 	else if (message == "MODE")
 	{
