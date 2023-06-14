@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 22:26:15 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/15 01:21:57 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,6 @@ namespace irc
 	}
 	std::string Server::scanMsg(User * users, std::string str)
 	{
-		(void)str;
 		for (std::vector<std::string>::const_iterator it = users->_incomingMsgs.begin(); it != users->_incomingMsgs.end(); ++it)
 		{
 			if(*it == str)
@@ -353,8 +352,14 @@ namespace irc
              try{
                   if(authenticate_user(index))
                 {
-                        std::string msg = "001 : " + _users[index - 1]->getNickName() + " \r\n";
+                        std::string msg = ":irc 001 " + _users[index - 1]->getNickName() + " :Welcome to the perfect Chat system " + _users[index - 1]->getNickName() + "\n";
                         this->sendMsg(_users[index - 1]->getUserFd(), msg);
+						msg = ":irc 002 " + _users[index - 1]->getNickName() + " :Host are Omar, Chinedu and Yonatan\n";
+                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
+						msg = ":irc 003 " + _users[index - 1]->getNickName() + " :Created on july->2023\n";
+                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
+						msg = ":irc 004 " + _users[index - 1]->getNickName()  + " :Enjoy your stay!\n";
+
                 }
                 else
                 {
