@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/13 11:39:39 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/14 13:27:34 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ class Channel
 {
 	private:
 		std::string				name;
-		std::vector<User *>		users;
 		std::map<char, bool>	modes;
 		unsigned int			maxUsers;
 		std::string				topic;
 	public:
 		Channel(std::string name);
 		~Channel();
+		std::vector<User *>		users;
 		bool					operator==(Channel const &rhs) const;
 		bool					operator<(Channel const &rhs) const;
 		void					partChannel(User *user);

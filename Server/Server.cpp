@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 11:49:09 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 13:27:05 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -356,6 +356,8 @@ namespace irc
             }
             else if(_users[index - 1]->getIsAuth() == true)
             {
+				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
+					exit(0);
                 //once already a memeber
 				Channel DummyChannel("");
 				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
@@ -401,7 +403,7 @@ namespace irc
 		std::cout << "\t\t\t Channels List" << std::endl;
 		while (x < this->_channels.size())
 		{
-			std::cout << "channel_name:\t" << _channels.at(x)->getName() << std::endl;
+			std::cout << "channel_name:\t" << _channels.at(x)->getName() << " users : "  << _channels.at(x)->users.size() << std::endl;
 			x++;
 		}
 		std::cout << "-----------------------------------------------------------------------------\n";

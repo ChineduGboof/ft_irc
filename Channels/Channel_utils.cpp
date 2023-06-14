@@ -210,6 +210,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 				std::cout << "here lol" << std::endl;
 				return;
 			}
+			channel = *it;
 			msg = messages[2];
 			for (unsigned int i = 3; i < messages.size(); i++)
 				msg += " " + messages[i];
