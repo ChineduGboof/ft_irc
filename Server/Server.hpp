@@ -6,13 +6,9 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/14 14:57:31 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:21:32 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
-
 
 #ifndef SERVER_HPP
 #define SERVER_HPP

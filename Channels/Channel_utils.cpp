@@ -164,7 +164,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		if (channel->getName() == "")
 			channel = irc::Server::serverInstance->createChannel(messages[1]);
 		joinChannel(user, channel);
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have joined channel " + channel->getName() + "\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":" + user->getNickName() + " JOIN " + messages[1] + "\r\n");
 	}
 	else if (message == "PING")
 	{
