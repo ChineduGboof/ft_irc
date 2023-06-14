@@ -184,7 +184,12 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 		{
 			if(irc::Server::serverInstance->getFdByNick(messages[1]) != -1)
             {
-				irc::Server::serverInstance->sendMsg(irc::Server::serverInstance->getFdByNick(messages[1]), "PRIVMSG " + user->getNickName() + " :" + msg + "\r\n");
+				msg = messages[2];
+				for (unsigned int i = 3; i < messages.size(); i++)
+					msg += " " + messages[i];
+				std::string msg2 = ":" + user->getNickName() + " PRIVMSG " + messages[1] + " " +  msg + "\r\n";//"PRIVMSG " + user->getNickName() + " :" + msg + "\r\n"
+				std::cout << "sending: " << msg2 << std::endl;
+				irc::Server::serverInstance->sendMsg(irc::Server::serverInstance->getFdByNick(messages[1]), msg2);
         	}
 			else
 			{

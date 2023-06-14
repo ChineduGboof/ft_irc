@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 13:31:21 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:54:54 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,14 +203,29 @@ namespace irc
 		}
 		return (false);
 	}
+	std::string Server::scanMsg(User * users, std::string str)
+	{
+		(void)str;
+		for (std::vector<std::string>::const_iterator it = users->_incomingMsgs.begin(); it != users->_incomingMsgs.end(); ++it)
+		{
+			if(*it == str)
+				if(++it != users->_incomingMsgs.end())
+					return(*it);
+		}
+		return "";
+	}
 	bool Server::authenticate_user(int index)
 	{
-		std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
-		std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
-		std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-		// std::cout << "pass: " << pass << std::endl;
-		// std::cout << "user: " << user_name << std::endl;
-		// std::cout << "nick: " << nick_name << std::endl;
+		;
+		std::string pass = scanMsg(_users[index - 1], "PASS");
+		std::string user_name = scanMsg(_users[index - 1], "USER");
+		std::string nick_name = scanMsg(_users[index - 1], "NICK");
+		// std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
+		// std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
+		// std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
+		std::cout << "pass: " << pass << std::endl;
+		std::cout << "user: " << user_name << std::endl;
+		std::cout << "nick: " << nick_name << std::endl;
 		if(ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") == _password && check_duplicate(nick_name) == false)
 		{
 			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
@@ -309,7 +324,6 @@ namespace irc
         }
         return false;
     }
-	
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -478,4 +492,6 @@ namespace irc
 	{
 		return this->_channels;
 	}
+
 } // namespace irc
+

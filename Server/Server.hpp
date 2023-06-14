@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/14 11:44:02 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 14:53:50 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ namespace irc {
             bool findCap(int index);
             void displayUsers();
             void displayChannels();
+            std::string scanMsg(User *users, std::string str);
             // std::string find(std::string, )
 
             void bye();
