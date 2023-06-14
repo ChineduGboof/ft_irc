@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/14 16:20:07 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 19:05:00 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 {
 	std::string message = messages[0];
 	std::vector<User *> users = channel->getUsers();
-	std::cout << "message: " << message << std::endl;
+	// std::cout << "message: " << message << std::endl;
 	if (server_messages(messages) == true)
 		return;
 	if (message == "JOIN")
@@ -246,24 +246,31 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 	{
 		handle_nickname(user, messages);
 	}
-	else if (std::find (users.begin(), users.end(), user) == users.end())
-	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
-		return;
-	}
+	// else if (std::find (users.begin(), users.end(), user) == users.end())
+	// {
+	// 	std::cout << "here 1" << message << std::endl;
+	// 	irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
+	// 	return;
+	// }
 	else if (channel->getName() == "")
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
-		return;
+		channel = irc::Server::serverInstance->getChannel(messages[1]);
+		if (!channel)
+			return;
+		std::cout << "here 2: " << channel->getName() << std::endl;
+		// irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
+		// return;
+	}
+	if (message == "PART")
+	{
+		// std::cout << ":" + user->getNickName() + " PART " + channel->getName() + " :leaving" +"\r\n" << std::endl;
+		channel->partChannel(user);
+		channel->sendMessage(user->getNickName() + "PART :" + channel->getName() + "\r\n", user->getNickName());
+		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + "!" + user->getUserName() + "@" + irc::Server::serverInstance->getRemoteIP() + " PART " + channel->getName() + " :leaving" +"\r\n");
 	}
 	else if (message == "MODE")
 	{
 		channel->switchMode(user, messages);
-	}
-	else if (message == "PART")
-	{
-		channel->partChannel(user);
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have left channel " + channel->getName() + "\r\n");
 	}
 	else if (message == "TOPIC")
 	{

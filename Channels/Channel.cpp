@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 15:46:45 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 17:11:42 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,16 @@ Channel	*irc::Server::createChannel(std::string name)
 	Channel *newChannel = new Channel(name);
 	this->_channels.push_back(newChannel);
 	return newChannel;
+}
+
+Channel *irc::Server::getChannel(std::string name)
+{
+	for (std::vector<Channel *>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
+	{
+		if ((*it)->getName() == name)
+			return (*it);
+	}
+	return NULL;
 }
 
 void irc::Server::deleteChannel(Channel* channel)

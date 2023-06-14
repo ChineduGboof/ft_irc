@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/14 15:21:32 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 17:12:16 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ namespace irc {
 			std::vector<Channel *> _channels;
 			Channel *createChannel(std::string name);
 			// void deleteChannel(Channel channel);
+			Channel *getChannel(std::string name);
             void deleteChannel(Channel* channel);
             std::string getRemoteIP() const;
             
