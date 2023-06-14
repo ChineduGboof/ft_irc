@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 13:27:34 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:43:20 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Channel
 		void					setTopic(std::string topic);
 		std::string				getTopic();
 
-		void					sendMessage(std::string message);
+		void					sendMessage(std::string message, std::string sender);
 		void					switchMode(User *user, std::vector<std::string> messages);
 		void					kickUser(Channel *channel, User *user, std::vector<std::string> messages);
 		void					execTopic(User *user, std::vector<std::string> messages);

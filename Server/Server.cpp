@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/14 14:56:57 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:47:32 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,7 +376,10 @@ namespace irc
             else if(_users[index - 1]->getIsAuth() == true)
             {
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
-					exit(0);
+				{
+					closeSocketAndRemoveUser(index);
+					return ;
+				}
                 //once already a memeber
 				Channel DummyChannel("");
 				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel

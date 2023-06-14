@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel_utils.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
+/*   Updated: 2023/06/14 15:48:17 by yonamog2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Channel.hpp"
 
 void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> messages)
@@ -219,8 +231,9 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 			msg = messages[2];
 			for (unsigned int i = 3; i < messages.size(); i++)
 				msg += " " + messages[i];
-			std::string msg2 = ":" + user->getNickName() + "!" + user->getUserName() + "@localhostPRIVMSG " + channel->getName() + " :" + msg + "\r\n";
-			channel->sendMessage(msg2);
+			// std::string msg2 = ":" + user->getNickName() + "!" + user->getUserName() + "@localhostPRIVMSG " + channel->getName() + " :" + msg + "\r\n";
+			std::string msg2 = ":" + user->getNickName() + " PRIVMSG " + messages[1] + " " +  msg + "\r\n";
+			channel->sendMessage(msg2, user->getNickName());
 		}
 	}
 	else if (message == "NICK")

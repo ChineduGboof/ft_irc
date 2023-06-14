@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 14:26:52 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/14 15:46:45 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,10 +154,11 @@ void irc::Server::deleteChannel(Channel* channel)
         return;
 }
 
-void	Channel::sendMessage(std::string message)
+void	Channel::sendMessage(std::string message, std::string sender)
 {
 	for (std::vector<User *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
 	{
-		irc::Server::serverInstance->sendMsg((*it)->getUserFd(), message + "\r\n");
+		if((*it)->getNickName() != sender)
+			irc::Server::serverInstance->sendMsg((*it)->getUserFd(), message + "\r\n");
 	}
 }
