@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 17:20:36 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 17:40:19 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,33 +232,19 @@ void execMessage(std::vector<std::string> messages, User *user)
 	// std::cout << "message: " << message << std::endl;
 	if (server_messages(messages) == true)
 		return;
-	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
-	{
-		std::cout << "message: " << *it << std::endl;
-	}
+	// for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
+	// {
+	// 	std::cout << "message: " << *it << std::endl;
+	// }
 	if (message == "JOIN")
 	{
 		size_t x = 0;
 		while (x < user->_channelToJoin.size())
 		{
-			std::cout <<  "channel: " << user->_channelToJoin.at(x) << std::endl;
 			channel = irc::Server::serverInstance->getChannel(user->_channelToJoin.at(x));
 			join_channel(user->_channelToJoin.at(x), user, channel);
 			x++;
 		}
-		// return;
-		// if (channel == NULL)
-		// {
-		// 	channel = irc::Server::serverInstance->createChannel(messages[1]);
-		// }
-		// joinChannel(user, channel);
-		// for (size_t i = 0; i < channel->users.size() ; i++)
-		// {
-		// 	// if(channel->users.at(i)->getNickName() == user->getNickName())
-		// 	// 	continue;
-		// 	std::string msg2 = ":" + user->getNickName() + " JOIN " + messages[1] + " \r\n";
-		// 	irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);
-		// }
 	}
 	else if (message == "PING")
 	{
