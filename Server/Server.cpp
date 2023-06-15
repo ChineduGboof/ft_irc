@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/15 17:09:37 by yonamog2         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/15 17:26:01 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 #include "Server.hpp"
 
@@ -118,8 +120,27 @@ namespace irc
 	{
 		for (size_t i = 0; i < _pollFD.size(); i++)
 		{
+			if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
+			{
+				// Find the user associated with the file descriptor
+				User* user = NULL;
+				for (std::vector<User*>::iterator it = getUser().begin(); it != getUser().end(); ++it) {
+					if ((*it)->getUserFd() == _pollFD[i].fd) {
+						user = *it;
+						break;
+					}
+				}
+				if (user != NULL) {
+					if (!user->getOutgoingMsg().empty()) {
+						std::string message = user->getOutgoingMsg()[0];
+						sendMsg(_pollFD[i].fd, message);
+					}
+				}
+			}
+
 			if (_pollFD[i].revents & POLLIN)
 			{
+				std::cout << "Poll FD: " << _pollFD[i].fd << "SOCK FD: "<< _sockfd << std::endl;
 				if (_pollFD[i].fd == _sockfd)
 					handleNewConnection();
 				else
@@ -182,7 +203,7 @@ namespace irc
 
 	void Server::sendMsg(int fd, std::string msg)
 	{
-		if (send(fd, msg.c_str(), msg.length(), 0) < 0){
+		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
 			throw std::runtime_error("Send error"); 
 		}
 	}
