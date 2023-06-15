@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 15:43:20 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 11:40:14 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@ class Channel
 		std::map<char, bool>	modes;
 		unsigned int			maxUsers;
 		std::string				topic;
+		std::string				key;
 	public:
 		Channel(std::string name);
 		~Channel();
 		std::vector<User *>		users;
 		bool					operator==(Channel const &rhs) const;
 		bool					operator<(Channel const &rhs) const;
-		void					partChannel(User *user);
+		bool					partChannel(User *user);
 		std::string				getName();
 		std::vector<User *>		getUsers();
 		void					setmaxUsers(unsigned int maxUsers);
@@ -51,7 +52,7 @@ class Channel
 };
 
 void	joinChannel(User *user, Channel *channel);
-void	execMessage(std::vector<std::string> messages, User *user, Channel *channel);
+void	execMessage(std::vector<std::string> messages, User *user);
 bool	findString(std::string str, std::vector<std::string> vec);
 
 #endif

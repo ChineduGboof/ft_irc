@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/15 15:20:47 by cegbulef         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/15 16:05:57 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "Server.hpp"
 
@@ -347,6 +348,45 @@ namespace irc
         }
         return false;
     }
+	void Server::splitChannelInp(int index)
+	{
+		size_t i = 0;
+		// std::cout << "size of msg : " << _users[index - 1]->_incomingMsgs.size() << std::endl;
+		while (i < _users[index - 1]->_incomingMsgs.size())
+		{
+			if(i == 1)
+			{
+				std::vector<std::string> splitWords = utils::splitByDelimiter(_users[index - 1]->_incomingMsgs.at(i) , ",");
+				for (std::vector<std::string>::size_type i = 0; i < splitWords.size(); ++i) 
+				{
+						_users[index -1 ]->_channelToJoin.push_back(splitWords[i]);
+				}
+			}
+			if(i == 2)
+			{
+				std::vector<std::string> splitWords = utils::splitByDelimiter(_users[index - 1]->_incomingMsgs.at(i) , ",");
+				for (std::vector<std::string>::size_type i = 0; i < splitWords.size(); ++i) 
+				{
+						_users[index -1 ]->_channelKeys.push_back(splitWords[i]);
+				}
+			}
+			// std::cout << "msg: " << _users[index - 1]->_incomingMsgs.at(i) << std::endl;
+			i++;
+		}
+		// i = 0;
+		// while (i < _users[index -1 ]->_channelToJoin.size())
+		// {
+		// 	std::cout << "channels: " << _users[index -1 ]->_channelToJoin.at(i) << std::endl;
+		// 	i++;
+		// }
+		// i = 0;
+		// while (i < _users[index -1 ]->_channelKeys.size())
+		// {
+		// 	std::cout << "key: " << _users[index -1 ]->_channelKeys.at(i) << std::endl;
+		// 	i++;
+		// }
+		return ;
+	}
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -399,14 +439,17 @@ namespace irc
             }
             else if(_users[index - 1]->getIsAuth() == true)
             {
+				if(_users[index -1 ]->_incomingMsgs.at(0) == "JOIN")
+				{
+					splitChannelInp(index);
+				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
 					closeSocketAndRemoveUser(index);
 					return ;
 				}
                 //once already a memeber
-				Channel DummyChannel("");
-				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
+				execMessage(_users[index - 1]->getMessages(), _users[index-1]); // (User, Channel
 				// give me the split here so I can call execMessage
                 // std::cout << "------------------------------------------------------------------------------------\n";
 				// std::cout << "\t\t Incomming messages" << std::endl;

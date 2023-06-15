@@ -34,6 +34,8 @@ public:
     std::string _dataBuffer;
     std::vector<std::string> _incomingMsgs;
     std::vector<std::string> _outgoingMsgs;
+    std::vector<std::string> _channelToJoin;
+    std::vector<std::string> _channelKeys;
 
 	bool		is_channel_op;
     // bool        is_auth;

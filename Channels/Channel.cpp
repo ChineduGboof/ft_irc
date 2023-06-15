@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/14 17:11:42 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 11:40:33 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Channel::Channel(std::string name)
 	this->modes['t'] = false;
 	this->modes['i'] = false;
 	this->modes['l'] = false;
+	this->key = "";
 }
 
 std::map<char, bool> Channel::getModes()
@@ -83,16 +84,28 @@ void joinChannel(User *user, Channel *channel)
 	channel->addUser(user);
 }
 
-void Channel::partChannel(User *user)
+bool Channel::partChannel(User *user)
 {
 	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
-	if (it != this->users.end())
+	if (it != this->users.end() && this->users.size() == 1)
+	{
+		user->setChannelOp(false);
+		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + " PART " + this->getName() + " :leaving " +"\r\n");
+		this->users.erase(it);
+		irc::Server::serverInstance->deleteChannel(this);
+		return false;
+	}
+	else if (it != this->users.end())
 	{
 		user->setChannelOp(false);
 		this->users.erase(it);
+		return true;
 	}
 	else
+	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You are not in channel " + this->getName() + ".\r\n");
+		return false;
+	}
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
