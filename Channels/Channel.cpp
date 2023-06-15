@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/15 11:40:33 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 18:36:55 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,15 @@ void	Channel::addUser(User *user)
 Channel::~Channel()
 {
 	// irc::Server::serverInstance->deleteChannel(this);
+}
+
+std::string	Channel::getKey()
+{
+	return this->key;
+}
+void	Channel::setKey(std::string password)
+{
+	this->key = password;
 }
 
 void joinChannel(User *user, Channel *channel)
@@ -139,7 +148,7 @@ bool Channel::operator<(Channel const &rhs) const
 		return true;
 	return false;
 }
-Channel	*irc::Server::createChannel(std::string name)
+Channel	*irc::Server::createChannel(std::string name, std::string password)
 {
 	if ((name[0] != '#' && name[0] != '&') || name.length() > 100)
 		return (NULL);
@@ -151,6 +160,8 @@ Channel	*irc::Server::createChannel(std::string name)
 			return (*it);
 	}
 	Channel *newChannel = new Channel(name);
+	newChannel->setKey(password);
+	std::cout << "inisde_pass: " << newChannel->getKey() << std::endl;
 	this->_channels.push_back(newChannel);
 	return newChannel;
 }

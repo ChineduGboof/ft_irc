@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 14:55:13 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/15 19:01:20 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,39 @@ void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> me
 	{
 		if ((*it)->getNickName() == nick)
 		{
+			channel->sendMessage(user->getNickName() + " has kicked " + nick + " from " + channel->getName() + "!", "");
+			irc::Server::serverInstance->sendMsg((*it)->getUserFd(),":" + (*it)->getNickName() + " PART :" + channel->getName() + "\n");
 			channel->partChannel(*it);
 			break;
 		}
 	}
-	// std::string kick = messages[0].substr(messages[0].find("KICK") + 5);
-	// channel.sendMessage(":" + user.getNickName() + " KICK " + channel.getName() + " :" + kick);
+
 }
 
 void Channel::switchMode(User *user, std::vector<std::string> messages)
 {
 	bool mode_bool = false;
-	if (messages.size() < 3 || messages[1] != this->getName() || user->is_op() == false)
+	if (messages.size() < 2 || messages[1] != this->getName() || user->is_op() == false)
 		return;
+	if (messages.size() == 2)
+	{
+		// std::cout << "DGZFZDLKGFDLGLKZDHGHADKLGJZGFJKADG" << std::endl;
+		std::string mode_str = "";
+		if (this->modes['o'] == true)
+			mode_str += "o";
+		if (this->modes['i'] == true)
+			mode_str += "i";
+		if (this->modes['t'] == true)
+			mode_str += "t";
+		if (this->modes['k'] == true)
+			mode_str += "k";
+		if (this->modes['l'] == true)
+		{
+			mode_str += "l ";
+			mode_str += std::to_string(this->maxUsers);
+		}
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
+	}
 	std::string mode = messages[2];
 	if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
 		return;
@@ -124,15 +144,18 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 				mode_str += "t";
 				break;
 			case ('l'):
+			{
 				mode_str += "l";
 				break;
+
+			}
 			case ('k'):
 				mode_str += "k";
 				break;
 		}
 	}
 	std::cout << "mode_str: " << mode_str << std::endl;
-	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str, NULL);
+	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
 }
 
 void	Channel::execTopic(User *user, std::vector<std::string> messages)
@@ -155,12 +178,8 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
        	for (unsigned int i = startIndex + 1; i < messages.size(); i++)
            	topic += " " + messages[i];
     }
+	irc::Server::serverInstance->sendMsg(user->getUserFd(), "332 " + user->getNickName() + " " + this->getName() + " " + topic + "\r\n");
     this->setTopic(topic);
-}
-
-void	Channel::setInvited(User *user, Channel &channel_name)
-{
-	user->setInvited(channel_name, true);
 }
 
 void	Channel::inviteUser(User *user, std::vector<std::string> messages)
@@ -171,14 +190,13 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 		return;
 	std::string nick = messages[1];
 	// std::vector<User *> &users = irc::Server::serverInstance->getUser(); when the server is up
-	std::vector<User *> users = this->getUsers();
+	std::vector<User *> users = irc::Server::serverInstance->getUser();
 	for(std::vector<User *>::iterator it = users.begin(); it != users.end(); ++it)
 	{
 		if ((*it)->getNickName() == nick)
 		{
-			// std::cout << "here cond" << std::endl;
-			this->setInvited(*it, *this);
-			irc::Server::serverInstance->sendMsg((*it)->getUserFd(), "You have been invited to channel " + this->getName() + "\r\n");
+			(*it)->setInvited(*this, true);
+			irc::Server::serverInstance->sendMsg((*it)->getUserFd(), ":" + user->getNickName() + " INVITE " + nick + " " + this->getName() + "\r\n");
 			break;
 		}
 	}
@@ -209,34 +227,55 @@ void	handle_nickname(User *user, std::vector<std::string> messages)
 	user->setNickName(nick);
 }
 
+void join_channel(std::string chnl_name , User *user, Channel *channel, std::string password)
+{
+	if (channel == NULL)
+	{
+		channel = irc::Server::serverInstance->createChannel(chnl_name, password);
+	}
+	std::cout << "channel_name: " << channel->getName() << std::endl;
+	std::cout << "channel_pass: " << channel->getKey() << std::endl;
+	std::cout << "main_passss: " << password << std::endl;
+	if(password != channel->getKey())
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 475 " + user->getNickName() + " " + chnl_name + " :Incorrect Channel Key\n");
+		return;
+	}
+	joinChannel(user, channel);
+	for (size_t i = 0; i < channel->users.size() ; i++)
+	{
+		// if(channel->users.at(i)->getNickName() == user->getNickName())
+		// 	continue;
+		std::string msg2 = ":" + user->getNickName() + " JOIN " + chnl_name + " \r\n";
+		irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);
+	}
+}
+
 void execMessage(std::vector<std::string> messages, User *user)
 {
 	std::string message = messages[0];
 	Channel *channel = irc::Server::serverInstance->getChannel(messages[1]);
+	if (message == "INVITE")
+		channel = irc::Server::serverInstance->getChannel(messages[2]);
 	// std::cout << "message: " << message << std::endl;
 	if (server_messages(messages) == true)
 		return;
-	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
-	{
-		std::cout << "message: " << *it << std::endl;
-	}
+	// for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
+	// {
+	// 	std::cout << "message: " << *it << std::endl;
+	// }
 	if (message == "JOIN")
 	{
-		if (channel == NULL)
+		size_t x = 0;
+		while (x < user->_channelToJoin.size())
 		{
-			channel = irc::Server::serverInstance->createChannel(messages[1]);
+			channel = irc::Server::serverInstance->getChannel(user->_channelToJoin.at(x));
+			if(user->_channelKeys.size())
+				join_channel(user->_channelToJoin.at(x), user, channel, user->_channelKeys.at(x));
+			else
+				join_channel(user->_channelToJoin.at(x), user, channel, "");
+			x++;
 		}
-		// channel->sendMessage(user->getNickName() + " has joined the channel\r\n", NULL);
-		joinChannel(user, channel);
-		// std::cout << "got : " << channel->users.size() << std::endl;
-		for (size_t i = 0; i < channel->users.size() ; i++)
-		{
-			// if(channel->users.at(i)->getNickName() == user->getNickName())
-			// 	continue;
-			std::string msg2 = ":" + user->getNickName() + " JOIN " + messages[1] + " \r\n";
-			irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);//":" + user->getNickName() + " JOIN " + messages[1] + "\r\n"
-		}
-		// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":" + user->getNickName() + " JOIN " + messages[1] + "\r\n");
 	}
 	else if (message == "PING")
 	{
@@ -245,12 +284,6 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	else if (message == "PRIVMSG")
 	{
-		// int i = 0;
-		// for(std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
-		// {
-		// 	std::cout << i++ <<":" << *it << std::endl;
-
-		// }
 		std::string msg = messages[2];
 		if (messages[1][0] != '#')
 		{
@@ -329,13 +362,9 @@ void execMessage(std::vector<std::string> messages, User *user)
 	if (message == "PART")
 	{
 		std::string msg = ":" + user->getNickName() + " PART :" + channel->getName() + "\n";
-		std::cout << ":" + user->getNickName() + " PART :" + channel->getName() +"\r\n" << std::endl;
-		std::cout << "fd: " << user->getUserFd() << std::endl;
-		std::cout << "len: " << msg.length() << std::endl;
 		irc::Server::serverInstance->sendMsg(user->getUserFd()  , msg);
 		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName() + " :leaving", user->getNickName());
-		channel->partChannel(user);
-		if(channel->users.size() == 0)
+		if(channel->partChannel(user) == true)
 		{
 			irc::Server::serverInstance->deleteChannel(channel);
 			return ;

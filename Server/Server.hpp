@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 15:54:57 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 17:46:34 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ namespace irc {
 			
 			// Channels
 			std::vector<Channel *> _channels;
-			Channel *createChannel(std::string name);
+			Channel *createChannel(std::string name, std::string password);
 			// void deleteChannel(Channel channel);
 			Channel *getChannel(std::string name);
             void deleteChannel(Channel* channel);

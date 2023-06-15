@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:02 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/15 11:40:14 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 18:35:52 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ class Channel
 		void					inviteUser(User *user, std::vector<std::string> messages);
 		void					setInvited(User *user, Channel &channel_name);
 		void					addUser(User *user);
+		std::string				getKey();
+		void					setKey(std::string password);
 };
 
 void	joinChannel(User *user, Channel *channel);
