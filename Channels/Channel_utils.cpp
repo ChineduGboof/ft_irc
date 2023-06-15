@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 17:40:19 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 18:49:37 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,11 +209,19 @@ void	handle_nickname(User *user, std::vector<std::string> messages)
 	user->setNickName(nick);
 }
 
-void join_channel(std::string chnl_name , User *user, Channel *channel)
+void join_channel(std::string chnl_name , User *user, Channel *channel, std::string password)
 {
 	if (channel == NULL)
 	{
-		channel = irc::Server::serverInstance->createChannel(chnl_name);
+		channel = irc::Server::serverInstance->createChannel(chnl_name, password);
+	}
+	std::cout << "channel_name: " << channel->getName() << std::endl;
+	std::cout << "channel_pass: " << channel->getKey() << std::endl;
+	std::cout << "main_passss: " << password << std::endl;
+	if(password != channel->getKey())
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 475 " + user->getNickName() + " " + chnl_name + " :Incorrect Channel Key\n");
+		return;
 	}
 	joinChannel(user, channel);
 	for (size_t i = 0; i < channel->users.size() ; i++)
@@ -242,7 +250,10 @@ void execMessage(std::vector<std::string> messages, User *user)
 		while (x < user->_channelToJoin.size())
 		{
 			channel = irc::Server::serverInstance->getChannel(user->_channelToJoin.at(x));
-			join_channel(user->_channelToJoin.at(x), user, channel);
+			if(user->_channelKeys.size())
+				join_channel(user->_channelToJoin.at(x), user, channel, user->_channelKeys.at(x));
+			else
+				join_channel(user->_channelToJoin.at(x), user, channel, "");
 			x++;
 		}
 	}
