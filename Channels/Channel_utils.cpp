@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 14:55:13 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/15 17:20:36 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,22 @@ void	handle_nickname(User *user, std::vector<std::string> messages)
 	user->setNickName(nick);
 }
 
+void join_channel(std::string chnl_name , User *user, Channel *channel)
+{
+	if (channel == NULL)
+	{
+		channel = irc::Server::serverInstance->createChannel(chnl_name);
+	}
+	joinChannel(user, channel);
+	for (size_t i = 0; i < channel->users.size() ; i++)
+	{
+		// if(channel->users.at(i)->getNickName() == user->getNickName())
+		// 	continue;
+		std::string msg2 = ":" + user->getNickName() + " JOIN " + chnl_name + " \r\n";
+		irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);
+	}
+}
+
 void execMessage(std::vector<std::string> messages, User *user)
 {
 	std::string message = messages[0];
@@ -222,21 +238,27 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	if (message == "JOIN")
 	{
-		if (channel == NULL)
+		size_t x = 0;
+		while (x < user->_channelToJoin.size())
 		{
-			channel = irc::Server::serverInstance->createChannel(messages[1]);
+			std::cout <<  "channel: " << user->_channelToJoin.at(x) << std::endl;
+			channel = irc::Server::serverInstance->getChannel(user->_channelToJoin.at(x));
+			join_channel(user->_channelToJoin.at(x), user, channel);
+			x++;
 		}
-		// channel->sendMessage(user->getNickName() + " has joined the channel\r\n", NULL);
-		joinChannel(user, channel);
-		// std::cout << "got : " << channel->users.size() << std::endl;
-		for (size_t i = 0; i < channel->users.size() ; i++)
-		{
-			// if(channel->users.at(i)->getNickName() == user->getNickName())
-			// 	continue;
-			std::string msg2 = ":" + user->getNickName() + " JOIN " + messages[1] + " \r\n";
-			irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);//":" + user->getNickName() + " JOIN " + messages[1] + "\r\n"
-		}
-		// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":" + user->getNickName() + " JOIN " + messages[1] + "\r\n");
+		// return;
+		// if (channel == NULL)
+		// {
+		// 	channel = irc::Server::serverInstance->createChannel(messages[1]);
+		// }
+		// joinChannel(user, channel);
+		// for (size_t i = 0; i < channel->users.size() ; i++)
+		// {
+		// 	// if(channel->users.at(i)->getNickName() == user->getNickName())
+		// 	// 	continue;
+		// 	std::string msg2 = ":" + user->getNickName() + " JOIN " + messages[1] + " \r\n";
+		// 	irc::Server::serverInstance->sendMsg(channel->users.at(i)->getUserFd(), msg2);
+		// }
 	}
 	else if (message == "PING")
 	{
@@ -329,17 +351,17 @@ void execMessage(std::vector<std::string> messages, User *user)
 	if (message == "PART")
 	{
 		std::string msg = ":" + user->getNickName() + " PART :" + channel->getName() + "\n";
-		std::cout << ":" + user->getNickName() + " PART :" + channel->getName() +"\r\n" << std::endl;
-		std::cout << "fd: " << user->getUserFd() << std::endl;
-		std::cout << "len: " << msg.length() << std::endl;
+		// std::cout << ":" + user->getNickName() + " PART :" + channel->getName() +"\r\n" << std::endl;
+		// std::cout << "fd: " << user->getUserFd() << std::endl;
+		// std::cout << "len: " << msg.length() << std::endl;
 		irc::Server::serverInstance->sendMsg(user->getUserFd()  , msg);
 		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName() + " :leaving", user->getNickName());
 		channel->partChannel(user);
-		if(channel->users.size() == 0)
-		{
-			irc::Server::serverInstance->deleteChannel(channel);
-			return ;
-		}
+		// if(channel->users.size() == 0)
+		// {
+		// 	irc::Server::serverInstance->deleteChannel(channel);
+		// 	return ;
+		// }
 	}
 	else if (message == "MODE")
 	{

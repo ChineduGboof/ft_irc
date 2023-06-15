@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/15 15:32:36 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/15 17:09:37 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,18 +353,18 @@ namespace irc
 			// std::cout << "msg: " << _users[index - 1]->_incomingMsgs.at(i) << std::endl;
 			i++;
 		}
-		// i = 0;
-		// while (i < _users[index -1 ]->_channelToJoin.size())
-		// {
-		// 	std::cout << "channels: " << _users[index -1 ]->_channelToJoin.at(i) << std::endl;
-		// 	i++;
-		// }
-		// i = 0;
-		// while (i < _users[index -1 ]->_channelKeys.size())
-		// {
-		// 	std::cout << "key: " << _users[index -1 ]->_channelKeys.at(i) << std::endl;
-		// 	i++;
-		// }
+		i = 0;
+		while (i < _users[index -1 ]->_channelToJoin.size())
+		{
+			std::cout << "channels: " << _users[index -1 ]->_channelToJoin.at(i) << std::endl;
+			i++;
+		}
+		i = 0;
+		while (i < _users[index -1 ]->_channelKeys.size())
+		{
+			std::cout << "key: " << _users[index -1 ]->_channelKeys.at(i) << std::endl;
+			i++;
+		}
 		return ;
 	}
     void Server::handleClientData(size_t index)
@@ -422,6 +422,7 @@ namespace irc
 				if(_users[index -1 ]->_incomingMsgs.at(0) == "JOIN")
 				{
 					splitChannelInp(index);
+					// return ;
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
