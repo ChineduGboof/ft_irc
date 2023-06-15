@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 16:05:57 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/15 19:17:23 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@ namespace irc
 	{
 		serverInstance = this;
 		std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT << std::flush << std::endl;
-		std::signal(SIGINT, signalHandler);
-		config();
-		run();
 	}
 
 	Server::~Server()
@@ -342,7 +339,7 @@ namespace irc
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-            // std::cout << "Incoming Message => " << *it << std::endl;
+            // std::cout << "Find Cap Message => " << *it << std::endl;
             if(*it == "CAP")
                 return true;
         }
@@ -387,6 +384,7 @@ namespace irc
 		// }
 		return ;
 	}
+
     void Server::handleClientData(size_t index)
     {
         if (_pollFD[index].fd != _sockfd)
@@ -473,6 +471,7 @@ namespace irc
         //     // execute clieent commands
         }
     }
+	
 	void Server::displayUsers()
 	{
 		size_t x = 0;
