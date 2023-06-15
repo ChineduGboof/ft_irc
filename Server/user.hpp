@@ -32,8 +32,8 @@ private:
 	std::map<Channel, bool> invited_channels;
 public:
     std::string _dataBuffer;
-    std::deque<std::vector<std::string> > _incomingMsgs;
-    std::deque<std::string> _outgoingMsgs;
+    std::vector<std::string> _incomingMsgs;
+    std::vector<std::string> _outgoingMsgs;
 
 	bool		is_channel_op;
     // bool        is_auth;
@@ -59,10 +59,11 @@ public:
     void setRealName( std::string real );
 
     size_t receive();
-    std::deque<std::vector<std::string> >& getMessages();
-    std::deque<std::string>& getOutgoingMsg();
+    std::vector<std::string> & getMessages();
+    std::vector<std::string> & getOutgoingMsg();
     void setOutgoingMsg( std::string msg );
     void printOutgoingMsgs();
+    void printIncomingMsgs();
 	void addMessage(std::string message);
 	void setChannelOp(bool op);
 	bool is_op();

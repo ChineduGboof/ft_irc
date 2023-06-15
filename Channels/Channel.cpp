@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/15 12:42:24 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 12:43:32 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,40 +48,50 @@ std::string Channel::getTopic()
 	return this->topic;
 }
 
+void	Channel::addUser(User *user)
+{
+	this->users.push_back(user);
+}
+
 Channel::~Channel()
 {
 }
 
-void Channel::joinChannel(User &user)
+void joinChannel(User *user, Channel *channel)
 {
-	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
-	if (it != this->users.end())
+	std::vector<User *>::iterator it = std::find(channel->getUsers().begin(), channel->getUsers().end(), user);
+	if (it != channel->getUsers().end())
 	{
-		std::cout << "Error: User " << user.getNickName() << " is already in channel " << this->name << "." << std::endl;
+		std::cout << "Error: 443, User " << user->getNickName() << " is already in channel " << channel->getName() << "." << std::endl;
 		return;
 	}
-	if (this->users.size() >= this->maxUsers)
+	if (channel->getUsers().size() >= channel->getmaxUsers())
 	{
-		std::cout << "Error: Channel " << this->name << " is full." << std::endl;
+		std::cout << "Error: 471, Channel " << channel->getName() << " is full." << std::endl;
 		return;
 	}
-	if (this->users.size() == 0)
+	if (channel->getModes()['i'] == true && user->getInvited(*channel) == false)
 	{
-		user.setChannelOp(true);
+		std::cout << "Error: 473, Channel " << channel->getName() << " is invite only." << std::endl;
+		return;
 	}
-	this->users.push_back(user);
+	if (channel->getUsers().size() == 0)
+	{
+		user->setChannelOp(true);
+	}
+	channel->addUser(user);
 }
 
-void Channel::partChannel(User &user)
+void Channel::partChannel(User *user)
 {
-	std::vector<User>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end())
 	{
-		user.setChannelOp(false);
+		user->setChannelOp(false);
 		this->users.erase(it);
 	}
 	else
-		std::cout << "Error: User " << user.getNickName() << " is not in channel " << this->name << "." << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You are not in channel " + this->getName() + ".\r\n");
 }
 
 bool	findString(std::string str, std::vector<std::string> vec)
@@ -97,7 +107,7 @@ std::string Channel::getName()
 	return this->name;
 }
 
-std::vector<User> Channel::getUsers()
+std::vector<User *> Channel::getUsers()
 {
 	return this->users;
 }
@@ -115,34 +125,38 @@ bool Channel::operator<(Channel const &rhs) const
 		return true;
 	return false;
 }
-void	irc::Server::createChannel(std::string name)
+Channel	*irc::Server::createChannel(std::string name)
 {
 	if ((name[0] != '#' && name[0] != '&') || name.length() > 100)
-		return;
+		return (NULL);
 	if (name.find(' ') != std::string::npos || name.find(',') != std::string::npos)
-		return;
-	for (std::vector<Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
+		return (NULL);
+	for (std::vector<Channel *>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it)
 	{
-		if (it->getName() == name)
-			return;
+		if ((*it)->getName() == name)
+			return (NULL);
 	}
-	Channel newChannel(name);
+	Channel *newChannel = new Channel(name);
 	this->_channels.push_back(newChannel);
+	return newChannel;
 }
 
-void	irc::Server::deleteChannel(const Channel channel)
+void	irc::Server::deleteChannel(Channel channel)
 {
-	std::vector<Channel>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), channel);
+	std::vector<Channel *>::iterator it = std::find(this->_channels.begin(), this->_channels.end(), &channel);
 	if (it != this->_channels.end())
+	{
+		delete *it;
 		this->_channels.erase(it);
+	}
 	else
 		return;
 }
 
 void	Channel::sendMessage(std::string message)
 {
-	for (std::vector<User>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+	for (std::vector<User *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
 	{
-		it->addMessage(message);
+		(*it)->addMessage(message);
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 16:23:29 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/10 01:23:07 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/13 12:34:24 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,62 +15,31 @@
 
 int main(int argc, char *argv[])
 {
-    // int         port;
-    // std::string password;
+    int         port;
+    std::string password;
 
-    // try 
-    // {
-    //     if (argc != 3)
-    //         throw std::runtime_error("retry: ./ircserv <port> <password>");
+    try 
+    {
+        if (argc != 3)
+            throw std::runtime_error("retry: ./ircserv <port> <password>");
 
-    //     port = utils::atoi(argv[1]);
-    //     if (port < 0 || port > 65535)
-    //         throw std::out_of_range("Select Port number (0 -> 65535)");
+        port = utils::atoi(argv[1]);
+        if (port < 0 || port > 65535)
+            throw std::out_of_range("Select Port number (0 -> 65535)");
             
-    //     password = utils::whitespace(argv[2]);
+        password = utils::whitespace(argv[2]);
 
-    //     irc::Server server("0.0.0.0", port, password);
-    //     irc::Server::serverInstance = &server;  // Set the serverInstance pointer
-    //     // server.users.push_back(User("yoni", "yoni1", "yonatan", 1));
-    //     std::signal(SIGINT, irc::Server::signalHandler);  // Register the signal handler
-    //     server.config();
-    //     server.run();
-        
-    //     // server.users.at(1).getNickName();
-    //     // server.users.at(1).getNickName();
-    // }
-    // catch (std::exception &e) 
-    // {
-    //     std::cout << RED << e.what() << DEFAULT << std::endl;
-    // }
-    // catch ( ... ) {
-    //     std::cout << "Fatal Error: An unhandled exception occurred." << std::endl;
-    //     return EXIT_FAILURE;
-    // }
-	(void) argc;
-	(void) argv;
+        irc::Server server("0.0.0.0", port, password);
+        irc::Server::serverInstance = &server;
 
-	Channel test("test");
-	User Yona(1);
-	User Yoni(2);
-	test.joinChannel(Yona);
-	// test.joinChannel(Yoni);
-	Yona.setNickName("Yona");
-	Yoni.setNickName("Yoni");
-	std::vector<std::string> messages;
-	messages.push_back("INVITE");
-	messages.push_back(Yona.getNickName());
-	messages.push_back(test.getName());
-	// std::cout << test.getmaxUsers() << std::endl;
-	test.execMessage(messages, Yona);
-	std::string str = Yona.getMessagesDeque().front();
-	std::cout << str << std::endl;
-	// messages.pop_back();
-	// test.execMessage(messages, Yona);
-	// std::cout << test.getTopic() << std::endl;
-	// User Yonatan(3);
-	// Yonatan.setNickName("Yonatan");
-	// test.joinChannel(Yonatan);
-	// std::cout << test.getmaxUsers() << std::endl;
+    }
+    catch (std::exception &e) 
+    {
+        std::cout << RED << e.what() << DEFAULT << std::endl;
+    }
+    catch ( ... ) {
+        std::cout << "Fatal Error: An unhandled exception occurred." << std::endl;
+        return EXIT_FAILURE;
+    }
 	return EXIT_SUCCESS;
 }

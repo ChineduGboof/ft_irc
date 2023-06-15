@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 17:38:50 by cegbulef          #+#    #+#             */
-/*   Updated: 2023/06/10 01:05:23 by Omar             ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/06/13 13:24:59 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 
 
@@ -35,9 +37,9 @@
 #include <poll.h>
 #include <csignal>
 #include <cctype>
-# include <vector>
+#include <vector>
 #include <deque>
-# include <map>
+#include <map>
 #include <sstream>
 #include <limits>
 #include <string>
@@ -49,12 +51,12 @@
 #include "Responses.hpp"
 #include <sys/socket.h>
 
+
 class Channel;
 class User;
 namespace irc {
 
     class Server {
-
         private:
 
             std::string         _host;
@@ -66,7 +68,7 @@ namespace irc {
             bool                _running;
             void initPollFD(int fd);
 			
-			std::vector<Channel> _channels;
+			std::vector<Channel *> _channels;
         public:
             Server();
             Server( const std::string& host, const int& port, const std::string& password );
@@ -80,23 +82,31 @@ namespace irc {
             void closeClientSocket(size_t index);
             void handleSignal(int signal);
             static void signalHandler(int signal);
+            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             
+            //user
             std::vector<User *> _users;
             void createNewUser(int fd);
-            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             void removeUser(int fd);
             // User &getUser(int fd);
             std::vector<User *>& getUser( void );
             void sendMsg(int fd, std::string msg);
-            void authenticate_user(int index);
+            bool authenticate_user(int index);
             std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
+            bool check_duplicate(std::string nick);
+            int getFdByNick(std::string nick);
+            bool findCap(int index);
+
             void bye();
             bool verifyPassword(std::string userPassword);
 			
 			// Channels
-			void createChannel(std::string name);
+			Channel *createChannel(std::string name);
 			void deleteChannel(Channel channel);
-			std::vector<Channel> getChannels();
+			std::vector<Channel *> getChannels();
+            void polling();
+            void searchingForConnections();
+            void closeSocketAndRemoveUser(size_t index);
     };
 }
 
