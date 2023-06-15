@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/11 12:20:52 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/15 01:21:57 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 11:47:58 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,8 +386,7 @@ namespace irc
 					return ;
 				}
                 //once already a memeber
-				Channel DummyChannel("");
-				execMessage(_users[index - 1]->getMessages(), _users[index-1], &DummyChannel); // (User, Channel
+				execMessage(_users[index - 1]->getMessages(), _users[index-1]); // (User, Channel
 				// give me the split here so I can call execMessage
                 // std::cout << "------------------------------------------------------------------------------------\n";
 				// std::cout << "\t\t Incomming messages" << std::endl;

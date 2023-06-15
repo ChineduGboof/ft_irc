@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 01:43:32 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 11:49:42 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,55 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 				this->maxUsers = 1000;
 			}
 		}
+		else if (mode[i] == 'k' && messages.size() > 3)
+		{
+			if (mode[0] == '+' && messages[3].length() > 0)
+			{
+				this->modes['k'] = true;
+				this->key = messages[3];
+			}
+			else
+			{
+				this->modes['k'] = false;
+				this->key = "";
+			}
+		}
 		else
 			return;
 	}
-	
+	std::string mode_str = "";
+	for (int i = 0; i < mode.length(); i++)
+	{
+		char c = mode[i];
+		switch (c)
+		{
+			case ('+'):{
+				mode_str += "+";
+				break;
+			}
+			case ('-'):{
+				mode_str += "-";
+				break;
+			}
+			case ('o'):
+				mode_str += "o";
+				break;
+			case ('i'):
+				mode_str += "i";
+				break;
+			case ('t'):
+				mode_str += "t";
+				break;
+			case ('l'):
+				mode_str += "l";
+				break;
+			case ('k'):
+				mode_str += "k";
+				break;
+		}
+	}
+	std::cout << "mode_str: " << mode_str << std::endl;
+	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str, NULL);
 }
 
 void	Channel::execTopic(User *user, std::vector<std::string> messages)
@@ -164,18 +209,24 @@ void	handle_nickname(User *user, std::vector<std::string> messages)
 	user->setNickName(nick);
 }
 
-void execMessage(std::vector<std::string> messages, User *user, Channel *channel)
+void execMessage(std::vector<std::string> messages, User *user)
 {
 	std::string message = messages[0];
-	std::vector<User *> users = channel->getUsers();
+	Channel *channel = irc::Server::serverInstance->getChannel(messages[1]);
 	// std::cout << "message: " << message << std::endl;
 	if (server_messages(messages) == true)
 		return;
+	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it)
+	{
+		std::cout << "message: " << *it << std::endl;
+	}
 	if (message == "JOIN")
 	{
-		std::cout << "coming to join" << std::endl;
-		if (channel->getName() == "")
+		if (channel == NULL)
+		{
 			channel = irc::Server::serverInstance->createChannel(messages[1]);
+		}
+		// channel->sendMessage(user->getNickName() + " has joined the channel\r\n", NULL);
 		joinChannel(user, channel);
 		// std::cout << "got : " << channel->users.size() << std::endl;
 		for (size_t i = 0; i < channel->users.size() ; i++)
@@ -234,7 +285,6 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 			if (it == channels.end())
 			{
 				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, No such nick/channel\r\n");
-				std::cout << "here lol" << std::endl;
 				return;
 			}
 			channel = *it;
@@ -242,13 +292,11 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 			std::vector<User *>::iterator it2;
 			for (it2 = channel->users.begin(); it2 != channel->users.end(); ++it2)
 			{
-				// std::cout << "send for : " << (*it2)->getNickName() << std::endl;
 				if((*it2)->getNickName() == user->getNickName())
 				{
 					std::cout << "found user" << std::endl;
 					break ;
 				}
-					// irc::Server::serverInstance->sendMsg((*it)->getUserFd(), message + "\r\n");
 			}
 			if(it2 == channel->users.end())
 			{
@@ -272,15 +320,11 @@ void execMessage(std::vector<std::string> messages, User *user, Channel *channel
 	// 	std::cout << "here 1" << message << std::endl;
 	// 	irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
 	// 	return;
-	// }
-	else if (channel->getName() == "")
+	// }/ return;
+	if (channel == NULL)
 	{
-		channel = irc::Server::serverInstance->getChannel(messages[1]);
-		if (!channel)
-			return;
-		std::cout << "here 2: " << channel->getName() << std::endl;
-		// irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
-		// return;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
+		return;
 	}
 	if (message == "PART")
 	{
