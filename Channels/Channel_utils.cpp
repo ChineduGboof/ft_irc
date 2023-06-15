@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 11:49:42 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 14:55:13 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 			return;
 	}
 	std::string mode_str = "";
-	for (int i = 0; i < mode.length(); i++)
+	for (size_t i = 0; i < mode.length(); i++)
 	{
 		char c = mode[i];
 		switch (c)

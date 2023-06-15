@@ -126,9 +126,9 @@ size_t User::receive() {
         }
         temp.erase(temp.begin(), temp.begin() + 1);
     }
-    // std::cout << "------------------------------------------------------------" << std::endl;
-    // printIncomingMsgs();
-    // std::cout << "------------------------------------------------------------" << std::endl;
+    std::cout << "------------------------------------------------------------" << std::endl;
+    printIncomingMsgs();
+    std::cout << "------------------------------------------------------------" << std::endl;
     return bytesRead;
 }
 
