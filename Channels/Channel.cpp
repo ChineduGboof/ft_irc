@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/15 18:36:55 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 19:25:33 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Channel::Channel(std::string name)
 	this->modes['t'] = false;
 	this->modes['i'] = false;
 	this->modes['l'] = false;
+	this->topic = "";
 	this->key = "";
 }
 
@@ -161,7 +162,7 @@ Channel	*irc::Server::createChannel(std::string name, std::string password)
 	}
 	Channel *newChannel = new Channel(name);
 	newChannel->setKey(password);
-	std::cout << "inisde_pass: " << newChannel->getKey() << std::endl;
+	// std::cout << "inisde_pass: " << newChannel->getKey() << std::endl;
 	this->_channels.push_back(newChannel);
 	return newChannel;
 }

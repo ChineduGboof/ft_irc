@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 19:01:20 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/15 19:28:04 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,6 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
 		return;
 	}
-	// std::cout << "here" << std::endl;
     unsigned int startIndex = (messages[2] == ":") ? 3 : 2;
    	std::string topic = "";
     if (messages.size() > 3 || messages[2] != ":")
@@ -242,6 +241,7 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 		return;
 	}
 	joinChannel(user, channel);
+	irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + chnl_name + " :" + channel->getTopic() + "\r\n");
 	for (size_t i = 0; i < channel->users.size() ; i++)
 	{
 		// if(channel->users.at(i)->getNickName() == user->getNickName())
@@ -276,6 +276,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 				join_channel(user->_channelToJoin.at(x), user, channel, "");
 			x++;
 		}
+		
 	}
 	else if (message == "PING")
 	{
@@ -361,12 +362,11 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	if (message == "PART")
 	{
-		std::string msg = ":" + user->getNickName() + " PART :" + channel->getName() + "\n";
+		std::string msg = ":" + user->getNickName() + " PART :" + channel->getName() + "\r\n";
 		irc::Server::serverInstance->sendMsg(user->getUserFd()  , msg);
 		channel->sendMessage(":" + user->getNickName() + " PART " + channel->getName() + " :leaving", user->getNickName());
 		if(channel->partChannel(user) == true)
 		{
-			irc::Server::serverInstance->deleteChannel(channel);
 			return ;
 		}
 	}
