@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 19:19:14 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/15 20:53:08 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,6 +397,7 @@ namespace irc
             {
 				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
+				return ;
             }
             if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "")
             {
@@ -446,7 +447,6 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
-					closeSocketAndRemoveUser(index);
 					return ;
 				}
                 //once already a memeber
