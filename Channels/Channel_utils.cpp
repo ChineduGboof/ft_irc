@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 19:01:20 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 09:23:23 by yoni             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 		if (this->modes['l'] == true)
 		{
 			mode_str += "l ";
-			mode_str += std::to_string(this->maxUsers);
+			mode_str += utils::convertToString(this->maxUsers);
 		}
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
 	}
@@ -166,7 +166,9 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 		return;
 	if (messages.size() == 2)
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
+		this->sendMessage(":irc 331 " + user->getNickName() + " " + this->getName() + " " + this->getTopic(), "");
+		// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + this->getName() + " " + this->getTopic() + "\r\n");
+		// irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
 		return;
 	}
 	// std::cout << "here" << std::endl;
@@ -178,8 +180,11 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
        	for (unsigned int i = startIndex + 1; i < messages.size(); i++)
            	topic += " " + messages[i];
     }
-	irc::Server::serverInstance->sendMsg(user->getUserFd(), "332 " + user->getNickName() + " " + this->getName() + " " + topic + "\r\n");
+	// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 331 " + user->getNickName() + " " + this->getName() + " :No topic is set\r\n");
+	// this->sendMessage(":irc 331 " + user->getNickName() + " " + this->getName() + " :No topic is set\r\n", "");
+	// irc::Server::serverInstance->sendMsg(user->getUserFd(), "332 " + user->getNickName() + " " + this->getName() + " " + topic + "\r\n");
     this->setTopic(topic);
+	this->sendMessage(":irc 332 " + user->getNickName() + " " + this->getName() + " " + this->getTopic(), "");
 }
 
 void	Channel::inviteUser(User *user, std::vector<std::string> messages)
@@ -242,6 +247,10 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 		return;
 	}
 	joinChannel(user, channel);
+	if(channel->getTopic() == "")
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + channel->getName() + " " + channel->getTopic() + "\r\n");
+	else
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 331 " + user->getNickName() + " " + channel->getName() + " :No topic is set\r\n");
 	for (size_t i = 0; i < channel->users.size() ; i++)
 	{
 		// if(channel->users.at(i)->getNickName() == user->getNickName())
