@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 15:09:54 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 15:22:57 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -398,7 +398,7 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
-					closeSocketAndRemoveUser(index);
+					// closeSocketAndRemoveUser(index);
 					return ;
 				}
 				execMessage(_users[index - 1]->getMessages(), _users[index-1]);
@@ -472,7 +472,12 @@ namespace irc
 		for (;it != _users.end(); it++) {
 			delete *it;
 		}
+		std::vector<Channel *>::iterator it_channel = _channels.begin();
+		for (;it_channel != _channels.end(); it_channel++) {
+			delete *it_channel;
+		}
 		_users.clear();
+		_channels.clear();
 		_pollFD.clear();
 
 		// Free socket file descriptor
