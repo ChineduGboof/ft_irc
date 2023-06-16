@@ -39,7 +39,6 @@ User::User(int fd)
     this->nick_name = "";
     this->user_name = "";
     this->real_name = "";
-	this->is_channel_op = false;
     this->is_auth = false;
 }
 
@@ -77,14 +76,19 @@ bool User::operator==(User const &rhs) const
 	return false;
 }
 
-void	User::setChannelOp(bool op)
+void	User::setChannelOp(Channel channel_name, bool op)
 {
-	this->is_channel_op = op;
+	if (this->channel_op.find(channel_name) == this->channel_op.end())
+	{
+		this->channel_op.insert(std::pair<Channel, bool>(channel_name, op));
+		return ;
+	}
+	this->channel_op[channel_name] = op;
 }
 
-bool	User::is_op()
+bool	User::is_op(Channel channel_name)
 {
-	return this->is_channel_op;
+	return this->channel_op[channel_name];
 }
 
 void	User::setInvited(Channel channel_name, bool invited)

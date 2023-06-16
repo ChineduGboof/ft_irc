@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 15:09:03 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 16:37:02 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> messages)
 {
-	if (messages.size() < 3 || messages[0] != "KICK" || messages[1] != channel->getName() || user->is_op() == false)
+	if (messages.size() < 3 || messages[0] != "KICK" || messages[1] != channel->getName() || user->is_op(*this) == false)
 		return;
 	std::string nick = messages[2];
 	std::vector<User *> users = channel->getUsers();
@@ -33,134 +33,133 @@ void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> me
 
 void Channel::switchMode(User *user, std::vector<std::string> messages)
 {
- bool mode_bool = false;
- if (messages.size() < 2 || messages[1] != this->getName() || user->is_op() == false)
-     return;
- if (messages.size() == 2)
- {
-     std::string mode_str = "";
-     if (this->modes['o'] == true)
-         mode_str += "o";
-     if (this->modes['i'] == true)
-         mode_str += "i";
-     if (this->modes['t'] == true)
-         mode_str += "t";
-     if (this->modes['k'] == true)
-         mode_str += "k";
-     if (this->modes['l'] == true)
-     {
-         mode_str += "l ";
-         mode_str += utils::convertToString(this->maxUsers);
-     }
-     irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
- }
- std::string mode = messages[2];
- if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
-     return;
- for (unsigned int i = 0; i < mode.length(); i++)
- {
-     if (mode[i] == '+')
-         mode_bool = true;
-     else if (mode[i] == '-')
-         mode_bool = false;
-     else if (mode[i] == 'o')
-     {
-         if (mode[0] == '+' && mode.length() > 3)
-         {
-             std::string nick = mode.substr(3);
-             std::vector<User *> users = this->getUsers();
-             for(std::vector<User *>::iterator it = users.begin(); it != users.end(); ++it)
-             {
-                 if ((*it)->getNickName() == nick)
-                 {
-                     (*it)->setChannelOp(mode_bool);
-                     break;
-                 }
-             }
-             this->modes['o'] = mode_bool;
-         }
-         else
-             this->modes['o'] = mode_bool;
-     }
-     else if (mode[i] == 'i')
-     {
-         this->modes['i'] = mode_bool;
-     }
-     else if (mode[i] == 't')
-     {
-         this->modes['t'] = mode_bool;
-     }
-     else if (mode[i] == 'l' && messages.size() > 3)
-     {
-         if (mode[0] == '+' && std::atoi(messages[3].c_str()) > 0 && std::atoi(messages[3].c_str()) < 1000)
-         {
-             this->maxUsers = std::atoi(messages[3].c_str());
-             this->modes['l'] = true;
-         }
-         else
-         {
-             this->modes['l'] = false;
-             this->maxUsers = 1000;
-         }
-     }
-     else if (mode[i] == 'k' && messages.size() > 3)
-     {
-         if (mode[0] == '+' && messages[3].length() > 0)
-         {
-             this->modes['k'] = true;
-             this->key = messages[3];
-         }
-         else
-         {
-             this->modes['k'] = false;
-             this->key = "";
-         }
-     }
-     else
-         return;
- }
- std::string mode_str = "";
- for (size_t i = 0; i < mode.length(); i++)
- {
-     char c = mode[i];
-     switch (c)
-     {
-         case ('+'):{
-             mode_str += "+";
-             break;
-         }
-         case ('-'):{
-             mode_str += "-";
-             break;
-         }
-         case ('o'):
-             mode_str += "o";
-             break;
-         case ('i'):
-             mode_str += "i";
-             break;
-         case ('t'):
-             mode_str += "t";
-             break;
-         case ('l'):
-         {
-             mode_str += "l";
-             break;
-         }
-         case ('k'):
-             mode_str += "k";
-             break;
-     }
- }
- std::cout << "mode_str: " << mode_str << std::endl;
- this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
+	bool mode_bool = false;
+	if (messages.size() < 2 || messages[1] != this->getName() || user->is_op(*this) == false)
+		return;
+	if (messages.size() == 2)
+	{
+    	std::string mode_str = "";
+    	if (this->modes['o'] == true)
+        	mode_str += "o";
+    	if (this->modes['i'] == true)
+        	mode_str += "i";
+    	if (this->modes['t'] == true)
+        	mode_str += "t";
+    	if (this->modes['k'] == true)
+        	mode_str += "k";
+    	if (this->modes['l'] == true)
+     	{
+        	mode_str += "l ";
+        	mode_str += utils::convertToString(this->maxUsers);
+    	}
+    	irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
+ 	}
+	std::string mode = messages[2];
+	std::cout << "mode: " << mode << std::endl;
+	if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
+    	return;
+	for (unsigned int i = 0; i < mode.length(); i++)
+	{
+    	if (mode[i] == '+')
+        	mode_bool = true;
+    	else if (mode[i] == '-')
+        	mode_bool = false;
+    	else if (mode[i] == 'o' && messages.size() > 3)
+    	{
+        	if (mode[0] == '+' && messages[3].length() > 0)
+        	{
+				std::string nick = messages[3];
+            	for(std::vector<User *>::iterator it = irc::Server::serverInstance->_users.begin(); it != irc::Server::serverInstance->_users.end(); ++it)
+            	{
+                	if ((*it)->getNickName() == nick)
+                	{
+                    	(*it)->setChannelOp(*this, mode_bool);
+						if ((*it)->is_op(*this) == true)
+                    	break;
+                	}
+            	}
+            	this->modes['o'] = mode_bool;
+        	}
+        	else
+            	this->modes['o'] = mode_bool;
+    	}
+    	else if (mode[i] == 'i')
+    	{
+    	    this->modes['i'] = mode_bool;
+    	}
+    	else if (mode[i] == 't')
+    	{
+    	    this->modes['t'] = mode_bool;
+    	}
+    	else if (mode[i] == 'l' && messages.size() > 3)
+    	{
+    	    if (mode[0] == '+' && std::atoi(messages[3].c_str()) > 0 && std::atoi(messages[3].c_str()) < 1000)
+    	    {
+    	        this->maxUsers = std::atoi(messages[3].c_str());
+    	        this->modes['l'] = true;
+    	    }
+    	    else
+    	    {
+    	        this->modes['l'] = false;
+    	        this->maxUsers = 1000;
+    	    }
+    	}
+    	else if (mode[i] == 'k' && messages.size() > 3)
+    	{
+    	    if (mode[0] == '+' && messages[3].length() > 0)
+    	    {
+    	        this->modes['k'] = true;
+    	        this->key = messages[3];
+    	    }
+    	    else
+    	    {
+    	        this->modes['k'] = false;
+    	        this->key = "";
+    	    }
+    	}
+    	else
+    	    return;
+	}
+	std::string mode_str = "";
+	for (size_t i = 0; i < mode.length(); i++)
+	{
+	    char c = mode[i];
+	    switch (c)
+	    {
+	        case ('+'):{
+	            mode_str += "+";
+	            break;
+	        }
+	        case ('-'):{
+	            mode_str += "-";
+	            break;
+	        }
+	        case ('o'):
+	            mode_str += "o";
+	            break;
+	        case ('i'):
+	            mode_str += "i";
+	            break;
+	        case ('t'):
+	            mode_str += "t";
+	            break;
+	        case ('l'):
+	        {
+	            mode_str += "l";
+	            break;
+	        }
+	        case ('k'):
+	            mode_str += "k";
+	            break;
+	    }
+	}
+	std::cout << "mode_str: " << mode_str << std::endl;
+	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
 }
 
 
 void	Channel::execTopic(User *user, std::vector<std::string> messages)
 {
-	if(this->modes['t'] == true && user->is_op() == false)
-		return;
 	if (messages.size() < 3 || this->getName() != messages[1])
 		return;
 	if (messages.size() == 2)
@@ -168,9 +167,9 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 		this->sendMessage(":irc 331 " + user->getNickName() + " " + this->getName() + " " + this->getTopic(), "");
 		return;
 	}
-	if (modes['t'] == true && user->is_op() == false)
+	if (modes['t'] == true && user->is_op(*this) == false)
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "482 " + user->getNickName() + " " + this->getName() + " :You're not channel operator\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 482 " + user->getNickName() + " " + this->getName() + " :You're not channel operator\r\n");
 		return;
 	}
     unsigned int startIndex = (messages[2] == ":") ? 3 : 2;
@@ -187,7 +186,7 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 
 void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 {
-	if (this->modes['i'] == true && user->is_op() == false)
+	if (this->modes['i'] == true && user->is_op(*this) == false)
 		return;
 	if (messages.size() < 3 || messages[2] != this->getName())
 		return;
@@ -221,7 +220,7 @@ void	handle_nickname(User *user, std::vector<std::string> messages)
 	std::cout << "nick: " << nick << std::endl;
 	if (irc::Server::serverInstance->check_duplicate(nick) == true)
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 433, Nickname is already in use\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 433, Nickname is already in use\r\n");
 		return;
 	}
 	irc::Server::serverInstance->sendMsg(user->getUserFd(), "You have changed your nickname to " + nick + "\r\n");
@@ -259,9 +258,21 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 	}
 }
 
+bool isCommand(std::string message)
+{
+	if (message == "NICK" || message == "USER" || message == "JOIN" || message == "PART" || message == "PRIVMSG" || message == "QUIT" || message == "MODE" || message == "INVITE" || message == "TOPIC")
+		return (true);
+	return (false);
+}
+
 void execMessage(std::vector<std::string> messages, User *user)
 {
 	std::string message = messages[0];
+	if (isCommand(message) == false)
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 421, Unknown command\r\n");
+		return;
+	}
 	Channel *channel = irc::Server::serverInstance->getChannel(messages[1]);
 	if (message == "INVITE")
 		channel = irc::Server::serverInstance->getChannel(messages[2]);
@@ -308,7 +319,7 @@ void execMessage(std::vector<std::string> messages, User *user)
         	}
 			else
 			{
-				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, No such nick/channel\r\n");
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 401, No such nick/channel\r\n");
 			}
 		}
 		else if (messages[1][0] == '#')
@@ -327,7 +338,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 			}
 			if (it == channels.end())
 			{
-				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, No such nick/channel\r\n");
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 401, No such nick/channel\r\n");
 				return;
 			}
 			channel = *it;
@@ -343,7 +354,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 			}
 			if(it2 == channel->users.end())
 			{
-				irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 401, User not in channel\r\n");
+				irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 401, User not in channel\r\n");
 				return;
 			}
 			for (unsigned int i = 3; i < messages.size(); i++)
@@ -359,7 +370,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	if (channel == NULL)
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You're not on that channel\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 442, You're not on that channel\r\n");
 		return;
 	}
 	if (message == "PART")
@@ -380,7 +391,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 	{
 		channel->execTopic(user, messages);
 	}
-	else if (message == "KICK" && user->is_op() == true)
+	else if (message == "KICK" && user->is_op(*channel) == true)
 	{
 		channel->kickUser(channel, user, messages);
 	}

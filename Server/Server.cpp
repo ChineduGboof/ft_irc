@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 15:22:57 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 16:59:37 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,7 +355,7 @@ namespace irc
             }
 			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
 				return ;
-            if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "")
+            if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "" && scanMsg(_users[index - 1], "NICK") == "" )
             {
 				// std::cout << "yoniiiiii" << std::endl;
                 // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
@@ -398,7 +398,7 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
-					// closeSocketAndRemoveUser(index);
+					closeSocketAndRemoveUser(index);
 					return ;
 				}
 				execMessage(_users[index - 1]->getMessages(), _users[index-1]);

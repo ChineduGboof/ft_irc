@@ -30,6 +30,7 @@ private:
     bool        is_auth;
 
 	std::map<Channel, bool> invited_channels;
+	std::map<Channel, bool> channel_op;
 public:
     std::string _dataBuffer;
     std::vector<std::string> _incomingMsgs;
@@ -37,9 +38,6 @@ public:
     std::vector<std::string> _channelToJoin;
     std::vector<std::string> _channelKeys;
 
-	bool		is_channel_op;
-    // bool        is_auth;
-    // bool        joined_server;
 	std::deque<std::string> messages;
 
 public:
@@ -67,8 +65,8 @@ public:
     void printOutgoingMsgs();
     void printIncomingMsgs();
 	void addMessage(std::string message);
-	void setChannelOp(bool op);
-	bool is_op();
+	void setChannelOp(Channel channel_name, bool op);
+	bool is_op(Channel channel_name);
     ~User( void );
 };
 

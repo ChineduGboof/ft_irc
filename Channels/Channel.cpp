@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/16 14:10:00 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 16:16:22 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,17 +73,17 @@ void joinChannel(User *user, Channel *channel)
 {
 	if (channel->getUsers().size() >= channel->getmaxUsers())
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 471, Channel " + channel->getName() + " is full.\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 471, Channel " + channel->getName() + " is full.\r\n");
 		return;
 	}
 	if (channel->getModes()['i'] == true && user->getInvited(*channel) == false)
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 473, You are not invited to channel " + channel->getName() + ".\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 473, You are not invited to channel " + channel->getName() + ".\r\n");
 		return;
 	}
 	if (channel->getUsers().size() == 0)
 	{
-		user->setChannelOp(true);
+		user->setChannelOp(*channel, true);
 	}
 	channel->addUser(user);
 }
@@ -93,7 +93,7 @@ bool Channel::partChannel(User *user)
 	std::vector<User *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
 	if (it != this->users.end() && this->users.size() == 1)
 	{
-		user->setChannelOp(false);
+		user->setChannelOp(*this, false);
 		irc::Server::serverInstance->sendMsg(user->getUserFd()  , ":" + user->getNickName() + " PART " + this->getName() + " :leaving " +"\r\n");
 		this->users.erase(it);
 		irc::Server::serverInstance->deleteChannel(this);
@@ -101,13 +101,13 @@ bool Channel::partChannel(User *user)
 	}
 	else if (it != this->users.end())
 	{
-		user->setChannelOp(false);
+		user->setChannelOp(*this, false);
 		this->users.erase(it);
 		return true;
 	}
 	else
 	{
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 442, You are not in channel " + this->getName() + ".\r\n");
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":COY 442, You are not in channel " + this->getName() + ".\r\n");
 		return false;
 	}
 }
