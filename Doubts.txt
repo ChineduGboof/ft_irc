@@ -46,3 +46,15 @@ once causes readline, used by bash, to end the stream, so we would need to
 change bash to fix that :D). The ping-pong implementation he wanted from us 
 is not specified by the subject pdf or the checklist, and our client 
 reconnects anyway, so it wasn't really a problem.
+
+
+
+
+
+
+
+
+
+//TODO
+
+when one user join a channel then changed the topic,, if another user join the channel they cant see it.

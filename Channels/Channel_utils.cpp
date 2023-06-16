@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 12:45:30 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 14:05:22 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 		if (this->modes['l'] == true)
 		{
 			mode_str += "l ";
-			mode_str += std::to_string(this->maxUsers);
+			mode_str += utils::convertToString(this->maxUsers);
 		}
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
 	}
@@ -168,6 +168,7 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
 		return;
 	}
+	// std::cout << "here" << std::endl;
 	if (modes['t'] == true && user->is_op() == false)
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "482 " + user->getNickName() + " " + this->getName() + " :You're not channel operator\r\n");
@@ -181,8 +182,11 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
        	for (unsigned int i = startIndex + 1; i < messages.size(); i++)
            	topic += " " + messages[i];
     }
-	irc::Server::serverInstance->sendMsg(user->getUserFd(), "332 " + user->getNickName() + " " + this->getName() + " " + topic + "\r\n");
+	// irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 331 " + user->getNickName() + " " + this->getName() + " :No topic is set\r\n");
+	// this->sendMessage(":irc 331 " + user->getNickName() + " " + this->getName() + " :No topic is set\r\n", "");
+	// irc::Server::serverInstance->sendMsg(user->getUserFd(), "332 " + user->getNickName() + " " + this->getName() + " " + topic + "\r\n");
     this->setTopic(topic);
+	this->sendMessage(":irc 332 " + user->getNickName() + " " + this->getName() + " " + this->getTopic(), "");
 }
 
 void	Channel::inviteUser(User *user, std::vector<std::string> messages)
@@ -234,9 +238,9 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 	{
 		channel = irc::Server::serverInstance->createChannel(chnl_name, password);
 	}
-	std::cout << "channel_name: " << channel->getName() << std::endl;
-	std::cout << "channel_pass: " << channel->getKey() << std::endl;
-	std::cout << "main_passss: " << password << std::endl;
+	// std::cout << "channel_name: " << channel->getName() << std::endl;
+	// std::cout << "channel_pass: " << channel->getKey() << std::endl;
+	// std::cout << "main_passss: " << password << std::endl;
 	if(password != channel->getKey())
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 475 " + user->getNickName() + " " + chnl_name + " :Incorrect Channel Key\n");
@@ -254,7 +258,7 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 		return;
 	}
 	joinChannel(user, channel);
-	irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + chnl_name + " :" + channel->getTopic() + "\r\n");
+	irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + channel->getName() + " " + channel->getTopic() + "\r\n");
 	for (size_t i = 0; i < channel->users.size() ; i++)
 	{
 		// if(channel->users.at(i)->getNickName() == user->getNickName())
@@ -298,6 +302,8 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	else if (message == "PRIVMSG")
 	{
+		if (messages.size() < 3)
+			return;
 		std::string msg = messages[2];
 		if (messages[1][0] != '#')
 		{
@@ -357,6 +363,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 			// std::string msg2 = ":" + user->getNickName() + " PART :" + channel->getName() + "\n";
 			channel->sendMessage(msg2, user->getNickName());
 		}
+		return;
 	}
 	else if (message == "NICK")
 	{

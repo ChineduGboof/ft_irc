@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 17:46:34 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 12:13:02 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,65 +55,66 @@ namespace irc {
     class Server {
         private:
 
-            std::string         _host;
-            int                 _port;
-            int                 _status;
-            int                 _sockfd;
-            std::string         _password;
-            std::vector<pollfd> _pollFD;
-            bool                _running;
-            std::string         _remoteIP;
+            std::string                 _host;
+            std::string                 _password;
+            std::string                 _remoteIP;
+            std::vector<pollfd>         _pollFD;
+            int                         _port;
+            int                         _status;
+            int                         _sockfd;
+            bool                        _running;
             
-            void initPollFD(int fd);
+            void    initPollFD(int fd);
+
+            Server();
 			
         public:
-            Server();
-            Server( const std::string& host, const int& port, const std::string& password );
-            ~Server();
+            Server  ( const std::string& host, const int& port, const std::string& password );
+            ~Server ();
 
-            static Server*      serverInstance;
-            void config();
-            void run();
-            void handleNewConnection();
-            void handleClientData(size_t index);
-            void closeClientSocket(size_t index);
-            void handleSignal(int signal);
+            static  Server*      serverInstance;
+            void    config();
+            void    run();
+            void    handleNewConnection();
+            void    handleClientData(size_t index);
+            void    closeClientSocket(size_t index);
+            void    polling();
+            void    printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
+            void    searchingForConnections();
+            void    closeSocketAndRemoveUser(size_t index);
+            void    bye();
+            std::string getRemoteIP() const;
+
+            void    handleSignal(int signal);
             static void signalHandler(int signal);
-            void printNewConnectionInfo(const struct sockaddr_storage& remoteAddress, int fd);
             
             //user
             std::vector<User *> _users;
-            void createNewUser(int fd);
-            void removeUser(int fd);
-            // User &getUser(int fd);
             std::vector<User *>& getUser( void );
+            void    createNewUser(int fd);
+            void    removeUser(int fd);
+            void    displayUsers();
+            bool    authenticate_user(int index);
+
             void sendMsg(int fd, std::string msg);
-            bool authenticate_user(int index);
             std::string ExtractFromMessage(const std::string& message, const std::string &to_find);
             bool check_duplicate(std::string nick);
             int getFdByNick(std::string nick);
             bool findCap(int index);
-            void displayUsers();
             void displayChannels();
             std::string scanMsg(User *users, std::string str);
             // std::string find(std::string, )
 
-            void bye();
             bool verifyPassword(std::string userPassword);
 			
 			// Channels
-			std::vector<Channel *> _channels;
 			Channel *createChannel(std::string name, std::string password);
-			// void deleteChannel(Channel channel);
 			Channel *getChannel(std::string name);
-            void deleteChannel(Channel* channel);
-            std::string getRemoteIP() const;
-            void splitChannelInp(int index);
+            void    deleteChannel(Channel* channel);
+            void    splitChannelInp(int index);
             
+			std::vector<Channel *> _channels;
 			std::vector<Channel *> getChannels();
-            void polling();
-            void searchingForConnections();
-            void closeSocketAndRemoveUser(size_t index);
     };
 }
 
