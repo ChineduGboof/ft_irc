@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/15 19:28:04 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 12:45:30 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,6 @@ void Channel::switchMode(User *user, std::vector<std::string> messages)
 				break;
 		}
 	}
-	std::cout << "mode_str: " << mode_str << std::endl;
 	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
 }
 
@@ -167,6 +166,11 @@ void	Channel::execTopic(User *user, std::vector<std::string> messages)
 	if (messages.size() == 2)
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "The topic for " + this->getName() + " is " + this->getTopic() + "\r\n");
+		return;
+	}
+	if (modes['t'] == true && user->is_op() == false)
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), "482 " + user->getNickName() + " " + this->getName() + " :You're not channel operator\r\n");
 		return;
 	}
     unsigned int startIndex = (messages[2] == ":") ? 3 : 2;
@@ -188,9 +192,7 @@ void	Channel::inviteUser(User *user, std::vector<std::string> messages)
 	if (messages.size() < 3 || messages[2] != this->getName())
 		return;
 	std::string nick = messages[1];
-	// std::vector<User *> &users = irc::Server::serverInstance->getUser(); when the server is up
-	std::vector<User *> users = irc::Server::serverInstance->getUser();
-	for(std::vector<User *>::iterator it = users.begin(); it != users.end(); ++it)
+	for(std::vector<User *>::iterator it = irc::Server::serverInstance->getUser().begin() ; it != irc::Server::serverInstance->getUser().end() ; ++it)
 	{
 		if ((*it)->getNickName() == nick)
 		{
@@ -238,6 +240,17 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 	if(password != channel->getKey())
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 475 " + user->getNickName() + " " + chnl_name + " :Incorrect Channel Key\n");
+		return;
+	}
+	if (channel->users.size() >= channel->getmaxUsers())
+	{
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 471 " + user->getNickName() + " " + chnl_name + " :Cannot join channel (+l)\n");
+		return;
+	}
+	if (channel->getModes()['i'] == true && user->getInvited(*channel) == false)
+	{
+		std::cout << "THISSSSSSSS CONDDDD" << std::endl;
+		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 473 " + user->getNickName() + " " + chnl_name + " :Cannot join channel (+i)\n");
 		return;
 	}
 	joinChannel(user, channel);

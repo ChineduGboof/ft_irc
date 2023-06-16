@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 17:39:05 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/15 19:56:41 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,7 @@ namespace irc
 	void Server::sendMsg(int fd, std::string msg)
 	{
 		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
-			throw std::runtime_error("Send error"); 
+			throw std::runtime_error("Good Bye"); 
 		}
 	}
 	void Server::removeUser(int fd)
@@ -448,7 +448,7 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
-					closeSocketAndRemoveUser(index);
+					// closeSocketAndRemoveUser(index);
 					return ;
 				}
                 //once already a memeber

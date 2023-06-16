@@ -89,6 +89,11 @@ bool	User::is_op()
 
 void	User::setInvited(Channel channel_name, bool invited)
 {
+	if (this->invited_channels.find(channel_name) == this->invited_channels.end())
+	{
+		this->invited_channels.insert(std::pair<Channel, bool>(channel_name, invited));
+		return ;
+	}
 	this->invited_channels[channel_name] = invited;
 }
 
