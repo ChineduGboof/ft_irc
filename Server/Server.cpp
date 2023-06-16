@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 16:59:37 by Omar             ###   ########.fr       */
+/*   Created: 2023/06/16 17:55:13 by Omar              #+#    #+#             */
+/*   Updated: 2023/06/16 17:55:17 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,8 +211,8 @@ namespace irc
 		{
 			if ((*it)->getUserFd() == fd)
 			{
-				_users.erase(it);
 				delete *it;
+				_users.erase(it);
 				break;
 			}
 		}
@@ -434,12 +434,33 @@ namespace irc
 		std::cout << "-----------------------------------------------------------------------------\n";
 	}
 
+	void Server::removeUser_fromChannels(User *user)
+	{
+		size_t x = 0;
+		size_t y = 0;
+		while (y < _channels.size())
+		{
+			x = 0;
+			while (x < _channels.at(y)->users.size())
+			{
+				if (_channels.at(y)->users.at(x) == user)
+				{
+					_channels.at(y)->users.erase(_channels.at(y)->users.begin() + x);
+					break ;
+				}
+				x++;
+			}
+			y++;
+		}
+	}
+
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
 		if(index  == 0)
 			std::cerr << "recv error" << std::endl;
 		close(_pollFD[index].fd);
 		_pollFD.erase(_pollFD.begin() + index);
+		removeUser_fromChannels(_users[index - 1]);
 		removeUser(_users[index - 1]->getUserFd());
 	} 
    

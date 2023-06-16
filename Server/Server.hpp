@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 12:13:02 by cegbulef         ###   ########.fr       */
+/*   Created: 2023/06/16 17:55:22 by Omar              #+#    #+#             */
+/*   Updated: 2023/06/16 17:55:28 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ namespace irc {
 			Channel *getChannel(std::string name);
             void    deleteChannel(Channel* channel);
             void    splitChannelInp(int index);
-            
+            void	removeUser_fromChannels(User *user);
 			std::vector<Channel *> _channels;
 			std::vector<Channel *> getChannels();
     };
