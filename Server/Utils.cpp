@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 23:47:23 by gboof             #+#    #+#             */
-/*   Updated: 2023/06/13 11:38:01 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/16 12:16:05 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,26 +34,6 @@ namespace utils {
         }
         return val;
     }
-
-    // std::queue<std::string> splitByDelimiter(const std::string& val, const std::string& delim) {
-    //     std::queue<std::string> ret;
-    //     size_t startPos = std::string::npos;
-    //     size_t endPos = 0;
-
-    //     while ((endPos = val.find(delim, startPos + 1)) != std::string::npos) {
-    //         std::string word = val.substr(startPos + 1, endPos - startPos - 1);
-    //         ret.push(word);
-    //         startPos = endPos;
-    //     }
-
-    //     // Add the remaining part of the string if any
-    //     std::string lastWord = val.substr(startPos + 1);
-    //     if (!lastWord.empty())
-    //         ret.push(lastWord);
-
-    //     return ret;
-    // }
-
 
     std::vector<std::string> splitByDelimiter(const std::string& val, const std::string& delim) {
     std::vector<std::string> ret;
