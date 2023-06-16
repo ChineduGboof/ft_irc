@@ -122,12 +122,9 @@ size_t User::receive() {
     if (bytesRead <= 0) {
         return bytesRead;
     }
-    std::cout << "bytesRead: " << bytesRead << std::endl;
     if(bytesRead < sizeof(buffer))
         buffer[bytesRead] = '\0';
-
     _dataBuffer = buffer;
-
     std::vector<std::string> temp = utils::splitByDelimiter(_dataBuffer, "\r\n");
     _incomingMsgs.clear();
     while (!temp.empty()) {
@@ -137,9 +134,6 @@ size_t User::receive() {
         }
         temp.erase(temp.begin(), temp.begin() + 1);
     }
-    std::cout << "------------------------------------------------------------" << std::endl;
-    printIncomingMsgs();
-    std::cout << "------------------------------------------------------------" << std::endl;
     return bytesRead;
 }
 

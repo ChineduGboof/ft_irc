@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/16 17:55:13 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/16 17:55:17 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 18:32:35 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,6 @@ namespace irc
 		}
 		int optval = 1;
 		if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
-			throw std::runtime_error("Server: socket options error");
-		}
-		if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&optval), sizeof(optval)) < 0) {
 			throw std::runtime_error("Server: socket options error");
 		}
 		if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) < 0) {
@@ -356,11 +353,7 @@ namespace irc
 			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
 				return ;
             if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "" && scanMsg(_users[index - 1], "NICK") == "" )
-            {
-				// std::cout << "yoniiiiii" << std::endl;
-                // std::cout << "ops got smtn:|" << _users[index - 1]->_dataBuffer << "|" << std::endl;
                 return ;
-            }
             if (_users[index - 1]->getIsAuth() == false)
             {
 				if(_users[index - 1]->_incomingMsgs.at(0) == "JOIN" && _users[index - 1]->_incomingMsgs.size() == 2)
@@ -378,7 +371,7 @@ namespace irc
                 }
                 else
                 {
-					std::cout << "not authenticated\n";
+					std::cout << "Not authenticated\n";
 					closeSocketAndRemoveUser(index);
                 }
              }
