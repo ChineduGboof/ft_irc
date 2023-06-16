@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 12:49:06 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/16 12:50:02 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,8 +201,8 @@ namespace irc
 
 	void Server::sendMsg(int fd, std::string msg)
 	{
-		if (send(fd, msg.c_str(), msg.length(), 0) < 0){
-			throw std::runtime_error("Send error"); 
+		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
+			std::cout << "Send error" << std::endl; 
 		}
 	}
 
@@ -346,6 +346,11 @@ namespace irc
         if (_pollFD[index].fd != _sockfd)
         {
             int bytesRead = _users[index - 1]->receive();
+			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
+			{
+				std::cout << "incoming msg is empty" << std::endl;
+				return ;
+			}
             if (bytesRead <= 0)
             {
 				std::cerr << "recv error" << std::endl;
