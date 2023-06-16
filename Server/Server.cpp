@@ -6,7 +6,7 @@
 /*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 12:50:02 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/16 14:03:19 by cegbulef         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,7 @@ namespace irc
 
 			if (_pollFD[i].revents & POLLIN)
 			{
-				if (_pollFD[i].fd == _sockfd)
-				{
+				if (_pollFD[i].fd == _sockfd) {
 					handleNewConnection();
 					break;
 				}
@@ -201,7 +200,7 @@ namespace irc
 
 	void Server::sendMsg(int fd, std::string msg)
 	{
-		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
+		if (send(fd, msg.c_str(), msg.length(), 0) < 0){
 			std::cout << "Send error" << std::endl; 
 		}
 	}
@@ -213,6 +212,7 @@ namespace irc
 			if ((*it)->getUserFd() == fd)
 			{
 				_users.erase(it);
+				delete *it;
 				break;
 			}
 		}
@@ -301,6 +301,7 @@ namespace irc
         }
         return false;
     }
+
 	void Server::splitChannelInp(int index)
 	{
 		size_t i = 0;
@@ -367,19 +368,18 @@ namespace irc
              try{
                   if(authenticate_user(index))
                 {
-                        std::string msg = ":irc 001 " + _users[index - 1]->getNickName() + " :Welcome to the perfect Chat system " + _users[index - 1]->getNickName() + "\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 002 " + _users[index - 1]->getNickName() + " :Host are Omar, Chinedu and Yonatan\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 003 " + _users[index - 1]->getNickName() + " :Created on july->2023\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 004 " + _users[index - 1]->getNickName()  + " :Enjoy your stay!\n";
-
+					std::string msg = ":irc 001 " + _users[index - 1]->getNickName() + " :Welcome to the perfect Chat system " + _users[index - 1]->getNickName() + "\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 002 " + _users[index - 1]->getNickName() + " :Host are Omar, Chinedu and Yonatan\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 003 " + _users[index - 1]->getNickName() + " :Created on july->2023\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 004 " + _users[index - 1]->getNickName()  + " :Enjoy your stay!\n";
                 }
                 else
                 {
-                        std::cout << "not authenticated\n";
-						closeSocketAndRemoveUser(index);
+					std::cout << "not authenticated\n";
+					closeSocketAndRemoveUser(index);
                 }
              }
              catch(std::exception & e)
@@ -398,10 +398,10 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
+					closeSocketAndRemoveUser(index);
 					return ;
 				}
-                //once already a memeber
-				execMessage(_users[index - 1]->getMessages(), _users[index-1]); // (User, Channel
+				execMessage(_users[index - 1]->getMessages(), _users[index-1]);
 
 				displayUsers();
 				displayChannels();
@@ -433,6 +433,7 @@ namespace irc
 		}
 		std::cout << "-----------------------------------------------------------------------------\n";
 	}
+
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
 		if(index  == 0)
@@ -455,7 +456,7 @@ namespace irc
 
 	void Server::bye()
 	{
-		_running = false; // Stop the main loop
+		_running = false;
 
 		// Close socket connections
 		for (size_t i = 0; i < _pollFD.size(); i++)
@@ -466,36 +467,30 @@ namespace irc
 				_pollFD[i].fd = -1;
 			}
 		}
-		// Free memory used by User objects
-		for (size_t i = 0; i < _users.size(); i++)
-		{
-			delete _users[i];
+
+		std::vector<User *>::iterator it = _users.begin();
+		for (;it != _users.end(); it++) {
+			delete *it;
 		}
 		_users.clear();
-
-		// Clear pollFD vector
 		_pollFD.clear();
 
 		// Free socket file descriptor
-		if (_sockfd != -1)
-		{
+		if (_sockfd != -1) {
 			close(_sockfd);
 			_sockfd = -1;
 		}
 	}
 
-
-
 	void Server::handleSignal(int signal)
 	{
 		std::cout << "Received signal: " << signal << std::endl;
-		_running = false; // Set _running to false to stop the server
+		_running = false;
 	}
 
 	void Server::signalHandler(int signal)
 	{
-		if (serverInstance != NULL)
-		{
+		if (serverInstance != NULL) {
 			serverInstance->handleSignal(signal);
 		}
 	}
@@ -507,8 +502,7 @@ namespace irc
 		return false;
 	}
 
-	std::vector<Channel *> irc::Server::getChannels()
-	{
+	std::vector<Channel *> irc::Server::getChannels() {
 		return this->_channels;
 	}
 
