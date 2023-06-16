@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_utils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoni <yoni@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 09:23:23 by yoni             ###   ########.fr       */
+/*   Updated: 2023/06/16 10:09:28 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,19 +238,16 @@ void join_channel(std::string chnl_name , User *user, Channel *channel, std::str
 	{
 		channel = irc::Server::serverInstance->createChannel(chnl_name, password);
 	}
-	std::cout << "channel_name: " << channel->getName() << std::endl;
-	std::cout << "channel_pass: " << channel->getKey() << std::endl;
-	std::cout << "main_passss: " << password << std::endl;
+	// std::cout << "channel_name: " << channel->getName() << std::endl;
+	// std::cout << "channel_pass: " << channel->getKey() << std::endl;
+	// std::cout << "main_passss: " << password << std::endl;
 	if(password != channel->getKey())
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 475 " + user->getNickName() + " " + chnl_name + " :Incorrect Channel Key\n");
 		return;
 	}
 	joinChannel(user, channel);
-	if(channel->getTopic() == "")
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + channel->getName() + " " + channel->getTopic() + "\r\n");
-	else
-		irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 331 " + user->getNickName() + " " + channel->getName() + " :No topic is set\r\n");
+	irc::Server::serverInstance->sendMsg(user->getUserFd(), ":irc 332 " + user->getNickName() + " " + channel->getName() + " " + channel->getTopic() + "\r\n");
 	for (size_t i = 0; i < channel->users.size() ; i++)
 	{
 		// if(channel->users.at(i)->getNickName() == user->getNickName())
