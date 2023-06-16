@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/16 17:55:13 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/16 18:32:35 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 18:36:34 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,7 +421,7 @@ namespace irc
 		std::cout << "\t\t\t Channels List" << std::endl;
 		while (x < this->_channels.size())
 		{
-			std::cout << "channel_name:\t" << _channels.at(x)->getName() << " users : "  << _channels.at(x)->users.size() << std::endl;
+			std::cout << "channel_name:\t" << _channels.at(x)->getName() << std::endl;
 			x++;
 		}
 		std::cout << "-----------------------------------------------------------------------------\n";
