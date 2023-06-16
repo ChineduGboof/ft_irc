@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 10:09:28 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 10:25:27 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,6 +290,8 @@ void execMessage(std::vector<std::string> messages, User *user)
 	}
 	else if (message == "PRIVMSG")
 	{
+		if (messages.size() < 3)
+			return;
 		std::string msg = messages[2];
 		if (messages[1][0] != '#')
 		{
@@ -349,6 +351,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 			// std::string msg2 = ":" + user->getNickName() + " PART :" + channel->getName() + "\n";
 			channel->sendMessage(msg2, user->getNickName());
 		}
+		return;
 	}
 	else if (message == "NICK")
 	{

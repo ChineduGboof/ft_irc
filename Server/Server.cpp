@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cegbulef <cegbulef@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/15 20:53:08 by cegbulef         ###   ########.fr       */
+/*   Updated: 2023/06/16 11:10:06 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,7 @@ namespace irc
 	void Server::sendMsg(int fd, std::string msg)
 	{
 		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
-			throw std::runtime_error("Send error"); 
+			std::cout << "Send error" << std::endl; 
 		}
 	}
 	void Server::removeUser(int fd)
@@ -393,6 +393,11 @@ namespace irc
         if (_pollFD[index].fd != _sockfd)
         {
             int bytesRead = _users[index - 1]->receive();
+			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
+			{
+				std::cout << "incoming msg is empty" << std::endl;
+				return ;
+			}
             if (bytesRead <= 0)
             {
 				std::cerr << "recv error" << std::endl;
