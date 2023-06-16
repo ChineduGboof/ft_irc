@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 11:10:06 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 14:52:19 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ namespace irc
 
 	void Server::sendMsg(int fd, std::string msg)
 	{
-		if (send(fd, msg.c_str(), msg.length(), SO_NOSIGPIPE) < 0){
+		if (send(fd, msg.c_str(), msg.length(), 0) < 0){
 			std::cout << "Send error" << std::endl; 
 		}
 	}
@@ -393,17 +393,14 @@ namespace irc
         if (_pollFD[index].fd != _sockfd)
         {
             int bytesRead = _users[index - 1]->receive();
-			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
-			{
-				std::cout << "incoming msg is empty" << std::endl;
-				return ;
-			}
             if (bytesRead <= 0)
             {
 				std::cerr << "recv error" << std::endl;
                 closeSocketAndRemoveUser(index);
 				return ;
             }
+			if(_users[index - 1]->_dataBuffer == "\r\n" || _users[index - 1]->_dataBuffer == "" || _users[index - 1]->_dataBuffer == "\n")
+				return ;
             if(findCap(index) == true && scanMsg(_users[index - 1], "PASS") == "")
             {
 				// std::cout << "yoniiiiii" << std::endl;

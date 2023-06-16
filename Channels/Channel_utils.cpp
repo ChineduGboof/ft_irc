@@ -6,7 +6,7 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 10:25:27 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 13:22:43 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,9 +272,13 @@ void execMessage(std::vector<std::string> messages, User *user)
 	// }
 	if (message == "JOIN")
 	{
+		if(messages.size() < 2)
+			return;
 		size_t x = 0;
 		while (x < user->_channelToJoin.size())
 		{
+			if(user->_channelToJoin.at(x).at(0) != '#')
+				user->_channelToJoin.at(x).insert(0, "#");
 			channel = irc::Server::serverInstance->getChannel(user->_channelToJoin.at(x));
 			if(user->_channelKeys.size())
 				join_channel(user->_channelToJoin.at(x), user, channel, user->_channelKeys.at(x));
@@ -282,6 +286,7 @@ void execMessage(std::vector<std::string> messages, User *user)
 				join_channel(user->_channelToJoin.at(x), user, channel, "");
 			x++;
 		}
+		return;
 	}
 	else if (message == "PING")
 	{
