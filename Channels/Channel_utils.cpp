@@ -6,7 +6,7 @@
 /*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 15:48:16 by yonamog2          #+#    #+#             */
-/*   Updated: 2023/06/16 14:09:32 by Omar             ###   ########.fr       */
+/*   Updated: 2023/06/16 14:20:53 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,82 +31,129 @@ void	Channel::kickUser(Channel *channel, User *user, std::vector<std::string> me
 
 }
 
-void Channel::switchMode(User* user, std::vector<std::string> messages)
+void Channel::switchMode(User *user, std::vector<std::string> messages)
 {
-    bool mode_bool = false;
-    if (messages.size() < 2 || messages[1] != this->getName() || !user->is_op())
-        return;
-
-    std::string mode = messages[2];
-    if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
-        return;
-
-    std::string modeStr = "";
-    std::map<char, bool> modeFlags;
-    modeFlags['o'] = this->modes['o'];
-    modeFlags['i'] = this->modes['i'];
-    modeFlags['t'] = this->modes['t'];
-    modeFlags['l'] = this->modes['l'];
-    modeFlags['k'] = this->modes['k'];
-
-    for (size_t i = 0; i < mode.length(); i++)
-    {
-        char c = mode[i];
-
-        switch (c)
-        {
-            case '+':
-                mode_bool = true;
-                modeStr += "+";
-                break;
-
-            case '-':
-                mode_bool = false;
-                modeStr += "-";
-                break;
-
-            case 'o':
-            case 'i':
-            case 't':
-                modeStr += c;
-                modeFlags[c] = mode_bool;
-                break;
-
-            case 'l':
-                if (messages.size() > 3 && mode[0] == '+' && std::atoi(messages[3].c_str()) > 0 && std::atoi(messages[3].c_str()) < 1000)
-                {
-                    modeStr += c;
-                    modeFlags[c] = true;
-                    this->maxUsers = std::atoi(messages[3].c_str());
-                }
-                else
-                {
-                    modeFlags[c] = false;
-                    this->maxUsers = 1000;
-                }
-                break;
-
-            case 'k':
-                if (messages.size() > 3 && mode[0] == '+')
-                {
-                    modeStr += c;
-                    modeFlags[c] = true;
-                    this->key = messages[3];
-                }
-                else
-                {
-                    modeFlags[c] = false;
-                    this->key = "";
-                }
-                break;
-
-			}
-			case ('k'):
-				mode_str += "k";
-				break;
-		}
-	}
-	this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
+ bool mode_bool = false;
+ if (messages.size() < 2 || messages[1] != this->getName() || user->is_op() == false)
+     return;
+ if (messages.size() == 2)
+ {
+     std::string mode_str = "";
+     if (this->modes['o'] == true)
+         mode_str += "o";
+     if (this->modes['i'] == true)
+         mode_str += "i";
+     if (this->modes['t'] == true)
+         mode_str += "t";
+     if (this->modes['k'] == true)
+         mode_str += "k";
+     if (this->modes['l'] == true)
+     {
+         mode_str += "l ";
+         mode_str += utils::convertToString(this->maxUsers);
+     }
+     irc::Server::serverInstance->sendMsg(user->getUserFd(), "324 " + user->getNickName() + " " + this->getName() + " +" + mode_str + "\r\n");
+ }
+ std::string mode = messages[2];
+ if (mode.length() < 2 || (mode[0] != '+' && mode[0] != '-'))
+     return;
+ for (unsigned int i = 0; i < mode.length(); i++)
+ {
+     if (mode[i] == '+')
+         mode_bool = true;
+     else if (mode[i] == '-')
+         mode_bool = false;
+     else if (mode[i] == 'o')
+     {
+         if (mode[0] == '+' && mode.length() > 3)
+         {
+             std::string nick = mode.substr(3);
+             std::vector<User *> users = this->getUsers();
+             for(std::vector<User *>::iterator it = users.begin(); it != users.end(); ++it)
+             {
+                 if ((*it)->getNickName() == nick)
+                 {
+                     (*it)->setChannelOp(mode_bool);
+                     break;
+                 }
+             }
+             this->modes['o'] = mode_bool;
+         }
+         else
+             this->modes['o'] = mode_bool;
+     }
+     else if (mode[i] == 'i')
+     {
+         this->modes['i'] = mode_bool;
+     }
+     else if (mode[i] == 't')
+     {
+         this->modes['t'] = mode_bool;
+     }
+     else if (mode[i] == 'l' && messages.size() > 3)
+     {
+         if (mode[0] == '+' && std::atoi(messages[3].c_str()) > 0 && std::atoi(messages[3].c_str()) < 1000)
+         {
+             this->maxUsers = std::atoi(messages[3].c_str());
+             this->modes['l'] = true;
+         }
+         else
+         {
+             this->modes['l'] = false;
+             this->maxUsers = 1000;
+         }
+     }
+     else if (mode[i] == 'k' && messages.size() > 3)
+     {
+         if (mode[0] == '+' && messages[3].length() > 0)
+         {
+             this->modes['k'] = true;
+             this->key = messages[3];
+         }
+         else
+         {
+             this->modes['k'] = false;
+             this->key = "";
+         }
+     }
+     else
+         return;
+ }
+ std::string mode_str = "";
+ for (size_t i = 0; i < mode.length(); i++)
+ {
+     char c = mode[i];
+     switch (c)
+     {
+         case ('+'):{
+             mode_str += "+";
+             break;
+         }
+         case ('-'):{
+             mode_str += "-";
+             break;
+         }
+         case ('o'):
+             mode_str += "o";
+             break;
+         case ('i'):
+             mode_str += "i";
+             break;
+         case ('t'):
+             mode_str += "t";
+             break;
+         case ('l'):
+         {
+             mode_str += "l";
+             break;
+         }
+         case ('k'):
+             mode_str += "k";
+             break;
+     }
+ }
+ std::cout << "mode_str: " << mode_str << std::endl;
+ this->sendMessage(":" + user->getNickName() + " MODE " + this->getName() + " " + mode_str + "\r\n", "");
 }
 
 
