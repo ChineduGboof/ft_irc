@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: Omar <Oabushar@student.42abudhabi.ae>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 18:04:08 by Omar              #+#    #+#             */
-/*   Updated: 2023/06/15 18:36:55 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 14:10:00 by Omar             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Channel::Channel(std::string name)
 	this->modes['t'] = false;
 	this->modes['i'] = false;
 	this->modes['l'] = false;
+	this->topic = "";
 	this->key = "";
 }
 
@@ -70,12 +71,6 @@ void	Channel::setKey(std::string password)
 
 void joinChannel(User *user, Channel *channel)
 {
-	// std::vector<User *>::iterator it = std::find(channel->getUsers().begin(), channel->getUsers().end(), user);
-	// if (it != channel->getUsers().end())
-	// {
-	// 	irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 443, You are already in channel " + channel->getName() + ".\r\n");
-	// 	return;
-	// }
 	if (channel->getUsers().size() >= channel->getmaxUsers())
 	{
 		irc::Server::serverInstance->sendMsg(user->getUserFd(), "Error: 471, Channel " + channel->getName() + " is full.\r\n");
@@ -161,7 +156,7 @@ Channel	*irc::Server::createChannel(std::string name, std::string password)
 	}
 	Channel *newChannel = new Channel(name);
 	newChannel->setKey(password);
-	std::cout << "inisde_pass: " << newChannel->getKey() << std::endl;
+	// std::cout << "inisde_pass: " << newChannel->getKey() << std::endl;
 	this->_channels.push_back(newChannel);
 	return newChannel;
 }

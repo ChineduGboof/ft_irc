@@ -6,11 +6,9 @@
 /*   By: yonamog2 <yonamog2@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/06/16 14:52:19 by yonamog2         ###   ########.fr       */
+/*   Updated: 2023/06/16 15:09:54 by yonamog2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 
 #include "Server.hpp"
 
@@ -22,11 +20,12 @@ namespace irc
 	Server::Server() {}
 
 	Server::Server(const std::string &host, const int &port, const std::string &password)
-		: _host(host), _port(port), _password(password), _running(false)
+		: _host(host), _password(password), _port(port), _running(false)
 	{
 		serverInstance = this;
 		std::cout << GREEN "Server: " + _host + " port: " << _port << " password: " + _password + DEFAULT << std::flush << std::endl;
 	}
+
 
 	Server::~Server()
 	{
@@ -119,7 +118,6 @@ namespace irc
 		{
 			if (_pollFD[i].revents & POLLOUT && _pollFD[i].fd != _sockfd)
 			{
-				// Find the user associated with the file descriptor
 				User* user = NULL;
 				for (std::vector<User*>::iterator it = getUser().begin(); it != getUser().end(); ++it) {
 					if ((*it)->getUserFd() == _pollFD[i].fd) {
@@ -137,11 +135,13 @@ namespace irc
 
 			if (_pollFD[i].revents & POLLIN)
 			{
-				// std::cout << "Poll FD: " << _pollFD[i].fd << "SOCK FD: "<< _sockfd << std::endl;
-				if (_pollFD[i].fd == _sockfd)
+				if (_pollFD[i].fd == _sockfd) {
 					handleNewConnection();
-				else
+					break;
+				}
+				else {
 					handleClientData(i);
+				}
 			}
 		}
 	}
@@ -204,6 +204,7 @@ namespace irc
 			std::cout << "Send error" << std::endl; 
 		}
 	}
+
 	void Server::removeUser(int fd)
 	{
 		for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++)
@@ -211,10 +212,12 @@ namespace irc
 			if ((*it)->getUserFd() == fd)
 			{
 				_users.erase(it);
+				delete *it;
 				break;
 			}
 		}
 	}
+
 	bool Server::check_duplicate(std::string nick)
 	{
 		std::vector<User *>::iterator it = _users.begin();
@@ -242,89 +245,42 @@ namespace irc
 		std::string pass = scanMsg(_users[index - 1], "PASS");
 		std::string user_name = scanMsg(_users[index - 1], "USER");
 		std::string nick_name = scanMsg(_users[index - 1], "NICK");
-		// std::string pass = ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ");
-		// std::string user_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "USER ");
-		// std::string nick_name = ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ");
-		// std::cout << "pass: " << pass << std::endl;
-		// std::cout << "user: " << user_name << std::endl;
-		// std::cout << "nick: " << nick_name << std::endl;
 		if(pass == _password && check_duplicate(nick_name) == false)
 		{
 			std::cout << "WELCOME : " << nick_name << " To Our IRC server , Enjoy!" << std::endl;
-			// size_t x = 0;
 			_users[index - 1]->setNickName(nick_name);
 			_users[index - 1]->setUserName(user_name);
 			_users[index - 1]->setIsAuth(true);
-			// while (x < _users.size())
-			// {
-			// 	std::cout << "-----------------------------------------------------------------------------\n";
-			// 	std::cout << "\t\t\tUser Info" << std::endl;
-			// 	std::cout << "Fd:\t" << _users.at(x)->getUserFd() << std::endl;
-			// 	std::cout << "Nick:\t" << _users.at(x)->getNickName() << std::endl;
-			// 	std::cout << "User:\t" << _users.at(x)->getUserName() << std::endl;
-			// 	std::cout << "Is_auth:\t" << _users.at(x)->getIsAuth() << std::endl;
-			// 	std::cout << "Users:\t" << _users.size() << std::endl << std::endl << std::endl;
-			// 	x++;
-			// 	std::cout << "-----------------------------------------------------------------------------\n";
-			// }
 			return true;
 
         }
         else
         {
-            if(pass == "" || pass != _password)
-            {
-                // std::string store = ("464 : INCORRECT PASSWORD \r\n");
-                // this->sendMsg(_users[index - 1]->getUserFd(), store);
+            if(pass == "" || pass != _password) {
                 throw std::runtime_error("INCORRECT PASSWORD\n");
             }
-            if(check_duplicate(nick_name) == true)
-            {
-                // this->sendMsg(_users[index - 1]->getUserFd(), ("Nickname " + nick_name + " is already in use.\r\n"));
+            if(check_duplicate(nick_name) == true) {
                 throw std::runtime_error("duplicate user\n");
             }
-            // std::cout << "-----------------------------------------------------------------------------\n";
-            // std::cout << "duplicate or incorrect pass" << std::endl;
-            // std::cout << "pass= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "PASS ") << std::endl;
-            // std::cout << "nick= " << ExtractFromMessage(_users[index - 1]->_dataBuffer, "NICK ") << std::endl;
-            // std::cout << "-----------------------------------------------------------------------------\n";
-            // if(!pass.empty() || !nick_name.empty())
-            //     removeUser(_users[index - 1]->getUserFd());
         }
         return false;
     }
 
 	std::string Server::ExtractFromMessage(const std::string& message, const std::string &to_find) {
-		// Find the line starting with "PASS"
 			size_t lineStart = message.find(to_find);
 			
-			// If "PASS" line found, extract the password
 			if (lineStart != std::string::npos) {
 				size_t toFindStart = lineStart + std::string(to_find).length();
 				
-				// Find the end of the password
 				size_t passwordEnd = message.find_first_of("\r\n", toFindStart);
 				
-				// Extract the password substring
 				std::string password = message.substr(toFindStart, passwordEnd - toFindStart);
 				
 				return password;
 			}
-			
-			// If no "PASS" line found, return an empty string or handle the case accordingly
 			return "";
 	}
-	// int Server::getFdByNick(std::string nick)
-	// {
-	//     std::vector<User *>::iterator it = _users.begin();
-	//     while (it != _users.end())
-	//     {
-	//         if((*it)->getUserNick() == nick)
-	//             return ((*it)->getNickName());
-	//         it++;
-	//     }
-	//     return "";
-	// }
+
 	int Server::getFdByNick(std::string nick)
 	{
 		std::vector<User *>::iterator it = _users.begin();
@@ -340,16 +296,15 @@ namespace irc
     bool Server::findCap(int index)
     {
         for (std::vector<std::string>::const_iterator it = _users[index - 1]->_incomingMsgs.begin(); it != _users[index - 1]->_incomingMsgs.end(); ++it) {
-            // std::cout << "Find Cap Message => " << *it << std::endl;
             if(*it == "CAP")
                 return true;
         }
         return false;
     }
+
 	void Server::splitChannelInp(int index)
 	{
 		size_t i = 0;
-		// std::cout << "size of msg : " << _users[index - 1]->_incomingMsgs.size() << std::endl;
 		_users[index -1 ]->_channelToJoin.clear();
 		_users[index -1 ]->_channelKeys.clear();
 		while (i < _users[index - 1]->_incomingMsgs.size())
@@ -370,7 +325,6 @@ namespace irc
 						_users[index -1 ]->_channelKeys.push_back(splitWords[i]);
 				}
 			}
-			// std::cout << "msg: " << _users[index - 1]->_incomingMsgs.at(i) << std::endl;
 			i++;
 		}
 		i = 0;
@@ -411,26 +365,21 @@ namespace irc
             {
 				if(_users[index - 1]->_incomingMsgs.at(0) == "JOIN" && _users[index - 1]->_incomingMsgs.size() == 2)
 					return ;
-                // _users.at(0)->printIncomingMsgs();
              try{
                   if(authenticate_user(index))
                 {
-                        std::string msg = ":irc 001 " + _users[index - 1]->getNickName() + " :Welcome to the perfect Chat system " + _users[index - 1]->getNickName() + "\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 002 " + _users[index - 1]->getNickName() + " :Host are Omar, Chinedu and Yonatan\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 003 " + _users[index - 1]->getNickName() + " :Created on july->2023\n";
-                        this->sendMsg(_users[index - 1]->getUserFd(), msg);
-						msg = ":irc 004 " + _users[index - 1]->getNickName()  + " :Enjoy your stay!\n";
-
+					std::string msg = ":irc 001 " + _users[index - 1]->getNickName() + " :Welcome to the perfect Chat system " + _users[index - 1]->getNickName() + "\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 002 " + _users[index - 1]->getNickName() + " :Host are Omar, Chinedu and Yonatan\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 003 " + _users[index - 1]->getNickName() + " :Created on july->2023\n";
+					this->sendMsg(_users[index - 1]->getUserFd(), msg);
+					msg = ":irc 004 " + _users[index - 1]->getNickName()  + " :Enjoy your stay!\n";
                 }
                 else
                 {
-                        std::cout << "not authenticated\n";
-                        // std::cout << "------------------------------------------------------------" << std::endl;
-                        // _users[index - 1]->printIncomingMsgs();
-                        // std::cout << "------------------------------------------------------------" << std::endl;
-						closeSocketAndRemoveUser(index);
+					std::cout << "not authenticated\n";
+					closeSocketAndRemoveUser(index);
                 }
              }
              catch(std::exception & e)
@@ -449,31 +398,14 @@ namespace irc
 				}
 				if(_users[index - 1]->_incomingMsgs.at(0) == "QUIT")
 				{
+					closeSocketAndRemoveUser(index);
 					return ;
 				}
-                //once already a memeber
-				execMessage(_users[index - 1]->getMessages(), _users[index-1]); // (User, Channel
-				// give me the split here so I can call execMessage
-                // std::cout << "------------------------------------------------------------------------------------\n";
-				// std::cout << "\t\t Incomming messages" << std::endl;
-				// if(_users.size() != 0)
-				// 	_users.at(0)->printIncomingMsgs();
-                // std::cout << "------------------------------------------------------------------------------------\n";
-                // if(_users[index - 1]->_incomingMsgs.at(0) == "PING")
-                //     this->sendMsg(_users[index - 1]->getUserFd(), "PONG\r\n");
-                // if(_users[index - 1]->_incomingMsgs.at(0) == "PRIVMSG" && _users[index - 1]->_incomingMsgs.at(1).at(0) != '#')
-                // {
-				// 	std::cout << "PRIVMSG forrrrr client " << std::endl;
-                //     if(getFdByNick(_users[0]->_incomingMsgs.at(1)) != -1)
-                //     {
-                //  	   this->sendMsg(getFdByNick(_users[0]->_incomingMsgs.at(1)), _users[index - 1]->_incomingMsgs.at(0) + "\r\n");
-                //     }
-                // }
-            //     std::cout << "---------------------\n";
+				execMessage(_users[index - 1]->getMessages(), _users[index-1]);
+
 				displayUsers();
 				displayChannels();
             }
-        //     // execute clieent commands
         }
     }
 	
@@ -501,6 +433,7 @@ namespace irc
 		}
 		std::cout << "-----------------------------------------------------------------------------\n";
 	}
+
 	void Server::closeSocketAndRemoveUser(size_t index)
 	{
 		if(index  == 0)
@@ -515,15 +448,6 @@ namespace irc
 		return _users;
 	}
 
-	// User& Server::getUser(int fd){
-	//     for (std::vector<User *>::iterator it = _users.begin(); it != _users.end(); it++) {
-	//         if (it->getUserFd() == fd) {
-	//             return *it;
-	//         }
-	//     }
-	//     return _users[0];
-	// }
-
 	void Server::closeClientSocket(size_t index)
 	{
 		close(_pollFD[index].fd);
@@ -532,25 +456,41 @@ namespace irc
 
 	void Server::bye()
 	{
-		if (_sockfd != -1)
+		_running = false;
+
+		// Close socket connections
+		for (size_t i = 0; i < _pollFD.size(); i++)
 		{
-			std::cout << RED << "Server: Stopped socket closed" << DEFAULT << std::endl;
+			if (_pollFD[i].fd != -1)
+			{
+				close(_pollFD[i].fd);
+				_pollFD[i].fd = -1;
+			}
+		}
+
+		std::vector<User *>::iterator it = _users.begin();
+		for (;it != _users.end(); it++) {
+			delete *it;
+		}
+		_users.clear();
+		_pollFD.clear();
+
+		// Free socket file descriptor
+		if (_sockfd != -1) {
 			close(_sockfd);
 			_sockfd = -1;
-			// Add any additional cleanup code here
 		}
 	}
 
 	void Server::handleSignal(int signal)
 	{
 		std::cout << "Received signal: " << signal << std::endl;
-		_running = false; // Set _running to false to stop the server
+		_running = false;
 	}
 
 	void Server::signalHandler(int signal)
 	{
-		if (serverInstance != NULL)
-		{
+		if (serverInstance != NULL) {
 			serverInstance->handleSignal(signal);
 		}
 	}
@@ -562,13 +502,7 @@ namespace irc
 		return false;
 	}
 
-
-	// function to send messages to specific clients when needed.
-	// void Server::sendToClient(size_t index, const std::string& message) {
-	//     send(_pollFD[index].fd, message.c_str(), message.size(), 0);
-	// }
-	std::vector<Channel *> irc::Server::getChannels()
-	{
+	std::vector<Channel *> irc::Server::getChannels() {
 		return this->_channels;
 	}
 
