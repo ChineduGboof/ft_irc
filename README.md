@@ -188,6 +188,27 @@ The `searchingForConnections()` function is responsible for checking the events 
 
 In summary, the `searchingForConnections()` function checks for writing events on client file descriptors and sends any pending outgoing messages. It also handles reading events, distinguishing between new client connections and data received from existing clients, and calls the appropriate functions for further processing.
 
+## handleNewConnection()
+
+The `handleNewConnection()` function is responsible for accepting a new client connection to the server.
+
+1. It declares a variable `fd` and initializes it with the value -1. This variable will hold the file descriptor for the new client connection.
+
+2. It declares a variable `addressLen` and initializes it with the size of the `struct sockaddr_storage` structure. This variable will hold the length of the remote address structure.
+
+3. It declares a variable `remoteAddress` of type `struct sockaddr_storage` and initializes it with zeros using `std::memset()`. This structure will hold information about the remote client's address.
+
+4. It calls the `accept()` function with the server's main socket `_sockfd`, the address of the `remoteAddress` structure, and the address length. The `accept()` function waits until a client connects to the server and then establishes a new socket connection with the client.
+
+5. If the `accept()` function returns a value less than 0, it means there was an error accepting the client connection. In this case, it throws a `std::runtime_error` with the message "Server: client connection error".
+
+6. If the client connection is successfully accepted, it proceeds to create a new user using the `createNewUser()` function. This function likely creates a new user object or performs any necessary setup for the user.
+
+7. It then initializes the polling file descriptor `_pollFD` for the new client connection by calling the `initPollFD()` function with the `fd` as the parameter. This allows the server to monitor the new client's file descriptor for events.
+
+8. It prints information about the new client connection by calling the `printNewConnectionInfo()` function, passing the `remoteAddress` and `fd` as parameters. This function likely displays details about the client's address and connection.
+
+In summary, the `handleNewConnection()` function accepts a new client connection to the server, creates a new user object for the client, initializes the polling file descriptor, and prints information about the new connection.
 
 ## Further Studies
 
